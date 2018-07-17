@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Main from './index';
+import RootComponent from '.';
 
 const container = document.createElement('div');
 document.body.appendChild(container);
 
-ReactDOM.render(<Main />, container);
+ReactDOM.render(<RootComponent />, container);
