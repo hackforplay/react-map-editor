@@ -1,0 +1,47 @@
+{
+  "name": "react-map-editor",
+  "version": "0.0.1",
+  "description": "Subset of HackforPlay. Experimental",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "ava",
+    "watch": "webpack-dev-server",
+    "format": "prettier --write 'src/**'",
+    "build": "npm run format && webpack -p && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hackforplay/react-map-editor.git"
+  },
+  "keywords": [
+    "hackforplay",
+    "react",
+    "map",
+    "editor"
+  ],
+  "author": "teramotodaiki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hackforplay/react-map-editor/issues"
+  },
+  "homepage": "https://github.com/hackforplay/react-map-editor#readme",
+  "dependencies": {
+    "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.54",
+    "@babel/preset-env": "^7.0.0-beta.54",
+    "@babel/preset-react": "^7.0.0-beta.54",
+    "@babel/preset-typescript": "^7.0.0-beta.54",
+    "ava": "1.0.0-beta.6",
+    "babel-loader": "^8.0.0-beta.4",
+    "html-webpack-plugin": "^3.2.0",
+    "prettier": "^1.13.7",
+    "webpack": "^4.16.1",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
