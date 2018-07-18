@@ -1,19 +1,43 @@
 import * as React from 'react';
-import { style } from 'typestyle';
-import * as csstips from 'csstips';
+import { style } from 'typestyle/lib';
+import * as csstips from 'csstips/lib';
 import { Square } from '@hackforplay/next';
+import { StateProps, DispatchProps } from '../containers/PaletteView';
 
-const container = style(csstips.flex1, {
+export type Props = StateProps & DispatchProps;
+
+const container = style(csstips.flex1, csstips.vertical, {
   minWidth: 120
 });
+const table = style(csstips.flex);
+const selected = style({
+  height: 120,
+  $nest: {
+    '& img': {
+      height: '100%'
+    }
+  }
+});
 
-export default class PaletteView extends React.Component {
+export default class PaletteView extends React.Component<Props> {
   render() {
     return (
       <div className={container}>
-        {squares.map(square => (
-          <img key={square.index} src={square.tile.image.src} alt="tile" />
-        ))}
+        <div className={table}>
+          {squares.map(square => (
+            <img
+              key={square.index}
+              src={square.tile.image.src}
+              alt="tile"
+              onClick={() => this.props.onSquareClick(square)}
+            />
+          ))}
+        </div>
+        <div className={selected}>
+          {this.props.selected && (
+            <img src={this.props.selected.tile.image.src} alt="selected tile" />
+          )}
+        </div>
       </div>
     );
   }

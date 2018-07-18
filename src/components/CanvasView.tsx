@@ -1,7 +1,15 @@
 import * as React from 'react';
-import { style } from 'typestyle';
-import * as csstips from 'csstips';
+import { style } from 'typestyle/lib';
+import * as csstips from 'csstips/lib';
 import { render, Scene, loadImages } from '@hackforplay/next';
+import { StateProps, DispatchProps } from '../containers/LayerView';
+
+export type Props = StateProps & DispatchProps;
+
+export interface State {
+  hackforplayRootNode: HTMLElement | null;
+  scene: Scene | null;
+}
 
 const container = style(csstips.flex8);
 const hackforplayRootNode = style({
@@ -9,12 +17,6 @@ const hackforplayRootNode = style({
   height: '100%',
   padding: 16
 });
-
-export interface Props {}
-export interface State {
-  hackforplayRootNode: HTMLElement | null;
-  scene: Scene | null;
-}
 
 export default class CanvasView extends React.Component<Props, State> {
   async componentDidMount() {

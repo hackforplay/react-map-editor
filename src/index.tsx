@@ -1,9 +1,11 @@
 import * as React from 'react';
-import LayerView from './components/LayerView';
-import CanvasView from './components/CanvasView';
-import PaletteView from './components/PaletteView';
-import { style } from 'typestyle';
-import * as csstips from 'csstips';
+import { Provider } from 'react-redux';
+import { style } from 'typestyle/lib';
+import * as csstips from 'csstips/lib';
+import LayerView from './containers/LayerView';
+import CanvasView from './containers/CanvasView';
+import PaletteView from './containers/PaletteView';
+import createStore from './redux/createStore';
 
 const root = style(csstips.vertical, {
   height: '100%'
@@ -18,14 +20,16 @@ const menu = style(csstips.content, {
 export default class Main extends React.Component {
   render() {
     return (
-      <div className={root}>
-        <div className={container}>
-          <LayerView />
-          <CanvasView />
-          <PaletteView />
+      <Provider store={createStore()}>
+        <div className={root}>
+          <div className={container}>
+            <LayerView />
+            <CanvasView />
+            <PaletteView />
+          </div>
+          <div className={menu}>Menu</div>
         </div>
-        <div className={menu}>Menu</div>
-      </div>
+      </Provider>
     );
   }
 }
