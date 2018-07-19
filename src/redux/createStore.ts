@@ -2,13 +2,14 @@ import * as redux from 'redux';
 import { Action } from 'typescript-fsa';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import logger from 'redux-logger';
-import { palette, canvas, Store } from '.';
+import { palette, canvas, input, Store } from '.';
 
-export const rootEpic = combineEpics(palette.epics, canvas.epics);
+export const rootEpic = combineEpics(palette.epics, canvas.epics, input.epics);
 
 export const rootReducer = redux.combineReducers<Store>({
   palette: palette.default,
-  canvas: canvas.default
+  canvas: canvas.default,
+  input: input.default
 });
 
 const epicMiddleware = createEpicMiddleware<Action<any>, any, Store>();

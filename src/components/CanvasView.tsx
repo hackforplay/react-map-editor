@@ -36,7 +36,17 @@ export default class CanvasView extends React.Component<Props, State> {
   render() {
     return (
       <div className={container}>
-        <div className={hackforplayRootNode} ref={this.setRoot} />
+        <div className={hackforplayRootNode} ref={this.setRoot}>
+          <canvas
+            width={320}
+            height={192}
+            onMouseEnter={this.props.onCanvasMouseEnter}
+            onMouseLeave={this.props.onCanvasMouseLeave}
+            onMouseDown={this.props.onCanvasMouseDown}
+            onMouseMove={this.props.onCanvasMouseMove}
+            onMouseUp={this.props.onCanvasMouseUp}
+          />
+        </div>
       </div>
     );
   }
