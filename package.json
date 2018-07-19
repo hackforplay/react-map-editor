@@ -4,7 +4,7 @@
   "description": "Subset of HackforPlay. Experimental",
   "main": "lib/index.js",
   "scripts": {
-    "test": "ava",
+    "test": "tsc && ava",
     "watch": "webpack-dev-server",
     "format": "prettier --write 'src/**'",
     "build": "npm run format && webpack -p && tsc"
