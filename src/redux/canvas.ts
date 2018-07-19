@@ -1,17 +1,26 @@
+import * as React from 'react';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
 import { from } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
-import { Scene, loadImages } from '@hackforplay/next';
+import { map, mergeMap, filter } from 'rxjs/operators';
+import { Scene, Table, loadImages } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
-import { Epic } from '.';
+import { Epic, input } from '.';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
   initScene: actionCreator('INIT_SCENE'),
-  loadAsset: actionCreator.async<Scene, Scene>('LOAD_ASSET')
+  loadAsset: actionCreator.async<Scene, Scene>('LOAD_ASSET'),
+  set: actionCreator<Scene | null>('SET')
 };
+
+export interface Pen {
+  x: number;
+  y: number;
+  layer: number;
+  index: number;
+}
 
 export interface State {
   rootScene: Scene | null;
@@ -25,6 +34,10 @@ export default reducerWithInitialState(initialState)
   .case(actions.loadAsset.done, (state, action) => ({
     ...state,
     rootScene: action.result
+  }))
+  .case(actions.set, (state, payload) => ({
+    ...state,
+    rootScene: payload
   }));
 
 export const initSceneEpic: Epic = action$ =>
@@ -45,7 +58,72 @@ export const loadAssetEpic: Epic = action$ =>
     )
   );
 
-export const epics = combineEpics(initSceneEpic, loadAssetEpic);
+const drawEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    ofAction(input.actions.draw),
+    map(action => {
+      const e = action.payload;
+      const pen: Pen = {
+        x: ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
+        y: ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
+        layer: 0, // TODO: palette.selected が指すタイルの placement によって決定 (オートタイル機能)
+        index: state$.value.palette.selected
+          ? state$.value.palette.selected.index
+          : -88 // とりあえず３桁にしたいだけ
+      };
+      return pen;
+    }),
+    filter(pen => {
+      // 更新の必要があるかどうかをチェックする
+      const { rootScene } = state$.value.canvas;
+      if (!rootScene) return false;
+      const current = rootScene.map.tables[pen.layer][pen.y][pen.x];
+      return pen.index !== current;
+    }),
+    map(pen => {
+      const { rootScene } = state$.value.canvas;
+      if (!rootScene) return null;
+      const tables = mapArray3d(rootScene.map.tables, [pen]);
+      return {
+        ...rootScene,
+        map: {
+          ...rootScene.map,
+          tables
+        }
+      };
+    }),
+    map(scene => actions.set(scene))
+  );
+
+export const epics = combineEpics(initSceneEpic, loadAssetEpic, drawEpic);
+
+/**
+ * ３次元配列を愚直に回して置き換える. もっとマシな方法を @hackforplay/next で実装したい
+ * @param origin 元の３次元配列
+ * @param pens 置き換える Pen の配列
+ */
+function mapArray3d(origin: number[][][], pens: Pen[]) {
+  const result = [];
+  for (let layer = 0; layer < origin.length; layer++) {
+    const table = origin[layer];
+    for (let y = 0; y < table.length; y++) {
+      const row = table[y];
+      for (let x = 0; x < row.length; x++) {
+        let element = row[x];
+        for (let i = 0; i < pens.length; i++) {
+          if (pens[i].x === x && pens[i].y === y && pens[i].layer === layer) {
+            element = pens[i].index;
+            break;
+          }
+        }
+        row[x] = element;
+      }
+      table[y] = row;
+    }
+    result[layer] = table;
+  }
+  return result;
+}
 
 function init(): Scene {
   return {
