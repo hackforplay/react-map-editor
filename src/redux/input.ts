@@ -2,7 +2,7 @@ import * as React from 'react';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic } from '.';
 
@@ -13,7 +13,7 @@ export const actions = {
   mouseDown: actionCreator<React.MouseEvent<HTMLElement>>('MOUSE_DOWN'),
   mouseMove: actionCreator<React.MouseEvent<HTMLElement>>('MOUSE_MOVE'),
   mouseUp: actionCreator<React.MouseEvent<HTMLElement>>('MOUSE_UP'),
-  draw: actionCreator<React.MouseEvent<HTMLElement>>('DRAW')
+  drag: actionCreator<React.MouseEvent<HTMLElement>>('DRAG')
 };
 
 export interface State {
@@ -30,7 +30,14 @@ export default reducerWithInitialState(initialState)
 const mouseDownEpic: Epic = action$ =>
   action$.pipe(
     ofAction(actions.mouseDown),
-    map(action => actions.draw(action.payload))
+    map(action => actions.drag(action.payload))
   );
 
-export const epics = combineEpics(mouseDownEpic);
+const mouseMoveEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    ofAction(actions.mouseMove),
+    filter(() => state$.value.input.isPressed),
+    map(action => actions.drag(action.payload))
+  );
+
+export const epics = combineEpics(mouseDownEpic, mouseMoveEpic);

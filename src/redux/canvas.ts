@@ -3,10 +3,11 @@ import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
 import { from } from 'rxjs';
-import { map, mergeMap, filter } from 'rxjs/operators';
+import { map, mergeMap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { Scene, Table, loadImages } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic, input } from '.';
+import Pen from '../utils/pen';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
@@ -14,13 +15,6 @@ export const actions = {
   loadAsset: actionCreator.async<Scene, Scene>('LOAD_ASSET'),
   set: actionCreator<Scene | null>('SET')
 };
-
-export interface Pen {
-  x: number;
-  y: number;
-  layer: number;
-  index: number;
-}
 
 export interface State {
   rootScene: Scene | null;
@@ -60,19 +54,19 @@ export const loadAssetEpic: Epic = action$ =>
 
 const drawEpic: Epic = (action$, state$) =>
   action$.pipe(
-    ofAction(input.actions.draw),
+    ofAction(input.actions.drag),
     map(action => {
       const e = action.payload;
-      const pen: Pen = {
-        x: ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
-        y: ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
-        layer: 0, // TODO: palette.selected が指すタイルの placement によって決定 (オートタイル機能)
-        index: state$.value.palette.selected
+      return new Pen(
+        ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODunit=32px に依存しない位置参照(@hackforplay/next)に
+        ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
+        0, // TODO: palette.selected が指すタイルの placement によって決定 (オートタイル機能)
+        state$.value.palette.selected
           ? state$.value.palette.selected.index
           : -88 // とりあえず３桁にしたいだけ
-      };
-      return pen;
+      );
     }),
+    distinctUntilChanged((x, y) => x.isEqual(y)),
     filter(pen => {
       // 更新の必要があるかどうかをチェックする
       const { rootScene } = state$.value.canvas;

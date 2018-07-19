@@ -21,7 +21,8 @@ export default function createStore() {
   const ignoreLogger = [
     input.actions.mouseMove,
     input.actions.mouseEnter,
-    input.actions.mouseLeave
+    input.actions.mouseLeave,
+    input.actions.drag
   ];
 
   const logger = createLogger({
