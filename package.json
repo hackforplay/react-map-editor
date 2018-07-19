@@ -8,7 +8,7 @@
     "watch": "webpack-dev-server",
     "format": "prettier --write 'src/**'",
     "build": "npm run format && npm run svgr && webpack -p && tsc",
-    "svgr": "svgr --icon --replace-attr-values '#000=currentColor' -d src/icons src/svg"
+    "svgr": "svgr --icon --replace-attr-values '#000=currentColor' --template ./svgr-template.js --ext tsx -d src/icons src/svg"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
-import React from 'react';
+import * as React from 'react';
 
-const Edit = props => (
+const Edit = (props: any) => (
   <svg viewBox="0 0 18 18" width="1em" height="1em" {...props}>
     <g fill="none" fillRule="evenodd">
       <path
