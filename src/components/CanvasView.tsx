@@ -2,7 +2,7 @@ import * as React from 'react';
 import { style } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
 import { render, Scene, loadImages } from '@hackforplay/next';
-import { StateProps, DispatchProps } from '../containers/LayerView';
+import { StateProps, DispatchProps } from '../containers/CanvasView';
 
 export type Props = StateProps & DispatchProps;
 
