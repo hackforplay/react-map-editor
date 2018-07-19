@@ -10,7 +10,7 @@ const container = style(csstips.flex1, csstips.vertical, {
   minWidth: 120
 });
 const table = style(csstips.flex);
-const selected = style({
+const nibView = style({
   height: 120,
   $nest: {
     '& img': {
@@ -33,9 +33,9 @@ export default class PaletteView extends React.Component<Props> {
             />
           ))}
         </div>
-        <div className={selected}>
-          {this.props.selected && (
-            <img src={this.props.selected.tile.image.src} alt="selected tile" />
+        <div className={nibView}>
+          {this.props.nib && (
+            <img src={this.props.nib.tile.image.src} alt="selected tile" />
           )}
         </div>
       </div>

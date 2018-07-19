@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
-import MenuBar, { Props } from '../components/MenuBar';
+import MenuBar from '../components/MenuBar';
 import { Store, mode } from '../redux';
+import { PenMode } from '../utils/pen';
 
 export type StateProps = {
-  penMode: mode.PenMode;
+  penMode: PenMode;
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (

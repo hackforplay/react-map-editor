@@ -57,15 +57,15 @@ const drawEpic: Epic = (action$, state$) =>
     ofAction(input.actions.drag),
     map(action => {
       const e = action.payload;
+      const { mode } = state$.value;
       return new Pen(
         ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
         ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
-        0, // TODO: palette.selected が指すタイルの placement によって決定 (オートタイル機能)
-        state$.value.palette.selected
-          ? state$.value.palette.selected.index
-          : -88 // とりあえず３桁にしたいだけ
+        mode.penMode,
+        mode.nib
       );
     }),
+    filter(pen => !pen.disabled),
     distinctUntilChanged((x, y) => x.isEqual(y)),
     filter(pen => {
       // 更新の必要があるかどうかをチェックする
