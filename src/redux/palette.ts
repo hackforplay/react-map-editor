@@ -10,31 +10,19 @@ import { Epic } from '.';
 
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
-  mousedown: actionCreator<Square>('MOUSE_DOWN'),
-  select: actionCreator<Square>('SELECT')
+  mousedown: actionCreator<Square>('MOUSE_DOWN')
 };
 
 export interface State {
-  selected: Square | null;
   tileSet: Square[];
 }
 const initialState: State = {
-  selected: null,
   tileSet: sampleData()
 };
 
-export default reducerWithInitialState(initialState).case(
-  actions.select,
-  (state, payload) => ({ ...state, selected: payload })
-);
+export default reducerWithInitialState(initialState);
 
-const paletteMousedownEpic: Epic = actions$ =>
-  actions$.pipe(
-    ofAction(actions.mousedown),
-    map(action => actions.select(action.payload))
-  );
-
-export const epics = combineEpics(paletteMousedownEpic);
+export const epics = combineEpics();
 
 function sampleData(): Square[] {
   return [

@@ -5,13 +5,13 @@ import { Store, palette } from '../redux';
 import { Square } from '@hackforplay/next';
 
 export type StateProps = {
-  selected: Square | null;
+  nib: Square | null;
   tileSet: Square[];
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = state => {
   return {
-    selected: state.palette.selected,
+    nib: state.mode.nib,
     tileSet: state.palette.tileSet
   };
 };

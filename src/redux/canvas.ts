@@ -54,18 +54,19 @@ export const loadAssetEpic: Epic = action$ =>
 
 const drawEpic: Epic = (action$, state$) =>
   action$.pipe(
+    filter(() => state$.value.mode.penMode === 'pen'),
     ofAction(input.actions.drag),
     map(action => {
       const e = action.payload;
+      const { mode } = state$.value;
       return new Pen(
-        ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODunit=32px に依存しない位置参照(@hackforplay/next)に
+        ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
         ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
-        0, // TODO: palette.selected が指すタイルの placement によって決定 (オートタイル機能)
-        state$.value.palette.selected
-          ? state$.value.palette.selected.index
-          : -88 // とりあえず３桁にしたいだけ
+        'pen',
+        mode.nib
       );
     }),
+    filter(pen => !pen.disabled),
     distinctUntilChanged((x, y) => x.isEqual(y)),
     filter(pen => {
       // 更新の必要があるかどうかをチェックする
@@ -89,7 +90,50 @@ const drawEpic: Epic = (action$, state$) =>
     map(scene => actions.set(scene))
   );
 
-export const epics = combineEpics(initSceneEpic, loadAssetEpic, drawEpic);
+const eraserEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    filter(() => state$.value.mode.penMode === 'eraser'),
+    ofAction(input.actions.drag),
+    map(action => {
+      const e = action.payload;
+      const { mode } = state$.value;
+      return new Pen(
+        ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
+        ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
+        'eraser',
+        null
+      );
+    }),
+    filter(pen => !pen.disabled),
+    distinctUntilChanged((x, y) => x.isEqual(y)),
+    filter(pen => {
+      // 更新の必要があるかどうかをチェックする
+      const { rootScene } = state$.value.canvas;
+      if (!rootScene) return false;
+      const current = rootScene.map.tables[pen.layer][pen.y][pen.x];
+      return pen.index !== current;
+    }),
+    map(pen => {
+      const { rootScene } = state$.value.canvas;
+      if (!rootScene) return null;
+      const tables = mapArray3d(rootScene.map.tables, [pen]);
+      return {
+        ...rootScene,
+        map: {
+          ...rootScene.map,
+          tables
+        }
+      };
+    }),
+    map(scene => actions.set(scene))
+  );
+
+export const epics = combineEpics(
+  initSceneEpic,
+  loadAssetEpic,
+  drawEpic,
+  eraserEpic
+);
 
 /**
  * ３次元配列を愚直に回して置き換える. もっとマシな方法を @hackforplay/next で実装したい
