@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { style } from 'typestyle/lib';
+import { style, classes } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
 import { StateProps, DispatchProps } from '../containers/MenuBar';
 import Edit from '../icons/Edit';
@@ -27,11 +27,34 @@ const paletteView = style(csstips.flex1, {
 const icons = style({
   marginTop: (48 - 24) / 2,
   width: '1em',
-  height: '1em'
+  height: '1em',
+  overflow: 'visible !important'
 });
 
-export default class CanvasView extends React.Component<Props, State> {
+const selectedColor = '#2196f3';
+
+const eraser = {
+  enabled: style({
+    color: '#ffffff',
+    stroke: selectedColor
+  }),
+  disabled: style({
+    color: '#ffffff',
+    stroke: '#000000'
+  })
+};
+const edit = {
+  enabled: style({
+    color: selectedColor
+  }),
+  disabled: style({
+    color: '#000000'
+  })
+};
+
+export default class MenuBar extends React.Component<Props, State> {
   render() {
+    const { penMode } = this.props;
     return (
       <div className={container}>
         <div className={layerView} />
@@ -41,8 +64,20 @@ export default class CanvasView extends React.Component<Props, State> {
           <div className={icons} />
           <div className={icons} />
           {/* 仮設置 */}
-          <Eraser className={icons} color="white" stroke="black" />
-          <Edit className={icons} />
+          <Eraser
+            className={classes(
+              icons,
+              penMode === 'eraser' ? eraser.enabled : eraser.disabled
+            )}
+            onClick={this.props.onClickEraser}
+          />
+          <Edit
+            className={classes(
+              icons,
+              penMode === 'pen' ? edit.enabled : edit.disabled
+            )}
+            onClick={this.props.onClickEdit}
+          />
         </div>
         <div className={paletteView} />
       </div>
