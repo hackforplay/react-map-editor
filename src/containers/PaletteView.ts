@@ -6,11 +6,13 @@ import { Square } from '@hackforplay/next';
 
 export type StateProps = {
   selected: Square | null;
+  tileSet: Square[];
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = state => {
   return {
-    selected: state.palette.selected
+    selected: state.palette.selected,
+    tileSet: state.palette.tileSet
   };
 };
 

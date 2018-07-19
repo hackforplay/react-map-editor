@@ -4,7 +4,7 @@
   "description": "Subset of HackforPlay. Experimental",
   "main": "lib/index.js",
   "scripts": {
-    "test": "ava",
+    "test": "tsc && ava",
     "watch": "webpack-dev-server",
     "format": "prettier --write 'src/**'",
     "build": "npm run format && webpack -p && tsc"
@@ -31,6 +31,7 @@
     "@types/react": "^16.4.6",
     "@types/react-dom": "^16.0.6",
     "@types/react-redux": "^6.0.4",
+    "@types/redux-logger": "^3.0.6",
     "csstips": "^0.3.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
