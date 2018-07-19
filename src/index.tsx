@@ -5,6 +5,7 @@ import * as csstips from 'csstips/lib';
 import LayerView from './containers/LayerView';
 import CanvasView from './containers/CanvasView';
 import PaletteView from './containers/PaletteView';
+import MenuBar from './containers/MenuBar';
 import createStore from './redux/createStore';
 
 const root = style(csstips.vertical, {
@@ -27,7 +28,7 @@ export default class Main extends React.Component {
             <CanvasView />
             <PaletteView />
           </div>
-          <div className={menu}>Menu</div>
+          <MenuBar />
         </div>
       </Provider>
     );
