@@ -25,7 +25,8 @@ const initialState: State = {
 
 export default reducerWithInitialState(initialState)
   .case(actions.mouseDown, state => ({ ...state, isPressed: true }))
-  .case(actions.mouseUp, state => ({ ...state, isPressed: false }));
+  .case(actions.mouseUp, state => ({ ...state, isPressed: false }))
+  .case(actions.mouseLeave, state => ({ ...state, isPressed: false }));
 
 const mouseDownEpic: Epic = action$ =>
   action$.pipe(
