@@ -80,6 +80,7 @@ const drawEpic: Epic = (action$, state$) =>
           table => table[pen.y][pen.x] > -1
         );
         if (topIndex < 0) return false;
+        if (topIndex === rootScene.map.tables.length - 1) return false; // オートレイヤー状態では一番下のレイヤーは消せない
         pen.layer = topIndex;
         return true;
       }
