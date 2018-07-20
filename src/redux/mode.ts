@@ -35,4 +35,11 @@ const nibEpic: Epic = action$ =>
     map(action => actions.setNib(action.payload))
   );
 
-export const epics = combineEpics(nibEpic);
+const setPenWhenSetNibEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    ofAction(actions.setNib),
+    filter(() => state$.value.mode.penMode === 'eraser'),
+    map(() => actions.setPen())
+  );
+
+export const epics = combineEpics(nibEpic, setPenWhenSetNibEpic);
