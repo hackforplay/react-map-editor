@@ -4,7 +4,7 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
 import { from } from 'rxjs';
 import { map, mergeMap, filter, distinctUntilChanged } from 'rxjs/operators';
-import { Scene, SceneMap, Table } from '@hackforplay/next';
+import { Scene, SceneMap, Table, Square } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic, input } from '.';
 import Pen from '../utils/pen';
@@ -12,6 +12,7 @@ import Pen from '../utils/pen';
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
   initScene: actionCreator<SceneMap>('INIT_SCENE'),
+  draw: actionCreator<Pen>('DRAW'),
   set: actionCreator<SceneMap>('SET')
 };
 
@@ -22,7 +23,7 @@ export default reducerWithInitialState(initialState)
   .case(actions.initScene, (state, payload) => payload)
   .case(actions.set, (state, payload) => payload);
 
-const drawEpic: Epic = (action$, state$) =>
+const dragEpic: Epic = (action$, state$) =>
   action$.pipe(
     ofAction(input.actions.drag),
     map(action => {
@@ -52,17 +53,41 @@ const drawEpic: Epic = (action$, state$) =>
         return true;
       }
     }),
-    map(pen => {
+    map(pen => actions.draw(pen))
+  );
+
+const penEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    ofAction(actions.draw),
+    filter(action => action.payload.mode === 'pen'),
+    map(action => {
+      const { tables, squares } = state$.value.canvas;
+      const { nib } = action.payload;
+      if (!nib) throw new Error('Nib is null');
+      const add = squares.every(s => s.index !== nib.index);
+      return {
+        tables: mapArray3d(tables, [action.payload]),
+        squares: add ? squares.concat(nib) : squares
+      };
+    }),
+    map(map => actions.set(map))
+  );
+
+const eraserEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    ofAction(actions.draw),
+    filter(action => action.payload.mode === 'eraser'),
+    map(action => {
       const { tables, squares } = state$.value.canvas;
       return {
-        tables: mapArray3d(tables, [pen]),
+        tables: mapArray3d(tables, [action.payload]),
         squares
       };
     }),
     map(map => actions.set(map))
   );
 
-export const epics = combineEpics(drawEpic);
+export const epics = combineEpics(dragEpic, penEpic, eraserEpic);
 
 /**
  * ３次元配列を愚直に回して置き換える. もっとマシな方法を @hackforplay/next で実装したい

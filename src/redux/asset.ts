@@ -3,7 +3,7 @@ import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
 import { from } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, filter } from 'rxjs/operators';
 import {
   Scene,
   Square,
@@ -69,4 +69,23 @@ export const loadAssetEpic: Epic = (action$, state$) =>
     })
   );
 
-export const epics = combineEpics(initSceneAssetEpic, loadAssetEpic);
+export const drawNewSquareEpic: Epic = (action$, state$) =>
+  action$.pipe(
+    ofAction(canvas.actions.draw),
+    filter(action => action.payload.mode === 'pen'),
+    map(action => action.payload.nib),
+    filter(nib => {
+      if (!nib) throw new Error('Nib is null');
+      return (
+        nib.index > -1 &&
+        state$.value.asset.images.every(img => img.index !== nib.index)
+      );
+    }),
+    map(nib => actions.loadAsset.started([nib as Square]))
+  );
+
+export const epics = combineEpics(
+  initSceneAssetEpic,
+  loadAssetEpic,
+  drawNewSquareEpic
+);
