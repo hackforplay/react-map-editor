@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { style } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
-import { render, Scene, loadImages } from '@hackforplay/next';
+import { render, Scene } from '@hackforplay/next';
 import { StateProps, DispatchProps } from '../containers/CanvasView';
 
 export type Props = StateProps & DispatchProps;
@@ -24,7 +24,7 @@ export default class CanvasView extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    if (this.state.hackforplayRootNode && this.props.rootScene) {
+    if (this.state.hackforplayRootNode && !this.props.loading) {
       render(this.props.rootScene, this.state.hackforplayRootNode);
     }
   }

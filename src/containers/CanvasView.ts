@@ -5,7 +5,8 @@ import CanvasView from '../components/CanvasView';
 import { canvas, input, Store } from '../redux';
 
 export type StateProps = {
-  rootScene: Scene | null;
+  rootScene: Scene;
+  loading: boolean;
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
@@ -13,7 +14,15 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
   ownProps
 ) => {
   return {
-    rootScene: state.canvas.rootScene
+    rootScene: {
+      map: state.canvas,
+      assets: state.asset,
+      screen: {
+        width: 320,
+        height: 192
+      }
+    },
+    loading: state.asset.loading
   };
 };
 
@@ -31,7 +40,7 @@ const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (
   ownProps
 ) => {
   return {
-    init: () => dispatch(canvas.actions.initScene()),
+    init: () => dispatch(canvas.actions.initScene(canvas.init())),
     onCanvasMouseEnter: e => dispatch(input.actions.mouseEnter(e)),
     onCanvasMouseLeave: e => dispatch(input.actions.mouseLeave(e)),
     onCanvasMouseDown: e => dispatch(input.actions.mouseDown(e)),

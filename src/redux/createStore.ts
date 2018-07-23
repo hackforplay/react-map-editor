@@ -2,20 +2,22 @@ import * as redux from 'redux';
 import { Action } from 'typescript-fsa';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import { createLogger } from 'redux-logger';
-import { palette, canvas, input, mode, Store } from '.';
+import { palette, canvas, input, mode, asset, Store } from '.';
 
 export const rootEpic = combineEpics(
   palette.epics,
   canvas.epics,
   input.epics,
-  mode.epics
+  mode.epics,
+  asset.epics
 );
 
 export const rootReducer = redux.combineReducers<Store>({
   palette: palette.default,
   canvas: canvas.default,
   input: input.default,
-  mode: mode.default
+  mode: mode.default,
+  asset: asset.default
 });
 
 const epicMiddleware = createEpicMiddleware<Action<any>, any, Store>();
