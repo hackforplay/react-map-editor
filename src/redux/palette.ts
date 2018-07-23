@@ -7,6 +7,7 @@ import { StateObservable } from 'redux-observable';
 import { Square, SceneAssets, loadImages, Scene } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic } from '.';
+import pipoya from '../tilesets/pipoya';
 
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
@@ -17,7 +18,7 @@ export interface State {
   tileSet: Square[];
 }
 const initialState: State = {
-  tileSet: sampleData()
+  tileSet: pipoya.tileSets as Square[]
 };
 
 export default reducerWithInitialState(initialState);

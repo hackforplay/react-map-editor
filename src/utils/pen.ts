@@ -61,19 +61,14 @@ export default class Pen {
 
 function autoLayer(placement: Placement): number {
   switch (placement.type) {
-    case 'Inherit': // TODO: これでいいのか？
-    case 'Custom': // TODO: 型に互換性がない
-      return 0;
     case 'Ground':
       return 2;
-    case 'Terrain':
+    case 'Wall':
     case 'Road':
     case 'Rug':
-      return 1;
     case 'Barrier':
+      return 1;
     case 'Float':
-    case 'Ornament':
-    case 'Roof':
     case 'Sky':
       return 0;
   }
