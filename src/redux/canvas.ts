@@ -27,13 +27,14 @@ const dragEpic: Epic = (action$, state$) =>
   action$.pipe(
     ofAction(input.actions.drag),
     map(action => {
-      const e = action.payload;
+      const e = action.payload.event;
       const { mode } = state$.value;
       return new Pen(
         ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
         ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
         state$.value.mode.penMode,
-        mode.nib
+        mode.nib,
+        action.payload.id
       );
     }),
     filter(pen => !pen.disabled),
