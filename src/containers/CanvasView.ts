@@ -3,10 +3,12 @@ import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import { Scene } from '@hackforplay/next';
 import CanvasView from '../components/CanvasView';
 import { canvas, input, Store } from '../redux';
+import { PenMode } from '../utils/pen';
 
 export type StateProps = {
   rootScene: Scene;
   loading: boolean;
+  penMode: PenMode;
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
@@ -22,7 +24,8 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
         height: 192
       }
     },
-    loading: state.asset.loading
+    loading: state.asset.loading,
+    penMode: state.mode.penMode
   };
 };
 
