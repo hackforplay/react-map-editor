@@ -2,22 +2,26 @@ import * as React from 'react';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
-import { map, filter } from 'rxjs/operators';
+import { map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { Square } from '@hackforplay/next';
-import { ofAction } from './typescript-fsa-redux-observable';
+import {
+  ofAction,
+  ofActionWithPayload
+} from './typescript-fsa-redux-observable';
 import { Epic, palette } from '.';
 import { CursorMode } from '../utils/cursor';
+import { getMatrix } from '../utils/selection';
 
 const actionCreator = actionCreatorFactory('react-map-editor/mode');
 export const actions = {
   setPen: actionCreator('USE_PEN'),
   setEraser: actionCreator('USE_ERASER'),
-  setNib: actionCreator<Square>('SET_NIB')
+  setNib: actionCreator<Square[][]>('SET_NIB')
 };
 
 export interface State {
   cursorMode: CursorMode;
-  nib: Square | null;
+  nib: Square[][] | null;
 }
 const initialState: State = {
   cursorMode: 'nope',
@@ -38,13 +42,11 @@ export default reducerWithInitialState(initialState)
 
 const nibEpic: Epic = (action$, state$) =>
   action$.pipe(
-    ofAction(palette.actions.setSelection),
-    filter(action => action.payload !== null),
+    ofActionWithPayload(palette.actions.setSelection),
     map(action => {
-      if (!action.payload) throw 'nope';
-      const { start, end } = action.payload;
-      const nib = state$.value.palette.tileSet[end.num];
-      if (!nib) throw new Error('Invalid selection');
+      const { tileSet } = state$.value.palette;
+      const matrix = getMatrix(action.payload);
+      const nib = matrix.map(row => row.map(num => tileSet[num]));
       return actions.setNib(nib);
     })
   );

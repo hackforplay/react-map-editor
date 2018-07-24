@@ -77,13 +77,19 @@ export default class PaletteView extends React.Component<Props> {
           ))}
         </div>
         <div className={nibView}>
-          {this.props.nib && (
-            <img
-              src={this.props.nib.tile.image.src}
-              alt="selected tile"
-              draggable={false}
-            />
-          )}
+          {this.props.nib &&
+            this.props.nib.map((row, i) => (
+              <div key={i}>
+                {row.map((square, j) => (
+                  <img
+                    key={j}
+                    src={square.tile.image.src}
+                    alt="selected tile"
+                    draggable={false}
+                  />
+                ))}
+              </div>
+            ))}
         </div>
       </div>
     );

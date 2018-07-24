@@ -3,9 +3,10 @@ import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import PaletteView from '../components/PaletteView';
 import { Store, palette } from '../redux';
 import { Square } from '@hackforplay/next';
+import { Pos } from '../utils/selection';
 
 export type StateProps = {
-  nib: Square | null;
+  nib: Square[][] | null;
   tileSet: Square[];
 };
 
@@ -17,8 +18,8 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = state => {
 };
 
 export type DispatchProps = {
-  startSelection: (pos: palette.Pos) => void;
-  updateSelection: (pos: palette.Pos) => void;
+  startSelection: (pos: Pos) => void;
+  updateSelection: (pos: Pos) => void;
   confirmSelection: () => void;
   unsetSelection: () => void;
 };

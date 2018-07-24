@@ -8,6 +8,7 @@ import { values } from 'lodash';
 import { Square, SceneAssets, loadImages, Scene } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic } from '.';
+import { Selection, Pos } from '../utils/selection';
 
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
@@ -18,18 +19,6 @@ export const actions = {
   setSelection: actionCreator<Selection | null>('SET_SELECTION'),
   addTileset: actionCreator<Square[]>('ADD_TILESET'),
   setTilesetMap: actionCreator<{ [key: number]: Square }>('SET_TILESET_MAP')
-};
-
-export type Selection = {
-  moving: boolean;
-  start: Pos;
-  end: Pos;
-};
-
-export type Pos = {
-  row: number;
-  col: number;
-  num: number;
 };
 
 export interface State {
