@@ -31,7 +31,7 @@ const icons = style({
   overflow: 'visible !important'
 });
 
-const selectedColor = '#2196f3';
+export const selectedColor = '#2196f3';
 
 const eraser = {
   enabled: style({
@@ -54,7 +54,7 @@ const edit = {
 
 export default class MenuBar extends React.Component<Props, State> {
   render() {
-    const { penMode } = this.props;
+    const { cursorMode } = this.props;
     return (
       <div className={container}>
         <div className={layerView} />
@@ -67,14 +67,14 @@ export default class MenuBar extends React.Component<Props, State> {
           <Eraser
             className={classes(
               icons,
-              penMode === 'eraser' ? eraser.enabled : eraser.disabled
+              cursorMode === 'eraser' ? eraser.enabled : eraser.disabled
             )}
             onClick={this.props.onClickEraser}
           />
           <Edit
             className={classes(
               icons,
-              penMode === 'pen' ? edit.enabled : edit.disabled
+              cursorMode === 'pen' ? edit.enabled : edit.disabled
             )}
             onClick={this.props.onClickEdit}
           />

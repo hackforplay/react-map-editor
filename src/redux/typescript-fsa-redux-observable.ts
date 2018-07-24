@@ -13,3 +13,14 @@ export function ofAction<P>(
     >;
   };
 }
+
+export function ofActionWithPayload<P>(
+  actionCreator: ActionCreator<P | null>
+): MonoTypeOperatorFunction<Action<P>> {
+  return function(actions$) {
+    return actions$.pipe(
+      filter(actionCreator.match),
+      filter(action => action.payload !== null)
+    ) as ActionsObservable<Action<P>>;
+  };
+}

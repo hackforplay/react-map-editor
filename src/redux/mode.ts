@@ -2,44 +2,53 @@ import * as React from 'react';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { combineEpics } from 'redux-observable';
-import { map, filter } from 'rxjs/operators';
+import { map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { Square } from '@hackforplay/next';
-import { ofAction } from './typescript-fsa-redux-observable';
+import {
+  ofAction,
+  ofActionWithPayload
+} from './typescript-fsa-redux-observable';
 import { Epic, palette } from '.';
-import { PenMode } from '../utils/pen';
+import { CursorMode } from '../utils/cursor';
+import { getMatrix } from '../utils/selection';
 
 const actionCreator = actionCreatorFactory('react-map-editor/mode');
 export const actions = {
   setPen: actionCreator('USE_PEN'),
   setEraser: actionCreator('USE_ERASER'),
-  setNib: actionCreator<Square>('SET_NIB')
+  setNib: actionCreator<Square[][]>('SET_NIB')
 };
 
 export interface State {
-  penMode: PenMode;
-  nib: Square | null;
+  cursorMode: CursorMode;
+  nib: Square[][] | null;
 }
 const initialState: State = {
-  penMode: 'pen',
+  cursorMode: 'nope',
   nib: null
 };
 
 export default reducerWithInitialState(initialState)
-  .case(actions.setPen, state => ({ ...state, penMode: 'pen' }))
-  .case(actions.setEraser, state => ({ ...state, penMode: 'eraser' }))
-  .case(actions.setNib, (state, payload) => ({ ...state, nib: payload }));
+  .case(actions.setPen, state => ({
+    ...state,
+    cursorMode: state.nib ? 'pen' : 'nope'
+  }))
+  .case(actions.setEraser, state => ({ ...state, cursorMode: 'eraser' }))
+  .case(actions.setNib, (state, payload) => ({
+    ...state,
+    nib: payload,
+    cursorMode: 'pen'
+  }));
 
-const nibEpic: Epic = action$ =>
+const nibEpic: Epic = (action$, state$) =>
   action$.pipe(
-    ofAction(palette.actions.mousedown),
-    map(action => actions.setNib(action.payload))
+    ofActionWithPayload(palette.actions.setSelection),
+    map(action => {
+      const { tileSet } = state$.value.palette;
+      const matrix = getMatrix(action.payload);
+      const nib = matrix.map(row => row.map(num => tileSet[num]));
+      return actions.setNib(nib);
+    })
   );
 
-const setPenWhenSetNibEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(actions.setNib),
-    filter(() => state$.value.mode.penMode === 'eraser'),
-    map(() => actions.setPen())
-  );
-
-export const epics = combineEpics(nibEpic, setPenWhenSetNibEpic);
+export const epics = combineEpics(nibEpic);

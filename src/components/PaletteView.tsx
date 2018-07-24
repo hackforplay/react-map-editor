@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { style, media } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
+import { Square } from '@hackforplay/next';
+import { flatten } from 'lodash';
 import { StateProps, DispatchProps } from '../containers/PaletteView';
+import { selectedColor } from './MenuBar';
 
 export type Props = StateProps & DispatchProps;
 
@@ -29,39 +32,83 @@ const table = style(
     overflowY: 'scroll',
     $nest: {
       '&>img': {
-        marginBottom: 1,
-        cursor: 'copy'
+        cursor: 'copy',
+        boxSizing: 'content-box',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'transparent',
+        width: 32,
+        height: 32,
+        margin: -1,
+        marginBottom: 0
+      },
+      '&>img.selected': {
+        borderColor: selectedColor
       }
     }
   }
 );
-const nibView = style(csstips.selfCenter, {
+const nibView = style(csstips.selfCenter, csstips.vertical, {
   flexBasis: container4,
+  justifyContent: 'center',
   $nest: {
-    '& img': {
-      height: '100%'
+    '&>div': {
+      height: 32
     }
   }
 });
 
 export default class PaletteView extends React.Component<Props> {
   render() {
+    const nibSquares = flatten(this.props.nib);
+    const selected = (square: Square) =>
+      nibSquares.some(n => n.index === square.index) ? 'selected' : '';
+
     return (
       <div className={container}>
-        <div className={table}>
-          {this.props.tileSet.map(square => (
+        <div
+          className={table}
+          onMouseUp={() => this.props.confirmSelection()}
+          onMouseLeave={() => this.props.confirmSelection()}
+        >
+          {this.props.tileSet.map((square, num) => (
             <img
               key={square.index}
               src={square.tile.image.src}
               alt="tile"
-              onClick={() => this.props.onSquareClick(square)}
+              className={selected(square)}
+              draggable={false}
+              onMouseDown={() =>
+                this.props.startSelection({
+                  row: (num / 8) >> 0,
+                  col: num % 8,
+                  num: num
+                })
+              }
+              onMouseMove={() =>
+                this.props.updateSelection({
+                  row: (num / 8) >> 0,
+                  col: num % 8,
+                  num: num
+                })
+              }
             />
           ))}
         </div>
         <div className={nibView}>
-          {this.props.nib && (
-            <img src={this.props.nib.tile.image.src} alt="selected tile" />
-          )}
+          {this.props.nib &&
+            this.props.nib.map((row, i) => (
+              <div key={i}>
+                {row.map((square, j) => (
+                  <img
+                    key={j}
+                    src={square.tile.image.src}
+                    alt="selected tile"
+                    draggable={false}
+                  />
+                ))}
+              </div>
+            ))}
         </div>
       </div>
     );

@@ -11,6 +11,7 @@ import {
   ImageAsset,
   loadImages
 } from '@hackforplay/next';
+import { flatten } from 'lodash';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic, palette, canvas } from '.';
 
@@ -73,15 +74,16 @@ export const drawNewSquareEpic: Epic = (action$, state$) =>
   action$.pipe(
     ofAction(canvas.actions.draw),
     filter(action => action.payload.mode === 'pen'),
-    map(action => action.payload.nib),
-    filter(nib => {
-      if (!nib) throw new Error('Nib is null');
-      return (
-        nib.index > -1 &&
-        state$.value.asset.images.every(img => img.index !== nib.index)
-      );
-    }),
-    map(nib => actions.loadAsset.started([nib as Square]))
+    map(action =>
+      flatten(action.payload.nib).filter(square => {
+        return (
+          square.index > -1 &&
+          state$.value.asset.images.every(img => img.index !== square.index)
+        );
+      })
+    ),
+    filter(array => array.length > 0),
+    map(array => actions.loadAsset.started(array))
   );
 
 export const epics = combineEpics(

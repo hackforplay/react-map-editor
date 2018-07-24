@@ -30,7 +30,8 @@ export default function createStore() {
     input.actions.mouseMove,
     input.actions.mouseEnter,
     input.actions.mouseLeave,
-    input.actions.drag
+    input.actions.drag,
+    palette.actions.updateSelection
   ];
 
   const logger = createLogger({
