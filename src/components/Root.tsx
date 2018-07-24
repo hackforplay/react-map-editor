@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { style } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
-import { Square } from '@hackforplay/next';
+import { SceneMap, Square } from '@hackforplay/next';
 import LayerView from '../containers/LayerView';
 import CanvasView from '../containers/CanvasView';
 import PaletteView from '../containers/PaletteView';
@@ -10,6 +10,7 @@ import { StateProps, DispatchProps } from '../containers/Root';
 
 export type OwnProps = {
   tileset?: Square[];
+  map?: SceneMap;
 };
 export type Props = StateProps & DispatchProps & OwnProps;
 
@@ -25,7 +26,12 @@ const menu = style(csstips.content, {
 
 export default class Root extends React.Component<Props> {
   componentDidMount() {
-    this.props.init();
+    if (this.props.map) {
+      this.props.initMap(this.props.map);
+    }
+    if (this.props.tileset) {
+      this.props.addTileset(this.props.tileset);
+    }
   }
 
   render() {
@@ -34,7 +40,7 @@ export default class Root extends React.Component<Props> {
         <div className={container}>
           <LayerView />
           <CanvasView />
-          <PaletteView tileset={this.props.tileset} />
+          <PaletteView />
         </div>
         <MenuBar />
       </div>

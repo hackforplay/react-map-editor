@@ -35,9 +35,9 @@ export default reducerWithInitialState(initialState)
     images: action.result
   }));
 
-export const initSceneAssetEpic: Epic = action$ =>
+export const initMapEpic: Epic = action$ =>
   action$.pipe(
-    ofAction(canvas.actions.initScene),
+    ofAction(canvas.actions.initMap),
     map(action => actions.loadAsset.started(action.payload.squares))
   );
 
@@ -85,7 +85,7 @@ export const drawNewSquareEpic: Epic = (action$, state$) =>
   );
 
 export const epics = combineEpics(
-  initSceneAssetEpic,
+  initMapEpic,
   loadAssetEpic,
   drawNewSquareEpic
 );
