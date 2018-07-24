@@ -6,7 +6,7 @@ import { map, filter } from 'rxjs/operators';
 import { Square } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic, palette } from '.';
-import { PenMode } from '../utils/pen';
+import { CursorMode } from '../utils/cursor';
 
 const actionCreator = actionCreatorFactory('react-map-editor/mode');
 export const actions = {
@@ -16,17 +16,17 @@ export const actions = {
 };
 
 export interface State {
-  penMode: PenMode;
+  cursorMode: CursorMode;
   nib: Square | null;
 }
 const initialState: State = {
-  penMode: 'pen',
+  cursorMode: 'pen',
   nib: null
 };
 
 export default reducerWithInitialState(initialState)
-  .case(actions.setPen, state => ({ ...state, penMode: 'pen' }))
-  .case(actions.setEraser, state => ({ ...state, penMode: 'eraser' }))
+  .case(actions.setPen, state => ({ ...state, cursorMode: 'pen' }))
+  .case(actions.setEraser, state => ({ ...state, cursorMode: 'eraser' }))
   .case(actions.setNib, (state, payload) => ({ ...state, nib: payload }));
 
 const nibEpic: Epic = action$ =>
@@ -38,7 +38,7 @@ const nibEpic: Epic = action$ =>
 const setPenWhenSetNibEpic: Epic = (action$, state$) =>
   action$.pipe(
     ofAction(actions.setNib),
-    filter(() => state$.value.mode.penMode === 'eraser'),
+    filter(() => state$.value.mode.cursorMode === 'eraser'),
     map(() => actions.setPen())
   );
 

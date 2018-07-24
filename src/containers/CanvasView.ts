@@ -3,12 +3,12 @@ import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import { Scene } from '@hackforplay/next';
 import CanvasView from '../components/CanvasView';
 import { input, Store } from '../redux';
-import { PenMode } from '../utils/pen';
+import { CursorMode } from '../utils/cursor';
 
 export type StateProps = {
   rootScene: Scene;
   loading: boolean;
-  penMode: PenMode;
+  cursorMode: CursorMode;
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
@@ -25,7 +25,7 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
       }
     },
     loading: state.asset.loading,
-    penMode: state.mode.penMode
+    cursorMode: state.mode.cursorMode
   };
 };
 

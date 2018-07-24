@@ -1,11 +1,11 @@
 import { Square, Placement } from '@hackforplay/next';
 
-export type PenMode = 'pen' | 'eraser';
+export type CursorMode = 'pen' | 'eraser';
 
-export default class Pen {
+export default class Cursor {
   x: number;
   y: number;
-  mode: PenMode;
+  mode: CursorMode;
   nib: Square | null;
   _layer: number | null = null;
   dragId: number;
@@ -13,7 +13,7 @@ export default class Pen {
   constructor(
     x: number,
     y: number,
-    mode: PenMode,
+    mode: CursorMode,
     nib: Square | null,
     dragId: number
   ) {
@@ -24,7 +24,7 @@ export default class Pen {
     this.dragId = dragId;
   }
 
-  isEqual(other: Pen) {
+  isEqual(other: Cursor) {
     return (
       this.x === other.x &&
       this.y === other.y &&

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { normalize, setupPage } from 'csstips';
+import { normalize, setupPage } from 'csstips/lib';
 import RootComponent from '.';
 import { Square, SceneMap } from '@hackforplay/next';
 import pipoya from './tilesets/pipoya';

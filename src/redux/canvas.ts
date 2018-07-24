@@ -7,12 +7,12 @@ import { map, mergeMap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { Scene, SceneMap, Table, Square } from '@hackforplay/next';
 import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic, input } from '.';
-import Pen from '../utils/pen';
+import Cursor from '../utils/cursor';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
   initMap: actionCreator<SceneMap>('INIT_MAP'),
-  draw: actionCreator<Pen>('DRAW'),
+  draw: actionCreator<Cursor>('DRAW'),
   set: actionCreator<SceneMap>('SET')
 };
 
@@ -29,28 +29,30 @@ const dragEpic: Epic = (action$, state$) =>
     map(action => {
       const e = action.payload.event;
       const { mode } = state$.value;
-      return new Pen(
+      return new Cursor(
         ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
         ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
-        state$.value.mode.penMode,
+        state$.value.mode.cursorMode,
         mode.nib,
         action.payload.id
       );
     }),
-    filter(pen => !pen.disabled),
+    filter(cursor => !cursor.disabled),
     distinctUntilChanged((x, y) => x.isEqual(y)),
-    filter(pen => {
+    filter(cursor => {
       // 更新の必要があるかどうかをチェックする
       const { tables } = state$.value.canvas;
 
-      if (pen.mode === 'pen') {
-        const current = tables[pen.layer][pen.y][pen.x];
-        return pen.index !== current;
+      if (cursor.mode === 'pen') {
+        const current = tables[cursor.layer][cursor.y][cursor.x];
+        return cursor.index !== current;
       } else {
-        const topIndex = tables.findIndex(table => table[pen.y][pen.x] > -1);
+        const topIndex = tables.findIndex(
+          table => table[cursor.y][cursor.x] > -1
+        );
         if (topIndex < 0) return false;
         if (topIndex === tables.length - 1) return false; // オートレイヤー状態では一番下のレイヤーは消せない
-        pen.layer = topIndex;
+        cursor.layer = topIndex;
         return true;
       }
     }),
@@ -93,9 +95,9 @@ export const epics = combineEpics(dragEpic, penEpic, eraserEpic);
 /**
  * ３次元配列を愚直に回して置き換える. もっとマシな方法を @hackforplay/next で実装したい
  * @param origin 元の３次元配列
- * @param pens 置き換える Pen の配列
+ * @param cursors 置き換える Cursor の配列
  */
-function mapArray3d(origin: number[][][], pens: Pen[]) {
+function mapArray3d(origin: number[][][], cursors: Cursor[]) {
   const result = [];
   for (let layer = 0; layer < origin.length; layer++) {
     const table = origin[layer];
@@ -103,9 +105,13 @@ function mapArray3d(origin: number[][][], pens: Pen[]) {
       const row = table[y];
       for (let x = 0; x < row.length; x++) {
         let element = row[x];
-        for (let i = 0; i < pens.length; i++) {
-          if (pens[i].x === x && pens[i].y === y && pens[i].layer === layer) {
-            element = pens[i].index;
+        for (let i = 0; i < cursors.length; i++) {
+          if (
+            cursors[i].x === x &&
+            cursors[i].y === y &&
+            cursors[i].layer === layer
+          ) {
+            element = cursors[i].index;
             break;
           }
         }

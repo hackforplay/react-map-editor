@@ -2,10 +2,10 @@ import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import MenuBar from '../components/MenuBar';
 import { Store, mode } from '../redux';
-import { PenMode } from '../utils/pen';
+import { CursorMode } from '../utils/cursor';
 
 export type StateProps = {
-  penMode: PenMode;
+  cursorMode: CursorMode;
 };
 
 const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
@@ -13,7 +13,7 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
   ownProps
 ) => {
   return {
-    penMode: state.mode.penMode
+    cursorMode: state.mode.cursorMode
   };
 };
 
