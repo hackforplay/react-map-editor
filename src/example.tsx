@@ -15,7 +15,11 @@ normalize();
 setupPage(`#${rootId}`);
 
 ReactDOM.render(
-  <RootComponent tileset={pipoya.tileSets as Square[]} map={defaultMap()} />,
+  <RootComponent
+    ref={ref => ((window as any).root = ref)}
+    tileset={pipoya.tileSets as Square[]}
+    map={defaultMap()}
+  />,
   container
 );
 
