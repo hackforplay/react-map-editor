@@ -48,19 +48,41 @@ export default class PaletteView extends React.Component<Props> {
   render() {
     return (
       <div className={container}>
-        <div className={table}>
-          {this.props.tileSet.map(square => (
+        <div
+          className={table}
+          onMouseUp={() => this.props.confirmSelection()}
+          onMouseLeave={() => this.props.confirmSelection()}
+        >
+          {this.props.tileSet.map((square, num) => (
             <img
               key={square.index}
               src={square.tile.image.src}
               alt="tile"
-              onClick={() => this.props.onSquareClick(square)}
+              draggable={false}
+              onMouseDown={() =>
+                this.props.startSelection({
+                  row: (num / 8) >> 0,
+                  col: num % 8,
+                  num: num
+                })
+              }
+              onMouseMove={() =>
+                this.props.updateSelection({
+                  row: (num / 8) >> 0,
+                  col: num % 8,
+                  num: num
+                })
+              }
             />
           ))}
         </div>
         <div className={nibView}>
           {this.props.nib && (
-            <img src={this.props.nib.tile.image.src} alt="selected tile" />
+            <img
+              src={this.props.nib.tile.image.src}
+              alt="selected tile"
+              draggable={false}
+            />
           )}
         </div>
       </div>

@@ -17,12 +17,18 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = state => {
 };
 
 export type DispatchProps = {
-  onSquareClick: (square: Square) => void;
+  startSelection: (pos: palette.Pos) => void;
+  updateSelection: (pos: palette.Pos) => void;
+  confirmSelection: () => void;
+  unsetSelection: () => void;
 };
 
 const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = dispatch => {
   return {
-    onSquareClick: square => dispatch(palette.actions.mousedown(square))
+    startSelection: pos => dispatch(palette.actions.startSelection(pos)),
+    updateSelection: pos => dispatch(palette.actions.updateSelection(pos)),
+    confirmSelection: () => dispatch(palette.actions.confirmSelection()),
+    unsetSelection: () => dispatch(palette.actions.setSelection(null))
   };
 };
 

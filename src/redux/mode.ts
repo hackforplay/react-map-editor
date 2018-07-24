@@ -36,10 +36,17 @@ export default reducerWithInitialState(initialState)
     cursorMode: 'pen'
   }));
 
-const nibEpic: Epic = action$ =>
+const nibEpic: Epic = (action$, state$) =>
   action$.pipe(
-    ofAction(palette.actions.mousedown),
-    map(action => actions.setNib(action.payload))
+    ofAction(palette.actions.setSelection),
+    filter(action => action.payload !== null),
+    map(action => {
+      if (!action.payload) throw 'nope';
+      const { start, end } = action.payload;
+      const nib = state$.value.palette.tileSet[end.num];
+      if (!nib) throw new Error('Invalid selection');
+      return actions.setNib(nib);
+    })
   );
 
 export const epics = combineEpics(nibEpic);
