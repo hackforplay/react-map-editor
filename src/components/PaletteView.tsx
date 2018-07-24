@@ -29,7 +29,8 @@ const table = style(
     overflowY: 'scroll',
     $nest: {
       '&>img': {
-        marginBottom: 1
+        marginBottom: 1,
+        cursor: 'copy'
       }
     }
   }
