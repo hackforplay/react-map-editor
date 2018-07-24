@@ -31,7 +31,7 @@ const icons = style({
   overflow: 'visible !important'
 });
 
-const selectedColor = '#2196f3';
+export const selectedColor = '#2196f3';
 
 const eraser = {
   enabled: style({

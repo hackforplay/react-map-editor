@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { style, media } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
+import { Square } from '@hackforplay/next';
+import { flatten } from 'lodash';
 import { StateProps, DispatchProps } from '../containers/PaletteView';
+import { selectedColor } from './MenuBar';
 
 export type Props = StateProps & DispatchProps;
 
@@ -29,23 +32,38 @@ const table = style(
     overflowY: 'scroll',
     $nest: {
       '&>img': {
-        marginBottom: 1,
-        cursor: 'copy'
+        cursor: 'copy',
+        boxSizing: 'content-box',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'transparent',
+        width: 32,
+        height: 32,
+        margin: -1,
+        marginBottom: 0
+      },
+      '&>img.selected': {
+        borderColor: selectedColor
       }
     }
   }
 );
-const nibView = style(csstips.selfCenter, {
+const nibView = style(csstips.selfCenter, csstips.vertical, {
   flexBasis: container4,
+  justifyContent: 'center',
   $nest: {
-    '& img': {
-      height: '100%'
+    '&>div': {
+      height: 32
     }
   }
 });
 
 export default class PaletteView extends React.Component<Props> {
   render() {
+    const nibSquares = flatten(this.props.nib);
+    const selected = (square: Square) =>
+      nibSquares.some(n => n.index === square.index) ? 'selected' : '';
+
     return (
       <div className={container}>
         <div
@@ -58,6 +76,7 @@ export default class PaletteView extends React.Component<Props> {
               key={square.index}
               src={square.tile.image.src}
               alt="tile"
+              className={selected(square)}
               draggable={false}
               onMouseDown={() =>
                 this.props.startSelection({
