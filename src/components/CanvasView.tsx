@@ -21,6 +21,9 @@ const hackforplayRootNode = style({
   padding: 16
 });
 const cursors: Record<CursorMode, string> = {
+  nope: style({
+    cursor: 'not-allowed'
+  }),
   pen: style({
     cursor: `url(${penUrl}) 0 24, crosshair`
   }),

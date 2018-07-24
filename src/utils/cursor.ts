@@ -1,6 +1,6 @@
 import { Square, Placement } from '@hackforplay/next';
 
-export type CursorMode = 'pen' | 'eraser';
+export type CursorMode = 'nope' | 'pen' | 'eraser';
 
 export default class Cursor {
   x: number;
@@ -22,6 +22,10 @@ export default class Cursor {
     this.mode = mode;
     this.nib = nib;
     this.dragId = dragId;
+
+    if (this.mode === 'pen' && this.nib === null) {
+      this.mode = 'nope';
+    }
   }
 
   isEqual(other: Cursor) {
@@ -58,13 +62,6 @@ export default class Cursor {
 
   get index(): number {
     return this.mode === 'pen' && this.nib ? this.nib.index : -88; // とりあえず３桁にしたい
-  }
-
-  /**
-   * ペンツールが選択されているのにペン先がない
-   */
-  get disabled(): boolean {
-    return this.mode === 'pen' && this.nib === null;
   }
 }
 

@@ -37,7 +37,7 @@ const dragEpic: Epic = (action$, state$) =>
         action.payload.id
       );
     }),
-    filter(cursor => !cursor.disabled),
+    filter(cursor => cursor.mode !== 'nope'),
     distinctUntilChanged((x, y) => x.isEqual(y)),
     filter(cursor => {
       // 更新の必要があるかどうかをチェックする

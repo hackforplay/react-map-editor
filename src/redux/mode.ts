@@ -20,14 +20,21 @@ export interface State {
   nib: Square | null;
 }
 const initialState: State = {
-  cursorMode: 'pen',
+  cursorMode: 'nope',
   nib: null
 };
 
 export default reducerWithInitialState(initialState)
-  .case(actions.setPen, state => ({ ...state, cursorMode: 'pen' }))
+  .case(actions.setPen, state => ({
+    ...state,
+    cursorMode: state.nib ? 'pen' : 'nope'
+  }))
   .case(actions.setEraser, state => ({ ...state, cursorMode: 'eraser' }))
-  .case(actions.setNib, (state, payload) => ({ ...state, nib: payload }));
+  .case(actions.setNib, (state, payload) => ({
+    ...state,
+    nib: payload,
+    cursorMode: 'pen'
+  }));
 
 const nibEpic: Epic = action$ =>
   action$.pipe(
@@ -35,11 +42,4 @@ const nibEpic: Epic = action$ =>
     map(action => actions.setNib(action.payload))
   );
 
-const setPenWhenSetNibEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(actions.setNib),
-    filter(() => state$.value.mode.cursorMode === 'eraser'),
-    map(() => actions.setPen())
-  );
-
-export const epics = combineEpics(nibEpic, setPenWhenSetNibEpic);
+export const epics = combineEpics(nibEpic);
