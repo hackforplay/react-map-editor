@@ -30,10 +30,6 @@ const cursors: Record<PenMode, string> = {
 };
 
 export default class CanvasView extends React.Component<Props, State> {
-  componentDidMount() {
-    this.props.init();
-  }
-
   componentDidUpdate() {
     if (this.state.hackforplayRootNode && !this.props.loading) {
       render(this.props.rootScene, this.state.hackforplayRootNode);

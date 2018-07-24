@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import { Scene } from '@hackforplay/next';
 import CanvasView from '../components/CanvasView';
-import { canvas, input, Store } from '../redux';
+import { input, Store } from '../redux';
 import { PenMode } from '../utils/pen';
 
 export type StateProps = {
@@ -30,7 +30,6 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
 };
 
 export type DispatchProps = {
-  init: () => void;
   onCanvasMouseEnter: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onCanvasMouseLeave: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   onCanvasMouseDown: (e: React.MouseEvent<HTMLCanvasElement>) => void;
@@ -43,7 +42,6 @@ const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (
   ownProps
 ) => {
   return {
-    init: () => dispatch(canvas.actions.initScene(canvas.init())),
     onCanvasMouseEnter: e => dispatch(input.actions.mouseEnter(e)),
     onCanvasMouseLeave: e => dispatch(input.actions.mouseLeave(e)),
     onCanvasMouseDown: e => dispatch(input.actions.mouseDown(e)),
