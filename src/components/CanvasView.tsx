@@ -3,9 +3,7 @@ import { style } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
 import { render, Scene } from '@hackforplay/next';
 import { StateProps, DispatchProps } from '../containers/CanvasView';
-import { CursorMode } from '../utils/cursor';
-import penUrl from '../cursors/pen.png';
-import eraserUrl from '../cursors/eraser.png';
+import { cursorClasses } from '../utils/cursor';
 
 export type Props = StateProps & DispatchProps;
 
@@ -20,17 +18,6 @@ const hackforplayRootNode = style({
   height: '100%',
   padding: 16
 });
-const cursors: Record<CursorMode, string> = {
-  nope: style({
-    cursor: 'not-allowed'
-  }),
-  pen: style({
-    cursor: `url(${penUrl}) 0 24, crosshair`
-  }),
-  eraser: style({
-    cursor: `url(${eraserUrl}) 0 24, crosshair`
-  })
-};
 
 export default class CanvasView extends React.Component<Props, State> {
   componentDidUpdate() {
@@ -44,7 +31,7 @@ export default class CanvasView extends React.Component<Props, State> {
   };
 
   render() {
-    const cursor = cursors[this.props.cursorMode];
+    const cursor = cursorClasses[this.props.cursorMode];
     return (
       <div className={container}>
         <div className={hackforplayRootNode} ref={this.setRoot}>
