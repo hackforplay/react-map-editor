@@ -1,5 +1,5 @@
 import { Square } from '@hackforplay/next';
-import { style } from 'typestyle';
+import { style } from 'typestyle/lib';
 
 export type CursorMode = 'nope' | 'pen' | 'eraser';
 
