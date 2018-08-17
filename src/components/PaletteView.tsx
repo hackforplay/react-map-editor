@@ -5,24 +5,13 @@ import { Square } from '@hackforplay/next';
 import { flatten } from 'lodash';
 import { StateProps, DispatchProps } from '../containers/PaletteView';
 import { selectedColor } from './MenuBar';
+import getScrollbarWidth from '../utils/getScrollbarWidth';
 
 export type Props = StateProps & DispatchProps;
 
-const container4 = (32 + 1) * 4 - 1;
-const container8 = (32 + 1) * 8 - 1;
+const tileSize = 32;
+const container8 = (tileSize + 1) * 8 - 1;
 
-const container = style(
-  csstips.vertical,
-  {
-    flexBasis: container4
-  },
-  media(
-    { minWidth: container4 * 8 },
-    {
-      flexBasis: container8
-    }
-  )
-);
 const table = style(
   csstips.flex,
   csstips.horizontal,
@@ -37,8 +26,8 @@ const table = style(
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: 'transparent',
-        width: 32,
-        height: 32,
+        width: tileSize,
+        height: tileSize,
         margin: -1,
         marginBottom: 0
       },
@@ -49,11 +38,11 @@ const table = style(
   }
 );
 const nibView = style(csstips.selfCenter, csstips.vertical, {
-  flexBasis: container4,
+  flexBasis: tileSize * 5,
   justifyContent: 'center',
   $nest: {
     '&>div': {
-      height: 32
+      height: tileSize
     }
   }
 });
@@ -63,6 +52,10 @@ export default class PaletteView extends React.Component<Props> {
     const nibSquares = flatten(this.props.nib);
     const selected = (square: Square) =>
       nibSquares.some(n => n.index === square.index) ? 'selected' : '';
+
+    const container = style(csstips.vertical, {
+      flexBasis: container8 + getScrollbarWidth()
+    });
 
     return (
       <div className={container}>
