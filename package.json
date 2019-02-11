@@ -4,10 +4,11 @@
   "description": "Subset of HackforPlay. Experimental",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tsc && ava",
+    "test": "npm run lint && tsc && ava",
     "watch": "webpack-dev-server",
-    "format": "prettier --write 'src/**'",
-    "build": "npm run format && npm run svgr && webpack -p && tsc",
+    "lint": "prettier -l 'src/**/*.{ts,tsx}'",
+    "format": "prettier --write 'src/**/*.{ts,tsx}'",
+    "build": "webpack -p && tsc",
     "svgr": "svgr --icon --replace-attr-values '#000=currentColor' --template ./svgr-template.js --ext tsx -d src/icons src/svg"
   },
   "repository": {
