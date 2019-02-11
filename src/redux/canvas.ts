@@ -52,7 +52,7 @@ const penEpic: Epic = (action$, state$) =>
       const { nib } = action.payload;
       if (!nib) throw new Error('Nib is null');
       let addFlag = false;
-      for (const item of flattenDepth(nib, 2)) {
+      for (const item of flattenDepth<Square>(nib, 2)) {
         if (squares.every(s => s.index !== item.index)) {
           addFlag = true;
           squares = squares.concat(item);
