@@ -13,6 +13,6 @@ const container = style(csstips.flex1, {
 
 export default class LayerView extends React.Component<Props, State> {
   render() {
-    return <div className={container}>LayerView</div>;
+    return <div className={container} />;
   }
 }
