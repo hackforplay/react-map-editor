@@ -1,6 +1,6 @@
 {
   "name": "react-map-editor",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Subset of HackforPlay. Experimental",
   "main": "lib/index.js",
   "directories": {
