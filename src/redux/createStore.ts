@@ -40,7 +40,9 @@ export default function createStore() {
 
   const store = redux.createStore(
     rootReducer,
-    composeEnhancers(redux.applyMiddleware(epicMiddleware, logger))
+    process.env.NODE_ENV === 'production'
+      ? redux.applyMiddleware(epicMiddleware)
+      : composeEnhancers(redux.applyMiddleware(epicMiddleware, logger))
   );
 
   epicMiddleware.run(rootEpic);
