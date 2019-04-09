@@ -5,12 +5,15 @@ import { StateProps, DispatchProps } from '../containers/MenuBar';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
 
-export type Props = StateProps & DispatchProps;
+export type OwnProps = {
+  className: string;
+};
+
+export type Props = OwnProps & StateProps & DispatchProps;
 
 export interface State {}
 
-const container = style(csstips.horizontal, {
-  height: 48,
+const container = style({
   fontSize: 24 // SVG アイコンのサイズ
 });
 const layerView = style(csstips.flex1, {
@@ -54,9 +57,9 @@ const edit = {
 
 export default class MenuBar extends React.Component<Props, State> {
   render() {
-    const { cursorMode } = this.props;
+    const { cursorMode, className } = this.props;
     return (
-      <div className={container}>
+      <div className={classes(className, container)}>
         <div className={layerView} />
         <div className={canvasView}>
           {/* 仮設置 */}

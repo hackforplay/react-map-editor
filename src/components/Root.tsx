@@ -14,14 +14,17 @@ export type OwnProps = {
 };
 export type Props = StateProps & DispatchProps & OwnProps;
 
-const root = style(csstips.vertical, {
+const menuBarHeight = 48;
+
+const root = style({
   height: '100%'
 });
 const container = style(csstips.flex, csstips.horizontal, {
+  height: `calc(100% - ${menuBarHeight}px)`,
   backgroundColor: 'lightgrey'
 });
 const menu = style(csstips.content, {
-  height: 64
+  height: menuBarHeight
 });
 
 export default class Root extends React.Component<Props> {
@@ -42,7 +45,7 @@ export default class Root extends React.Component<Props> {
           <CanvasView />
           <PaletteView />
         </div>
-        <MenuBar />
+        <MenuBar className={menu} />
       </div>
     );
   }

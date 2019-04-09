@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { style, media } from 'typestyle/lib';
+import { style } from 'typestyle/lib';
 import * as csstips from 'csstips/lib';
 import { Square } from '@hackforplay/next';
 import { flatten } from 'lodash';
@@ -12,33 +12,29 @@ export type Props = StateProps & DispatchProps;
 const tileSize = 32;
 const container8 = (tileSize + 1) * 8 - 1;
 
-const table = style(
-  csstips.flex,
-  csstips.horizontal,
-  csstips.wrap,
-  csstips.betweenJustified,
-  {
-    overflowY: 'scroll',
-    $nest: {
-      '&>img': {
-        cursor: 'copy',
-        boxSizing: 'content-box',
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: 'transparent',
-        width: tileSize,
-        height: tileSize,
-        margin: -1,
-        marginBottom: 0
-      },
-      '&>img.selected': {
-        borderColor: selectedColor
-      }
+const table = style({
+  paddingLeft: 1,
+  paddingRight: 1,
+  overflowY: 'scroll',
+  $nest: {
+    '&>img': {
+      cursor: 'copy',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: 'transparent',
+      width: tileSize,
+      height: tileSize,
+      margin: -0.5,
+      marginBottom: -3.5 // うまく height が計算されない？列方向に謎の空白が生まれる
+    },
+    '&>img.selected': {
+      borderColor: selectedColor
     }
   }
-);
+});
 const nibView = style(csstips.selfCenter, csstips.vertical, {
   flexBasis: tileSize * 5,
+  minHeight: tileSize * 5,
   justifyContent: 'center',
   $nest: {
     '&>div': {
@@ -54,7 +50,8 @@ export default class PaletteView extends React.Component<Props> {
       nibSquares.some(n => n.index === square.index) ? 'selected' : '';
 
     const container = style(csstips.vertical, {
-      flexBasis: container8 + getScrollbarWidth()
+      flexBasis: container8 + getScrollbarWidth() + 2, // padding left(1px) + right(1px)
+      height: '100%'
     });
 
     return (
