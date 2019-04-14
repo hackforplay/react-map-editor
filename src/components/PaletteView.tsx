@@ -1,9 +1,9 @@
+import { Square } from '@hackforplay/next';
+import * as csstips from 'csstips/lib';
+import { flatten } from 'lodash';
 import * as React from 'react';
 import { style } from 'typestyle/lib';
-import * as csstips from 'csstips/lib';
-import { Square } from '@hackforplay/next';
-import { flatten } from 'lodash';
-import { StateProps, DispatchProps } from '../containers/PaletteView';
+import { DispatchProps, StateProps } from '../containers/PaletteView';
 import { selectedColor } from './MenuBar';
 
 export type Props = StateProps & DispatchProps;
