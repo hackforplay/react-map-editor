@@ -5,7 +5,6 @@ import { Square } from '@hackforplay/next';
 import { flatten } from 'lodash';
 import { StateProps, DispatchProps } from '../containers/PaletteView';
 import { selectedColor } from './MenuBar';
-import getScrollbarWidth from '../utils/getScrollbarWidth';
 
 export type Props = StateProps & DispatchProps;
 
@@ -50,7 +49,7 @@ export default class PaletteView extends React.Component<Props> {
       nibSquares.some(n => n.index === square.index) ? 'selected' : '';
 
     const container = style(csstips.vertical, {
-      flexBasis: container8 + getScrollbarWidth() + 2, // padding left(1px) + right(1px)
+      flexBasis: 280,
       height: '100%'
     });
 
