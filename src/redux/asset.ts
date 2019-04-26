@@ -47,6 +47,7 @@ export const loadAssetEpic: Epic = (action$, state$) =>
     ofAction(actions.loadAsset.started),
     mergeMap(action => {
       const input: Scene = {
+        debug: true, // TODO: Switching UI
         map: {
           tables: [[[-1]]],
           squares: action.payload

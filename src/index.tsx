@@ -17,6 +17,7 @@ export default class Main extends React.Component<Props> {
   export = () => {
     const state = store.getState();
     return {
+      debug: true, // TODO: Switching UI
       map: cloneDeep(state.canvas),
       assets: {
         images: []
