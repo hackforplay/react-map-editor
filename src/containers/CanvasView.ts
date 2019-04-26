@@ -17,6 +17,7 @@ const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
 ) => {
   return {
     rootScene: {
+      debug: true,
       map: state.canvas,
       assets: state.asset,
       screen: {
