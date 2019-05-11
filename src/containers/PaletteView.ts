@@ -1,8 +1,7 @@
-import * as React from 'react';
-import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
-import PaletteView from '../components/PaletteView';
-import { Store, palette } from '../redux';
 import { Square } from '@hackforplay/next';
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux';
+import { PaletteView } from '../components/PaletteView';
+import { palette, Store } from '../redux';
 import { Pos } from '../utils/selection';
 
 export type StateProps = {

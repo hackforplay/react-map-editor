@@ -1,12 +1,12 @@
+import { SceneMap, Square } from '@hackforplay/next';
+import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { style } from 'typestyle/lib';
-import * as csstips from 'csstips/lib';
-import { SceneMap, Square } from '@hackforplay/next';
-import LayerView from '../containers/LayerView';
 import CanvasView from '../containers/CanvasView';
-import PaletteView from '../containers/PaletteView';
+import LayerView from '../containers/LayerView';
 import MenuBar from '../containers/MenuBar';
-import { StateProps, DispatchProps } from '../containers/Root';
+import PaletteView from '../containers/PaletteView';
+import { DispatchProps, StateProps } from '../containers/Root';
 
 export type OwnProps = {
   tileset?: Square[];
