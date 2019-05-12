@@ -1,21 +1,15 @@
+import { Square } from '@hackforplay/next';
+import { values } from 'lodash';
+import { combineEpics } from 'redux-observable';
+import { map } from 'rxjs/operators';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
-import { combineEpics, ActionsObservable } from 'redux-observable';
-import { defer, from } from 'rxjs';
-import { map, mergeMap, filter } from 'rxjs/operators';
-import { StateObservable } from 'redux-observable';
-import { values } from 'lodash';
-import { Square, SceneAssets, loadImages, Scene } from '@hackforplay/next';
-import { ofAction } from './typescript-fsa-redux-observable';
 import { Epic } from '.';
-import { Selection, Pos } from '../utils/selection';
+import { Selection } from '../utils/selection';
+import { ofAction } from './typescript-fsa-redux-observable';
 
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
-  mousedown: actionCreator<Square>('MOUSE_DOWN'),
-  startSelection: actionCreator<Pos>('START_SELECTION'),
-  updateSelection: actionCreator<Pos>('UPDATE_SELECTION'),
-  confirmSelection: actionCreator('CONFIRM_SELECTION'),
   setSelection: actionCreator<Selection | null>('SET_SELECTION'),
   addTileset: actionCreator<Square[]>('ADD_TILESET'),
   setTilesetMap: actionCreator<{ [key: number]: Square }>('SET_TILESET_MAP')
@@ -54,54 +48,4 @@ const addTilesetEpic: Epic = (action$, state$) =>
     map(tilesetMap => actions.setTilesetMap(tilesetMap))
   );
 
-const startSelectionEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(actions.startSelection),
-    map(action =>
-      actions.setSelection({
-        moving: true,
-        start: action.payload,
-        end: action.payload
-      })
-    )
-  );
-
-const updateSelectionEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(actions.updateSelection),
-    filter(() => state$.value.palette.selection !== null),
-    map(action => {
-      const { selection } = state$.value.palette;
-      if (!selection) throw 'nope';
-      return {
-        moving: selection.moving,
-        start: selection.start,
-        end: action.payload
-      };
-    }),
-    filter(payload => payload.moving),
-    map(payload => actions.setSelection(payload))
-  );
-
-const confirmSelectionEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(actions.confirmSelection),
-    filter(() => state$.value.palette.selection !== null),
-    map(action => {
-      const { selection } = state$.value.palette;
-      if (!selection) throw 'nope';
-      return {
-        moving: false,
-        start: selection.start,
-        end: selection.end
-      };
-    }),
-    map(payload => actions.setSelection(payload))
-  );
-
-export const epics = combineEpics(
-  addTilesetEpic,
-  startSelectionEpic,
-  updateSelectionEpic,
-  confirmSelectionEpic
-);
+export const epics = combineEpics(addTilesetEpic);

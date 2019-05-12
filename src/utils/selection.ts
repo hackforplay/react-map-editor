@@ -1,5 +1,4 @@
 export type Selection = {
-  moving: boolean;
   start: Pos;
   end: Pos;
 };
@@ -40,7 +39,6 @@ export function getMatrix(selection: Selection): number[][] {
   } else if (start.row > end.row) {
     // 逆
     return getMatrix({
-      moving: selection.moving,
       start: selection.end,
       end: selection.start
     });

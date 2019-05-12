@@ -24,11 +24,7 @@ export default function createStore() {
   const composeEnhancers =
     (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux.compose;
 
-  const ignoreLogger = [palette.actions.updateSelection];
-
-  const logger = createLogger({
-    predicate: (getState, action) => !ignoreLogger.some(ac => ac.match(action))
-  });
+  const logger = createLogger({});
 
   const store = redux.createStore(
     rootReducer,

@@ -5,6 +5,7 @@ import * as React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { classes, style } from 'typestyle/lib';
 import { DispatchProps, StateProps } from '../containers/PaletteView';
+import { Pos } from '../utils/selection';
 import { selectedColor } from './MenuBar';
 
 export type Props = StateProps &
@@ -14,6 +15,11 @@ export type Props = StateProps &
 
 const tileSize = 32 + 1;
 const floatThrethold = 300;
+const getPos = (num: number): Pos => ({
+  row: (num / 8) >> 0,
+  col: num % 8,
+  num
+});
 
 const cn = {
   root: style(csstips.vertical, {
@@ -115,42 +121,64 @@ export function PaletteView(props: Props) {
 }
 
 export function PaletteContainer(props: Props) {
+  return (
+    <div className={classes(props.className, cn.vertical)}>
+      <TileSetsView {...props} />
+      <NibView nib={props.nib} />
+    </div>
+  );
+}
+
+function TileSetsView(props: Props) {
+  const [mutate] = React.useState({
+    start: getPos(-1),
+    end: getPos(-1),
+    pressed: false
+  });
+
   const nibSquares = flatten(props.nib);
   const selected = (square: Square) =>
     nibSquares.some(n => n.index === square.index) ? 'selected' : '';
 
+  const handleMouseDown = (num: number) => {
+    mutate.pressed = true;
+    mutate.start = getPos(num);
+    mutate.end = getPos(-1);
+    handleMove(num);
+  };
+  const handleMove = (num: number) => {
+    if (!mutate.pressed) return;
+    if (mutate.end.num !== num) {
+      mutate.end = getPos(num);
+      props.setSelection({
+        start: mutate.start,
+        end: mutate.end
+      });
+    }
+  };
+  const handleUnset = () => {
+    if (!mutate.pressed) return;
+    mutate.pressed = false;
+    props.setSelection(null);
+  };
+
   return (
-    <div className={classes(props.className, cn.vertical)}>
-      <div
-        className={cn.table}
-        onMouseUp={() => props.confirmSelection()}
-        onMouseLeave={() => props.confirmSelection()}
-      >
-        {props.tileSet.map((square, num) => (
-          <img
-            key={square.index}
-            src={square.tile.image.src}
-            alt="tile"
-            className={selected(square)}
-            draggable={false}
-            onMouseDown={() =>
-              props.startSelection({
-                row: (num / 8) >> 0,
-                col: num % 8,
-                num: num
-              })
-            }
-            onMouseMove={() =>
-              props.updateSelection({
-                row: (num / 8) >> 0,
-                col: num % 8,
-                num: num
-              })
-            }
-          />
-        ))}
-      </div>
-      <NibView nib={props.nib} />
+    <div
+      className={cn.table}
+      onMouseUp={handleUnset}
+      onMouseLeave={handleUnset}
+    >
+      {props.tileSet.map((square, num) => (
+        <img
+          key={square.index}
+          src={square.tile.image.src}
+          alt="tile"
+          className={selected(square)}
+          draggable={false}
+          onMouseDown={() => handleMouseDown(num)}
+          onMouseMove={() => handleMove(num)}
+        />
+      ))}
     </div>
   );
 }

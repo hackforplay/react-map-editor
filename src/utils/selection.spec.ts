@@ -17,7 +17,7 @@ test('getMatrix left-top to right-bottom', t => {
     [34, 35] // row=1
   ];
 
-  const result = getMatrix({ start, end, moving: true });
+  const result = getMatrix({ start, end });
   t.is(result.length, expect.length);
   t.deepEqual(result, expect);
 });
@@ -37,7 +37,7 @@ test('getMatrix click (3:2)', t => {
     [26] // row=0
   ];
 
-  const result = getMatrix({ start, end, moving: true });
+  const result = getMatrix({ start, end });
   t.is(result.length, expect.length);
   t.deepEqual(result, expect);
 });
