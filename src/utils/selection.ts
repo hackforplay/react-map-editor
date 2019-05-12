@@ -44,14 +44,22 @@ export function getMatrix(selection: Selection): number[][] {
     });
   } else {
     // 複数行にまたがる => column を動的に求める
+    const tableColumn = getTableColumn(end);
+    const height = end.row - start.row + 1;
     const width = Math.abs(start.col - end.col);
-    const column = (end.num - start.num - width) / (end.row - start.row);
-    const leftTop = start.col < end.col ? start.num : start.num - width;
-    return Array.from({ length: end.row - start.row + 1 }).map((_, y) => {
-      const begin = leftTop + y * column;
+    const left = start.col < end.col ? start.col : end.col;
+    return Array.from({ length: height }).map((_, y) => {
+      const begin = left + (start.row + y) * tableColumn;
       return range(begin, begin + width);
     });
   }
+}
+
+function getTableColumn(pos: Pos) {
+  if (pos.row === 0) {
+    throw new Error('getTableColumn can not calcurate when pos.row is zero.');
+  }
+  return (pos.num - pos.col) / pos.row;
 }
 
 function range(a: number, b: number) {
