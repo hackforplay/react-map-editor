@@ -30,9 +30,14 @@ const dragEpic: Epic = (action$, state$) =>
     map(action => {
       const e = action.payload.event;
       const { mode } = state$.value;
+      const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
+      const x =
+        e.clientX - offsetLeft + (parentElement ? parentElement.scrollLeft : 0);
+      const y =
+        e.clientY - offsetTop + (parentElement ? parentElement.scrollTop : 0);
       return new Cursor(
-        ((e.clientX - e.currentTarget.offsetLeft) / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
-        ((e.clientY - e.currentTarget.offsetTop) / 32) >> 0,
+        (x / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
+        (y / 32) >> 0,
         state$.value.mode.cursorMode,
         mode.nib,
         action.payload.id

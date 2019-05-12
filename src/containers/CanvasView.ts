@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import { Scene } from '@hackforplay/next';
-import CanvasView from '../components/CanvasView';
+import { CanvasView } from '../components/CanvasView';
 import { input, Store } from '../redux';
 import { CursorMode } from '../utils/cursor';
 

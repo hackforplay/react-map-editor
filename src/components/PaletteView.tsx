@@ -34,7 +34,8 @@ const cn = {
   }),
   resizeWrapper: style({
     transition: 'width 250ms',
-    backgroundColor: 'rgb(218,218,218)'
+    backgroundColor: 'rgb(218,218,218)',
+    overflow: 'hidden'
   }),
   collapsed: style({
     width: 0
