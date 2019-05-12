@@ -1,13 +1,12 @@
 import * as redux from 'redux';
-import { Action } from 'typescript-fsa';
-import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import { createLogger } from 'redux-logger';
-import { palette, canvas, input, mode, asset, Store } from '.';
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
+import { Action } from 'typescript-fsa';
+import { asset, canvas, mode, palette, Store } from '.';
 
 export const rootEpic = combineEpics(
   palette.epics,
   canvas.epics,
-  input.epics,
   mode.epics,
   asset.epics
 );
@@ -15,7 +14,6 @@ export const rootEpic = combineEpics(
 export const rootReducer = redux.combineReducers<Store>({
   palette: palette.default,
   canvas: canvas.default,
-  input: input.default,
   mode: mode.default,
   asset: asset.default
 });
@@ -26,13 +24,7 @@ export default function createStore() {
   const composeEnhancers =
     (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux.compose;
 
-  const ignoreLogger = [
-    input.actions.mouseMove,
-    input.actions.mouseEnter,
-    input.actions.mouseLeave,
-    input.actions.drag,
-    palette.actions.updateSelection
-  ];
+  const ignoreLogger = [palette.actions.updateSelection];
 
   const logger = createLogger({
     predicate: (getState, action) => !ignoreLogger.some(ac => ac.match(action))

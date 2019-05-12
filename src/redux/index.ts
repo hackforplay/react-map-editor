@@ -1,17 +1,15 @@
-import { Action } from 'typescript-fsa';
 import { Epic as BaseEpic } from 'redux-observable';
-import * as palette from './palette';
-import * as canvas from './canvas';
-import * as input from './input';
-import * as mode from './mode';
+import { Action } from 'typescript-fsa';
 import * as asset from './asset';
+import * as canvas from './canvas';
+import * as mode from './mode';
+import * as palette from './palette';
 
-export { palette, canvas, input, mode, asset };
+export { palette, canvas, mode, asset };
 
 export type Store = {
   canvas: canvas.State;
   palette: palette.State;
-  input: input.State;
   mode: mode.State;
   asset: asset.State;
 };

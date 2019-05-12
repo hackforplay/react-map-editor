@@ -1,14 +1,12 @@
-import * as React from 'react';
+import { Placement, SceneMap, Square } from '@hackforplay/next';
+import { cloneDeep, flattenDepth } from 'lodash';
+import { combineEpics } from 'redux-observable';
+import { filter, map } from 'rxjs/operators';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
-import { combineEpics } from 'redux-observable';
-import { from } from 'rxjs';
-import { map, mergeMap, filter, distinctUntilChanged } from 'rxjs/operators';
-import { Scene, SceneMap, Table, Square, Placement } from '@hackforplay/next';
-import { cloneDeep, flattenDepth } from 'lodash';
-import { ofAction } from './typescript-fsa-redux-observable';
-import { Epic, input } from '.';
+import { Epic } from '.';
 import Cursor from '../utils/cursor';
+import { ofAction } from './typescript-fsa-redux-observable';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
@@ -23,30 +21,6 @@ const initialState: State = init();
 export default reducerWithInitialState(initialState)
   .case(actions.initMap, (state, payload) => payload)
   .case(actions.set, (state, payload) => payload);
-
-const dragEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(input.actions.drag),
-    map(action => {
-      const e = action.payload.event;
-      const { mode } = state$.value;
-      const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
-      const x =
-        e.clientX - offsetLeft + (parentElement ? parentElement.scrollLeft : 0);
-      const y =
-        e.clientY - offsetTop + (parentElement ? parentElement.scrollTop : 0);
-      return new Cursor(
-        (x / 32) >> 0, // TODO: unit=32px に依存しない位置参照(@hackforplay/next)に
-        (y / 32) >> 0,
-        state$.value.mode.cursorMode,
-        mode.nib,
-        action.payload.id
-      );
-    }),
-    filter(cursor => cursor.mode !== 'nope'),
-    distinctUntilChanged((x, y) => x.isEqual(y)),
-    map(pen => actions.draw(pen))
-  );
 
 const penEpic: Epic = (action$, state$) =>
   action$.pipe(
@@ -85,7 +59,7 @@ const eraserEpic: Epic = (action$, state$) =>
     map(map => actions.set(map))
   );
 
-export const epics = combineEpics(dragEpic, penEpic, eraserEpic);
+export const epics = combineEpics(penEpic, eraserEpic);
 
 /**
  * ３次元配列を置き換える.

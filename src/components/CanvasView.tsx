@@ -1,9 +1,9 @@
+import { render } from '@hackforplay/next';
+import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { style } from 'typestyle/lib';
-import * as csstips from 'csstips/lib';
-import { render } from '@hackforplay/next';
-import { StateProps, DispatchProps } from '../containers/CanvasView';
-import { cursorClasses } from '../utils/cursor';
+import { DispatchProps, StateProps } from '../containers/CanvasView';
+import Cursor, { cursorClasses } from '../utils/cursor';
 
 export type Props = StateProps & DispatchProps;
 
@@ -19,9 +19,15 @@ const cn = {
 
 export function CanvasView(props: Props) {
   const renderRoot = React.useRef<HTMLDivElement>(null);
+  const [mutate] = React.useState({
+    px: -1,
+    py: -1,
+    pressed: false,
+    id: 0
+  });
 
-  const { cursorMode, rootScene } = props;
-  const cursor = cursorClasses[cursorMode];
+  const { mode, rootScene } = props;
+  const cursor = cursorClasses[mode.cursorMode];
   const {
     map: {
       tables: [table]
@@ -31,12 +37,39 @@ export function CanvasView(props: Props) {
   const width = table[0].length * 32;
 
   React.useEffect(() => {
-    return () => {
-      if (renderRoot.current) {
-        render(props.rootScene, renderRoot.current);
-      }
-    };
-  }, [props.rootScene]);
+    if (renderRoot.current && !props.loading) {
+      render(props.rootScene, renderRoot.current);
+    }
+  }, [props.rootScene, props.loading]);
+
+  const handleMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!mutate.pressed) return;
+    const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
+    const x =
+      ((e.clientX -
+        offsetLeft +
+        (parentElement ? parentElement.scrollLeft : 0)) /
+        32) >>
+      0;
+    const y =
+      ((e.clientY - offsetTop + (parentElement ? parentElement.scrollTop : 0)) /
+        32) >>
+      0;
+    if (x !== mutate.px || y !== mutate.py) {
+      mutate.px = x;
+      mutate.py = y;
+      props.draw(
+        new Cursor(x, y, props.mode.cursorMode, props.mode.nib, mutate.id)
+      );
+    }
+  };
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    mutate.px = -1;
+    mutate.py = -1;
+    mutate.pressed = true;
+    mutate.id++;
+    handleMove(e);
+  };
 
   return (
     <div className={cn.root}>
@@ -45,11 +78,10 @@ export function CanvasView(props: Props) {
           className={cursor}
           width={width}
           height={height}
-          onMouseEnter={props.onCanvasMouseEnter}
-          onMouseLeave={props.onCanvasMouseLeave}
-          onMouseDown={props.onCanvasMouseDown}
-          onMouseMove={props.onCanvasMouseMove}
-          onMouseUp={props.onCanvasMouseUp}
+          onMouseDown={handleMouseDown}
+          onMouseUp={() => (mutate.pressed = false)}
+          onMouseLeave={() => (mutate.pressed = false)}
+          onMouseMove={handleMove}
         />
       </div>
     </div>
