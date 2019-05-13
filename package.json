@@ -40,7 +40,7 @@
   "homepage": "https://github.com/hackforplay/react-map-editor#readme",
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.54",
-    "@hackforplay/next": "^0.4.0",
+    "@hackforplay/next": "^0.5.0",
     "@types/lodash": "^4.14.113",
     "@types/node": "^11.13.2",
     "@types/react": "^16.8.17",
