@@ -14,6 +14,7 @@ export type Props = OwnProps & StateProps & DispatchProps;
 export interface State {}
 
 const container = style({
+  zIndex: 1,
   fontSize: 24 // SVG アイコンのサイズ
 });
 const layerView = style(csstips.flex1, {
