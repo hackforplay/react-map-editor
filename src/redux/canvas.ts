@@ -119,6 +119,7 @@ export function init(): SceneMap {
 
 function autoLayer(placement: Placement): number {
   switch (placement.type) {
+    case 'Nope':
     case 'Ground':
       return 2;
     case 'Wall':
