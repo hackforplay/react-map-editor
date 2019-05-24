@@ -1,19 +1,18 @@
-import * as React from 'react';
-import actionCreatorFactory from 'typescript-fsa';
-import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
-import { combineEpics } from 'redux-observable';
-import { from } from 'rxjs';
-import { map, mergeMap, filter } from 'rxjs/operators';
 import {
-  Scene,
-  Square,
-  SceneAssets,
   ImageAsset,
-  loadImages
+  loadImages,
+  Scene,
+  SceneAssets,
+  Square
 } from '@hackforplay/next';
 import { flatten } from 'lodash';
+import { combineEpics } from 'redux-observable';
+import { from } from 'rxjs';
+import { filter, map, mergeMap } from 'rxjs/operators';
+import actionCreatorFactory from 'typescript-fsa';
+import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
+import { canvas, Epic } from '.';
 import { ofAction } from './typescript-fsa-redux-observable';
-import { Epic, palette, canvas } from '.';
 
 const actionCreator = actionCreatorFactory('react-map-editor/asset');
 export const actions = {
