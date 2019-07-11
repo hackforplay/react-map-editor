@@ -71,6 +71,38 @@ export function CanvasView(props: Props) {
     handleMove(e);
   };
 
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!mutate.pressed) return;
+    const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
+    const primary = e.touches.item(0);
+    const x =
+      ((primary.clientX -
+        offsetLeft +
+        (parentElement ? parentElement.scrollLeft : 0)) /
+        32) >>
+      0;
+    const y =
+      ((primary.clientY -
+        offsetTop +
+        (parentElement ? parentElement.scrollTop : 0)) /
+        32) >>
+      0;
+    if (x !== mutate.px || y !== mutate.py) {
+      mutate.px = x;
+      mutate.py = y;
+      props.draw(
+        new Cursor(x, y, props.mode.cursorMode, props.mode.nib, mutate.id)
+      );
+    }
+  };
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    mutate.px = -1;
+    mutate.py = -1;
+    mutate.pressed = true;
+    mutate.id++;
+    handleTouchMove(e);
+  };
+
   return (
     <div className={cn.root}>
       <div className={cn.renderRoot} ref={renderRoot}>
@@ -78,6 +110,10 @@ export function CanvasView(props: Props) {
           className={cursor}
           width={width}
           height={height}
+          onTouchStart={handleTouchStart}
+          onTouchCancel={() => (mutate.pressed = false)}
+          onTouchEnd={() => (mutate.pressed = false)}
+          onTouchMove={handleTouchMove}
           onMouseDown={handleMouseDown}
           onMouseUp={() => (mutate.pressed = false)}
           onMouseLeave={() => (mutate.pressed = false)}
