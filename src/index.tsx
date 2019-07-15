@@ -8,7 +8,7 @@ import { OwnProps } from './components/Root';
 
 export type Props = OwnProps;
 
-const store = createStore();
+export const store = createStore();
 
 export default class Main extends React.Component<Props> {
   /**
