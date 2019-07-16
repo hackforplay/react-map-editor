@@ -6,10 +6,13 @@ import { useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import { classes, style } from 'typestyle/lib';
 import { useTypedSelector } from '../hooks/useTypedSelector';
-import { actions } from '../redux/palette';
+import { actions, IPage } from '../redux/palette';
 import { Pos } from '../utils/selection';
 import { selectedColor } from './MenuBar';
 
+const padding = 2;
+const transparent = 'rgba(255,255,255,0)';
+const color = 'rgba(255,255,255,1)';
 const tileSize = 32 + 1;
 const floatThrethold = 300;
 const getPos = (num: number): Pos => ({
@@ -45,6 +48,7 @@ const cn = {
   }),
   vertical: style(csstips.vertical),
   table: style({
+    flex: 1,
     overflowY: 'scroll',
     overflowX: 'hidden',
     width: tileSize * 8,
@@ -78,6 +82,7 @@ const cn = {
     }
   }),
   nibView: style(csstips.selfCenter, csstips.vertical, {
+    flex: 0,
     flexBasis: tileSize * 5,
     minHeight: tileSize * 5,
     justifyContent: 'center',
@@ -137,6 +142,7 @@ function TileSetsView() {
   });
 
   const tileSet = useTypedSelector(state => state.palette.tileSet);
+  const pages = useTypedSelector(state => state.palette.pages);
 
   const nib = useTypedSelector(state => state.mode.nib);
   const nibSquares = flatten(nib);
@@ -174,7 +180,10 @@ function TileSetsView() {
       onMouseUp={handleUnset}
       onMouseLeave={handleUnset}
     >
-      {tileSet.map((square, num) => (
+      {pages.map(page => (
+        <PageView key={page.index} {...page} />
+      ))}
+      {/* {tileSet.map((square, num) => (
         <img
           key={square.index}
           src={square.tile.image.src}
@@ -184,7 +193,85 @@ function TileSetsView() {
           onMouseDown={() => handleMouseDown(num)}
           onMouseMove={() => handleMove(num)}
         />
-      ))}
+      ))} */}
+    </div>
+  );
+}
+
+function PageView(props: IPage) {
+  const [collapsed, setCollapsed] = React.useState(props.row > 1);
+
+  const canOpen = props.row > 1 && collapsed;
+  const open = React.useCallback(() => {
+    if (canOpen) {
+      setCollapsed(false);
+    }
+  }, [canOpen]);
+
+  const canClose = props.row > 1 && !collapsed;
+  const close = React.useCallback(() => {
+    if (canClose) {
+      setCollapsed(true);
+    }
+  }, [canClose]);
+
+  return (
+    <div style={{ padding }}>
+      <div
+        style={{
+          padding,
+          paddingBottom: 0,
+          width: '100%',
+          backgroundColor: color,
+          borderRadius: 2,
+          overflow: 'hidden',
+          cursor: canOpen ? 'pointer' : 'inherit'
+        }}
+        onClick={open}
+      >
+        <div
+          style={{
+            position: 'relative',
+            height: 0,
+            paddingTop: collapsed ? '12.5%' : `${12.5 * props.row}%`,
+            width: '100%',
+            transition: 'padding-top 200ms'
+          }}
+        >
+          <img
+            src={props.src}
+            alt=""
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%' }}
+            draggable={false}
+          />
+          {collapsed ? (
+            <div
+              style={{
+                position: 'absolute',
+                background: `linear-gradient(${transparent},${transparent},${color})`,
+                height: '100%',
+                width: '100%',
+                top: 0,
+                zIndex: 1
+              }}
+            />
+          ) : null}
+        </div>
+        {canClose ? (
+          <div
+            style={{
+              height: 32,
+              textAlign: 'center',
+              width: '100%',
+              cursor: 'pointer',
+              fontSize: 28 // TODO: SVG にする
+            }}
+            onClick={close}
+          >
+            ー
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
