@@ -1,20 +1,19 @@
 import { SceneMap, Square } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { style } from 'typestyle/lib';
-import CanvasView from '../containers/CanvasView';
-import LayerView from '../containers/LayerView';
-import MenuBar from '../containers/MenuBar';
-import PaletteView from '../containers/PaletteView';
-import { DispatchProps, StateProps } from '../containers/Root';
+import { actions as canvasActions } from '../redux/canvas';
+import { actions } from '../redux/palette';
+import { CanvasView } from './CanvasView';
+import { LayerView } from './LayerView';
+import { MenuBar, menuBarHeight } from './MenuBar';
+import { PaletteView } from './PaletteView';
 
-export type OwnProps = {
+export interface RootProps {
   tileset?: Square[];
   map?: SceneMap;
-};
-export type Props = StateProps & DispatchProps & OwnProps;
-
-const menuBarHeight = 48;
+}
 
 const root = style({
   height: '100%'
@@ -23,30 +22,27 @@ const container = style(csstips.flex, csstips.horizontal, {
   height: `calc(100% - ${menuBarHeight}px)`,
   backgroundColor: 'lightgrey'
 });
-const menu = style(csstips.content, {
-  height: menuBarHeight
-});
 
-export default class Root extends React.Component<Props> {
-  componentDidMount() {
-    if (this.props.map) {
-      this.props.initMap(this.props.map);
-    }
-    if (this.props.tileset) {
-      this.props.addTileset(this.props.tileset);
-    }
-  }
+export function Root(props: RootProps) {
+  const dispatch = useDispatch();
 
-  render() {
-    return (
-      <div className={root}>
-        <div className={container}>
-          <LayerView />
-          <CanvasView />
-          <PaletteView />
-        </div>
-        <MenuBar className={menu} />
+  React.useEffect(() => {
+    if (props.map) {
+      dispatch(canvasActions.initMap(props.map));
+    }
+    if (props.tileset) {
+      dispatch(actions.addTileset(props.tileset));
+    }
+  }, []);
+
+  return (
+    <div className={root}>
+      <div className={container}>
+        <LayerView />
+        <CanvasView />
+        <PaletteView />
       </div>
-    );
-  }
+      <MenuBar />
+    </div>
+  );
 }

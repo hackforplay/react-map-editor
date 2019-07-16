@@ -1,11 +1,11 @@
 import { render } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { style } from 'typestyle/lib';
-import { DispatchProps, StateProps } from '../containers/CanvasView';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import { actions } from '../redux/canvas';
 import Cursor, { cursorClasses } from '../utils/cursor';
-
-export type Props = StateProps & DispatchProps;
 
 const cn = {
   root: style(csstips.flex8),
@@ -17,7 +17,13 @@ const cn = {
   })
 };
 
-export function CanvasView(props: Props) {
+export function CanvasView() {
+  const mode = useTypedSelector(state => state.mode);
+  const cursor = cursorClasses[mode.cursorMode];
+
+  const [height] = React.useState(10 * 32); // TODO: 可変
+  const [width] = React.useState(15 * 32); // TODO: 可変
+
   const renderRoot = React.useRef<HTMLDivElement>(null);
   const [mutate] = React.useState({
     px: -1,
@@ -26,22 +32,29 @@ export function CanvasView(props: Props) {
     id: 0
   });
 
-  const { mode, rootScene } = props;
-  const cursor = cursorClasses[mode.cursorMode];
-  const {
-    map: {
-      tables: [table]
-    }
-  } = rootScene;
-  const height = table.length * 32;
-  const width = table[0].length * 32;
-
+  const images = useTypedSelector(state => state.asset.images);
+  const loading = useTypedSelector(state => state.asset.loading);
+  const sceneMap = useTypedSelector(state => state.canvas);
   React.useEffect(() => {
-    if (renderRoot.current && !props.loading) {
-      render(props.rootScene, renderRoot.current);
+    if (renderRoot.current && !loading) {
+      render(
+        {
+          debug: true,
+          map: sceneMap,
+          assets: {
+            images
+          },
+          screen: {
+            width,
+            height
+          }
+        },
+        renderRoot.current
+      );
     }
-  }, [props.rootScene, props.loading]);
+  }, [loading, sceneMap, images, width, height]);
 
+  const dispatch = useDispatch();
   const handleMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!mutate.pressed) return;
     const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
@@ -58,8 +71,8 @@ export function CanvasView(props: Props) {
     if (x !== mutate.px || y !== mutate.py) {
       mutate.px = x;
       mutate.py = y;
-      props.draw(
-        new Cursor(x, y, props.mode.cursorMode, props.mode.nib, mutate.id)
+      dispatch(
+        actions.draw(new Cursor(x, y, mode.cursorMode, mode.nib, mutate.id))
       );
     }
   };
@@ -90,8 +103,8 @@ export function CanvasView(props: Props) {
     if (x !== mutate.px || y !== mutate.py) {
       mutate.px = x;
       mutate.py = y;
-      props.draw(
-        new Cursor(x, y, props.mode.cursorMode, props.mode.nib, mutate.id)
+      dispatch(
+        actions.draw(new Cursor(x, y, mode.cursorMode, mode.nib, mutate.id))
       );
     }
   };

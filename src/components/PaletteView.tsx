@@ -2,16 +2,13 @@ import { Square } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import { flatten } from 'lodash';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import { classes, style } from 'typestyle/lib';
-import { DispatchProps, StateProps } from '../containers/PaletteView';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+import { actions } from '../redux/palette';
 import { Pos } from '../utils/selection';
 import { selectedColor } from './MenuBar';
-
-export type Props = StateProps &
-  DispatchProps & {
-    className?: string;
-  };
 
 const tileSize = 32 + 1;
 const floatThrethold = 300;
@@ -92,7 +89,7 @@ const cn = {
   })
 };
 
-export function PaletteView(props: Props) {
+export function PaletteView() {
   const [floating, setFloating] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState(false);
 
@@ -108,35 +105,41 @@ export function PaletteView(props: Props) {
               {collapsed ? '◀︎' : '▶︎'}
             </button>
             <PaletteContainer
-              {...props}
               className={classes(cn.resizeWrapper, collapsed && cn.collapsed)}
             />
           </div>
         ) : (
-          <PaletteContainer {...props} />
+          <PaletteContainer />
         )}
       </ReactResizeDetector>
     </div>
   );
 }
 
-export function PaletteContainer(props: Props) {
+export interface PaletteContainerProps {
+  className?: string;
+}
+
+export function PaletteContainer(props: PaletteContainerProps) {
   return (
     <div className={classes(props.className, cn.vertical)}>
-      <TileSetsView {...props} />
-      <NibView nib={props.nib} />
+      <TileSetsView />
+      <NibView />
     </div>
   );
 }
 
-function TileSetsView(props: Props) {
+function TileSetsView() {
   const [mutate] = React.useState({
     start: getPos(-1),
     end: getPos(-1),
     pressed: false
   });
 
-  const nibSquares = flatten(props.nib);
+  const tileSet = useTypedSelector(state => state.palette.tileSet);
+
+  const nib = useTypedSelector(state => state.mode.nib);
+  const nibSquares = flatten(nib);
   const selected = (square: Square) =>
     nibSquares.some(n => n.index === square.index) ? 'selected' : '';
 
@@ -146,20 +149,23 @@ function TileSetsView(props: Props) {
     mutate.end = getPos(-1);
     handleMove(num);
   };
+  const dispatch = useDispatch();
   const handleMove = (num: number) => {
     if (!mutate.pressed) return;
     if (mutate.end.num !== num) {
       mutate.end = getPos(num);
-      props.setSelection({
-        start: mutate.start,
-        end: mutate.end
-      });
+      dispatch(
+        actions.setSelection({
+          start: mutate.start,
+          end: mutate.end
+        })
+      );
     }
   };
   const handleUnset = () => {
     if (!mutate.pressed) return;
     mutate.pressed = false;
-    props.setSelection(null);
+    dispatch(actions.setSelection(null));
   };
 
   return (
@@ -168,7 +174,7 @@ function TileSetsView(props: Props) {
       onMouseUp={handleUnset}
       onMouseLeave={handleUnset}
     >
-      {props.tileSet.map((square, num) => (
+      {tileSet.map((square, num) => (
         <img
           key={square.index}
           src={square.tile.image.src}
@@ -183,11 +189,13 @@ function TileSetsView(props: Props) {
   );
 }
 
-function NibView(props: { nib: Square[][] | null }) {
+function NibView() {
+  const nib = useTypedSelector(state => state.mode.nib);
+
   return (
     <div className={cn.nibView}>
-      {props.nib &&
-        props.nib.map((row, i) => (
+      {nib &&
+        nib.map((row, i) => (
           <div key={i}>
             {row.map((square, j) => (
               <img

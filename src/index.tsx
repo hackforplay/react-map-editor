@@ -1,12 +1,11 @@
+import { Scene } from '@hackforplay/next';
+import { cloneDeep } from 'lodash';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { cloneDeep } from 'lodash';
-import { Scene } from '@hackforplay/next';
+import { Root, RootProps } from './components/Root';
 import createStore from './redux/createStore';
-import Root from './containers/Root';
-import { OwnProps } from './components/Root';
 
-export type Props = OwnProps;
+export type Props = RootProps;
 
 export const store = createStore();
 
