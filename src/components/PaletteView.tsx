@@ -10,7 +10,7 @@ import { actions, IPage } from '../redux/palette';
 import { Pos } from '../utils/selection';
 import { selectedColor } from './MenuBar';
 
-const padding = 2;
+const padding = 4;
 const transparent = 'rgba(255,255,255,0)';
 const color = 'rgba(255,255,255,1)';
 const tileSize = 32 + 1;
@@ -216,11 +216,11 @@ function PageView(props: IPage) {
   }, [canClose]);
 
   return (
-    <div style={{ padding }}>
+    <div style={{ paddingTop: padding }}>
       <div
         style={{
           padding,
-          paddingBottom: 0,
+          paddingBottom: collapsed ? 0 : padding,
           width: '100%',
           backgroundColor: color,
           borderRadius: 2,
