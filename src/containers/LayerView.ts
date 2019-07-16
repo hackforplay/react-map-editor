@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import LayerView, { Props } from '../components/LayerView';
-import { Store } from '../redux';
+import { StoreState } from '../redux';
 
 export type StateProps = {};
 
-const mapStateToProps: MapStateToProps<StateProps, Props, Store> = (
+const mapStateToProps: MapStateToProps<StateProps, Props, StoreState> = (
   state,
   ownProps
 ) => {

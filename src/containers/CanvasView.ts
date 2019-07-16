@@ -1,7 +1,7 @@
 import { Scene } from '@hackforplay/next';
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux';
 import { CanvasView } from '../components/CanvasView';
-import { Store } from '../redux';
+import { StoreState } from '../redux';
 import { actions } from '../redux/canvas';
 import * as mode from '../redux/mode';
 import Cursor from '../utils/cursor';
@@ -12,7 +12,7 @@ export type StateProps = {
   mode: mode.State;
 };
 
-const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
+const mapStateToProps: MapStateToProps<StateProps, {}, StoreState> = (
   state,
   ownProps
 ) => {

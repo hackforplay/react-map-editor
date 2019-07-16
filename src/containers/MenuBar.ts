@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import MenuBar from '../components/MenuBar';
-import { Store, mode } from '../redux';
+import { StoreState, mode } from '../redux';
 import { CursorMode } from '../utils/cursor';
 
 export type StateProps = {
   cursorMode: CursorMode;
 };
 
-const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
+const mapStateToProps: MapStateToProps<StateProps, {}, StoreState> = (
   state,
   ownProps
 ) => {

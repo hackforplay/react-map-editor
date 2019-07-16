@@ -7,11 +7,11 @@ import * as palette from './palette';
 
 export { palette, canvas, mode, asset };
 
-export type Store = {
+export type StoreState = {
   canvas: canvas.State;
   palette: palette.State;
   mode: mode.State;
   asset: asset.State;
 };
 
-export type Epic = BaseEpic<Action<any>, Action<any>, Store, void>;
+export type Epic = BaseEpic<Action<any>, Action<any>, StoreState, void>;

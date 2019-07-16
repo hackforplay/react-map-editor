@@ -1,7 +1,7 @@
 import { Square } from '@hackforplay/next';
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux';
 import { PaletteView } from '../components/PaletteView';
-import { palette, Store } from '../redux';
+import { palette, StoreState } from '../redux';
 import { Selection } from '../utils/selection';
 
 export type StateProps = {
@@ -9,7 +9,7 @@ export type StateProps = {
   tileSet: Square[];
 };
 
-const mapStateToProps: MapStateToProps<StateProps, {}, Store> = state => {
+const mapStateToProps: MapStateToProps<StateProps, {}, StoreState> = state => {
   return {
     nib: state.mode.nib,
     tileSet: state.palette.tileSet

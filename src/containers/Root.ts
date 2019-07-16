@@ -2,11 +2,11 @@ import * as React from 'react';
 import { connect, MapStateToProps, MapDispatchToProps } from 'react-redux';
 import { SceneMap, Square } from '@hackforplay/next';
 import Root from '../components/Root';
-import { canvas, palette, Store } from '../redux';
+import { canvas, palette, StoreState } from '../redux';
 
 export type StateProps = {};
 
-const mapStateToProps: MapStateToProps<StateProps, {}, Store> = (
+const mapStateToProps: MapStateToProps<StateProps, {}, StoreState> = (
   state,
   ownProps
 ) => {
