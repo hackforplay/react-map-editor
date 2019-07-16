@@ -65,8 +65,56 @@ const initialState: State = {
   pages: [
     {
       index: 100,
+      src: 'https://tile.hackforplay.xyz/example/0.png',
+      row: 1,
+      tiles: {}
+    },
+    {
+      index: 101,
       src: 'https://tile.hackforplay.xyz/example/1.png',
       row: 4,
+      tiles: {}
+    },
+    {
+      index: 102,
+      src: 'https://tile.hackforplay.xyz/example/2.png',
+      row: 1,
+      tiles: {}
+    },
+    {
+      index: 103,
+      src: 'https://tile.hackforplay.xyz/example/3.png',
+      row: 1,
+      tiles: {}
+    },
+    {
+      index: 104,
+      src: 'https://tile.hackforplay.xyz/example/4.png',
+      row: 1,
+      tiles: {}
+    },
+    {
+      index: 105,
+      src: 'https://tile.hackforplay.xyz/example/5.png',
+      row: 5,
+      tiles: {}
+    },
+    {
+      index: 100,
+      src: 'https://tile.hackforplay.xyz/example/6.png',
+      row: 5,
+      tiles: {}
+    },
+    {
+      index: 106,
+      src: 'https://tile.hackforplay.xyz/example/7.png',
+      row: 3,
+      tiles: {}
+    },
+    {
+      index: 107,
+      src: 'https://tile.hackforplay.xyz/example/8.png',
+      row: 6,
       tiles: {}
     }
   ],
