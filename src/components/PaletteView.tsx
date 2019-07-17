@@ -203,7 +203,19 @@ function PageView(props: IPage) {
 
   const selection = useTypedSelector(state => state.palette.selection);
   const touchRef = React.useRef(0); // save last touch indentifier of onTouchStart
+
   const draggingRef = React.useRef(false); // is dragging or swiping?
+  const release = React.useCallback(() => {
+    draggingRef.current = false;
+  }, []);
+  React.useEffect(() => {
+    window.addEventListener('mouseup', release, { passive: true });
+    window.addEventListener('touchend', release, { passive: true });
+    return () => {
+      window.removeEventListener('mouseup', release);
+      window.removeEventListener('touchend', release);
+    };
+  }, [release]);
 
   const canOpen = props.row > 1 && collapsed;
   const open = React.useCallback(() => {
@@ -233,7 +245,7 @@ function PageView(props: IPage) {
   const move = React.useCallback(
     (pos: Pos) => {
       if (!selection || !draggingRef.current) return;
-      if (shallowEqual(pos, selection)) return;
+      if (shallowEqual(pos, selection.end)) return;
       dispatch(
         actions.setSelection({
           page: selection.page,
@@ -244,9 +256,6 @@ function PageView(props: IPage) {
     },
     [selection]
   );
-  const end = React.useCallback(() => {
-    draggingRef.current = false;
-  }, []);
   const handleMouseDown = React.useCallback<React.MouseEventHandler>(
     e => {
       if (collapsed) return;
@@ -311,10 +320,10 @@ function PageView(props: IPage) {
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
-          onMouseUp={end}
+          onMouseUp={release}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          onTouchEnd={end}
+          onTouchEnd={release}
         >
           <img
             src={props.src}
