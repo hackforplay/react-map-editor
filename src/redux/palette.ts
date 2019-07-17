@@ -189,19 +189,19 @@ const initialState: State = {
       tiles: {}
     },
     {
-      index: 100,
+      index: 106,
       src: 'https://tile.hackforplay.xyz/example/6.png',
       row: 5,
       tiles: {}
     },
     {
-      index: 106,
+      index: 107,
       src: 'https://tile.hackforplay.xyz/example/7.png',
       row: 3,
       tiles: {}
     },
     {
-      index: 107,
+      index: 108,
       src: 'https://tile.hackforplay.xyz/example/8.png',
       row: 6,
       tiles: {}
