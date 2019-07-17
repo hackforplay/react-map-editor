@@ -4,7 +4,7 @@ import { combineEpics } from 'redux-observable';
 import { map } from 'rxjs/operators';
 import actionCreatorFactory from 'typescript-fsa';
 import { Epic } from '.';
-import { Selection } from '../utils/selection';
+import { getMatrix, Selection } from '../utils/selection';
 import { reducerWithImmer } from './reducerWithImmer';
 import { ofAction } from './typescript-fsa-redux-observable';
 
@@ -47,6 +47,17 @@ export interface ITile {
   author: TileAuthor;
 }
 
+const nope: ITile = {
+  index: -1,
+  src: 'https://tile.hackforplay.xyz/example/nope.png',
+  placement: {
+    type: 'Nope'
+  },
+  author: {
+    name: 'nope'
+  }
+};
+
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
   setSelection: actionCreator<Selection | null>('SET_SELECTION'),
@@ -59,6 +70,7 @@ export interface State {
   tileSet: Square[];
   tileSetMap: { [key: number]: Square };
   selection: Selection | null;
+  nib: ITile[][];
 }
 
 const initialState: State = {
@@ -209,7 +221,8 @@ const initialState: State = {
   ],
   tileSet: [] as Square[],
   tileSetMap: {},
-  selection: null
+  selection: null,
+  nib: [[]]
 };
 
 export default reducerWithImmer(initialState)
@@ -219,6 +232,16 @@ export default reducerWithImmer(initialState)
   })
   .case(actions.setSelection, (draft, payload) => {
     draft.selection = payload;
+    if (payload) {
+      // Update nib
+      const page = draft.pages.find(page => page.index === payload.page);
+      draft.nib = getMatrix(payload).map(row =>
+        row.map(num => {
+          if (!page) return nope;
+          return page.tiles[num] || nope;
+        })
+      );
+    }
   })
   .toReducer();
 
