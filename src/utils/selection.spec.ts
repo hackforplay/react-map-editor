@@ -56,7 +56,7 @@ const cases = [
 
 test('getMatrix', t => {
   for (let { start, end, expect, message } of cases) {
-    const result = getMatrix({ start, end });
+    const result = getMatrix({ page: 0, start, end });
     t.deepEqual(result, expect, message);
   }
 });
