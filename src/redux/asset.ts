@@ -10,8 +10,8 @@ import { combineEpics } from 'redux-observable';
 import { from } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import actionCreatorFactory from 'typescript-fsa';
-import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { canvas, Epic } from '.';
+import { reducerWithImmer } from './reducerWithImmer';
 import { ofAction } from './typescript-fsa-redux-observable';
 
 const actionCreator = actionCreatorFactory('react-map-editor/asset');
@@ -27,13 +27,15 @@ const initialState: State = {
   images: [] as ImageAsset[]
 };
 
-export default reducerWithInitialState(initialState)
-  .case(actions.loadAsset.started, state => ({ ...state, loading: true }))
-  .case(actions.loadAsset.done, (state, action) => ({
-    ...state,
-    loading: false,
-    images: action.result
-  }));
+export default reducerWithImmer(initialState)
+  .case(actions.loadAsset.started, draft => {
+    draft.loading = true;
+  })
+  .case(actions.loadAsset.done, (draft, action) => {
+    draft.loading = false;
+    draft.images = action.result;
+  })
+  .toReducer();
 
 export const initMapEpic: Epic = action$ =>
   action$.pipe(

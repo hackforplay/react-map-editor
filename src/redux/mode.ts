@@ -1,16 +1,12 @@
-import * as React from 'react';
-import actionCreatorFactory from 'typescript-fsa';
-import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
-import { combineEpics } from 'redux-observable';
-import { map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { Square } from '@hackforplay/next';
-import {
-  ofAction,
-  ofActionWithPayload
-} from './typescript-fsa-redux-observable';
+import { combineEpics } from 'redux-observable';
+import { map } from 'rxjs/operators';
+import actionCreatorFactory from 'typescript-fsa';
 import { Epic, palette } from '.';
 import { CursorMode } from '../utils/cursor';
 import { getMatrix } from '../utils/selection';
+import { reducerWithImmer } from './reducerWithImmer';
+import { ofActionWithPayload } from './typescript-fsa-redux-observable';
 
 const actionCreator = actionCreatorFactory('react-map-editor/mode');
 export const actions = {
@@ -28,17 +24,18 @@ const initialState: State = {
   nib: null
 };
 
-export default reducerWithInitialState(initialState)
-  .case(actions.setPen, state => ({
-    ...state,
-    cursorMode: state.nib ? 'pen' : 'nope'
-  }))
-  .case(actions.setEraser, state => ({ ...state, cursorMode: 'eraser' }))
-  .case(actions.setNib, (state, payload) => ({
-    ...state,
-    nib: payload,
-    cursorMode: 'pen'
-  }));
+export default reducerWithImmer(initialState)
+  .case(actions.setPen, draft => {
+    draft.cursorMode = draft.nib ? 'pen' : 'nope';
+  })
+  .case(actions.setEraser, draft => {
+    draft.cursorMode = 'eraser';
+  })
+  .case(actions.setNib, (draft, payload) => {
+    draft.nib = payload;
+    draft.cursorMode = 'pen';
+  })
+  .toReducer();
 
 const nibEpic: Epic = (action$, state$) =>
   action$.pipe(

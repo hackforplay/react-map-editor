@@ -3,9 +3,9 @@ import { values } from 'lodash';
 import { combineEpics } from 'redux-observable';
 import { map } from 'rxjs/operators';
 import actionCreatorFactory from 'typescript-fsa';
-import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { Epic } from '.';
 import { Selection } from '../utils/selection';
+import { reducerWithImmer } from './reducerWithImmer';
 import { ofAction } from './typescript-fsa-redux-observable';
 
 export interface IPagesResult {
@@ -212,16 +212,15 @@ const initialState: State = {
   selection: null
 };
 
-export default reducerWithInitialState(initialState)
-  .case(actions.setTilesetMap, (state, payload) => ({
-    ...state,
-    tileSetMap: payload,
-    tileSet: values(payload)
-  }))
-  .case(actions.setSelection, (state, payload) => ({
-    ...state,
-    selection: payload
-  }));
+export default reducerWithImmer(initialState)
+  .case(actions.setTilesetMap, (draft, payload) => {
+    draft.tileSetMap = payload;
+    draft.tileSet = values(payload);
+  })
+  .case(actions.setSelection, (draft, payload) => {
+    draft.selection = payload;
+  })
+  .toReducer();
 
 const addTilesetEpic: Epic = (action$, state$) =>
   action$.pipe(
