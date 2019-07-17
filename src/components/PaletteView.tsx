@@ -279,23 +279,7 @@ function PageView(props: IPage) {
             draggable={false}
           />
           {selection && selection.page === props.index && !collapsed ? (
-            <div
-              style={{
-                borderWidth: 1,
-                borderStyle: 'solid',
-                borderColor: selectedColor,
-                boxSizing: 'border-box',
-                position: 'absolute',
-                left: `${selection.start.col * 12.5}%`,
-                top: `${(selection.start.row / props.row) * 100}%`,
-                width: `${(selection.end.col - selection.start.col + 1) *
-                  12.5}%`,
-                height: `${((selection.end.row - selection.start.row + 1) /
-                  props.row) *
-                  100}%`,
-                zIndex: 1
-              }}
-            />
+            <SelectionView selection={selection} row={props.row} />
           ) : null}
           {collapsed ? (
             <div
@@ -326,6 +310,34 @@ function PageView(props: IPage) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+interface SelectionViewProps {
+  selection: Selection;
+  row: number;
+}
+
+function SelectionView({ selection: { start, end }, row }: SelectionViewProps) {
+  const left = Math.min(start.col, end.col);
+  const top = Math.min(start.row, end.row);
+  const right = Math.max(start.col, end.col) + 1;
+  const bottom = Math.max(start.row, end.row) + 1;
+  return (
+    <div
+      style={{
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: selectedColor,
+        boxSizing: 'border-box',
+        position: 'absolute',
+        left: `${left * 12.5}%`,
+        top: `${(top / row) * 100}%`,
+        width: `${(right - left) * 12.5}%`,
+        height: `${((bottom - top) / row) * 100}%`,
+        zIndex: 1
+      }}
+    />
   );
 }
 
