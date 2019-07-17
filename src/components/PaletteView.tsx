@@ -2,12 +2,12 @@ import { Square } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import { flatten } from 'lodash';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, shallowEqual } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import { classes, style } from 'typestyle/lib';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { actions, IPage } from '../redux/palette';
-import { Pos } from '../utils/selection';
+import { Pos, Selection } from '../utils/selection';
 import { selectedColor } from './MenuBar';
 
 const padding = 4;
@@ -202,6 +202,8 @@ function PageView(props: IPage) {
   const [collapsed, setCollapsed] = React.useState(props.row > 1);
 
   const selection = useTypedSelector(state => state.palette.selection);
+  const touchRef = React.useRef(0); // save last touch indentifier of onTouchStart
+  const draggingRef = React.useRef(false); // is dragging or swiping?
 
   const canOpen = props.row > 1 && collapsed;
   const open = React.useCallback(() => {
@@ -218,7 +220,8 @@ function PageView(props: IPage) {
   }, [canClose]);
 
   const dispatch = useDispatch();
-  const start = (pos: Pos) => {
+  const start = React.useCallback((pos: Pos) => {
+    draggingRef.current = true;
     dispatch(
       actions.setSelection({
         page: props.index,
@@ -226,7 +229,24 @@ function PageView(props: IPage) {
         end: pos
       })
     );
-  };
+  }, []);
+  const move = React.useCallback(
+    (pos: Pos) => {
+      if (!selection || !draggingRef.current) return;
+      if (shallowEqual(pos, selection)) return;
+      dispatch(
+        actions.setSelection({
+          page: selection.page,
+          start: selection.start,
+          end: pos
+        })
+      );
+    },
+    [selection]
+  );
+  const end = React.useCallback(() => {
+    draggingRef.current = false;
+  }, []);
   const handleMouseDown = React.useCallback<React.MouseEventHandler>(
     e => {
       if (collapsed) return;
@@ -234,7 +254,16 @@ function PageView(props: IPage) {
         getPos(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())
       );
     },
-    [collapsed]
+    [collapsed, start]
+  );
+  const handleMouseMove = React.useCallback<React.MouseEventHandler>(
+    e => {
+      if (collapsed) return;
+      move(
+        getPos(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())
+      );
+    },
+    [collapsed, move]
   );
   const handleTouchStart = React.useCallback<React.TouchEventHandler>(
     e => {
@@ -243,8 +272,19 @@ function PageView(props: IPage) {
       start(
         getPos(p.clientX, p.clientY, e.currentTarget.getBoundingClientRect())
       );
+      touchRef.current = p.identifier;
     },
-    [collapsed]
+    [collapsed, start]
+  );
+  const handleTouchMove = React.useCallback<React.TouchEventHandler>(
+    e => {
+      const p = e.touches.item(0);
+      if (collapsed || !p || p.identifier !== touchRef.current) return;
+      move(
+        getPos(p.clientX, p.clientY, e.currentTarget.getBoundingClientRect())
+      );
+    },
+    [collapsed, move]
   );
 
   return (
@@ -270,7 +310,11 @@ function PageView(props: IPage) {
             transition: 'padding-top 200ms'
           }}
           onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={end}
           onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={end}
         >
           <img
             src={props.src}
