@@ -1,23 +1,17 @@
 import test from 'ava';
-import { Square } from '@hackforplay/next';
-import { draw } from './canvas';
 import Cursor from '../utils/cursor';
+import { draw } from './canvas';
+import { ITile } from './palette';
 
 test('draw canvas', t => {
-  const sky: Square = {
+  const sky: ITile = {
     index: 1,
     placement: {
       type: 'Sky'
     },
-    tile: {
-      size: [32, 32],
-      image: {
-        type: 'data-url',
-        src: ''
-      },
-      author: {
-        name: ''
-      }
+    src: '',
+    author: {
+      name: ''
     }
   };
 
