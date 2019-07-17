@@ -395,21 +395,23 @@ function SelectionView({ selection: { start, end }, row }: SelectionViewProps) {
 }
 
 function NibView() {
-  const nib = useTypedSelector(state => state.mode.nib);
+  const nib = useTypedSelector(state => state.palette.nib);
 
   return (
     <div className={cn.nibView}>
       {nib &&
         nib.map((row, i) => (
           <div key={i}>
-            {row.map((square, j) => (
-              <img
-                key={j}
-                src={square.tile.image.src}
-                alt="selected tile"
-                draggable={false}
-              />
-            ))}
+            {row.map(tile =>
+              tile.index > 0 ? (
+                <img
+                  key={tile.index}
+                  src={tile.src}
+                  alt="selected tile"
+                  draggable={false}
+                />
+              ) : null
+            )}
           </div>
         ))}
     </div>
