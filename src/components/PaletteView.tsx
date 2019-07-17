@@ -201,6 +201,8 @@ function TileSetsView() {
 function PageView(props: IPage) {
   const [collapsed, setCollapsed] = React.useState(props.row > 1);
 
+  const selection = useTypedSelector(state => state.palette.selection);
+
   const canOpen = props.row > 1 && collapsed;
   const open = React.useCallback(() => {
     if (canOpen) {
@@ -219,6 +221,7 @@ function PageView(props: IPage) {
   const start = (pos: Pos) => {
     dispatch(
       actions.setSelection({
+        page: props.index,
         start: pos,
         end: pos
       })
@@ -275,6 +278,25 @@ function PageView(props: IPage) {
             style={{ position: 'absolute', top: 0, left: 0, width: '100%' }}
             draggable={false}
           />
+          {selection && selection.page === props.index && !collapsed ? (
+            <div
+              style={{
+                borderWidth: 1,
+                borderStyle: 'solid',
+                borderColor: selectedColor,
+                boxSizing: 'border-box',
+                position: 'absolute',
+                left: `${selection.start.col * 12.5}%`,
+                top: `${(selection.start.row / props.row) * 100}%`,
+                width: `${(selection.end.col - selection.start.col + 1) *
+                  12.5}%`,
+                height: `${((selection.end.row - selection.start.row + 1) /
+                  props.row) *
+                  100}%`,
+                zIndex: 1
+              }}
+            />
+          ) : null}
           {collapsed ? (
             <div
               style={{

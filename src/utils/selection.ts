@@ -1,4 +1,8 @@
 export type Selection = {
+  /**
+   * ページ番号
+   */
+  page: number;
   start: Pos;
   end: Pos;
 };
@@ -39,6 +43,7 @@ export function getMatrix(selection: Selection): number[][] {
   } else if (start.row > end.row) {
     // 逆
     return getMatrix({
+      page: selection.page,
       start: selection.end,
       end: selection.start
     });
