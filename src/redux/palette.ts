@@ -67,7 +67,96 @@ const initialState: State = {
       index: 100,
       src: 'https://tile.hackforplay.xyz/example/0.png',
       row: 1,
-      tiles: {}
+      tiles: {
+        0: {
+          index: 10000,
+          src: 'https://tile.hackforplay.xyz/example/0/0.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        1: {
+          index: 10001,
+          src: 'https://tile.hackforplay.xyz/example/0/1.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        2: {
+          index: 10002,
+          src: 'https://tile.hackforplay.xyz/example/0/2.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        3: {
+          index: 10003,
+          src: 'https://tile.hackforplay.xyz/example/0/3.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        4: {
+          index: 10004,
+          src: 'https://tile.hackforplay.xyz/example/0/4.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        5: {
+          index: 10005,
+          src: 'https://tile.hackforplay.xyz/example/0/5.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        6: {
+          index: 10006,
+          src: 'https://tile.hackforplay.xyz/example/0/6.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        },
+        7: {
+          index: 10007,
+          src: 'https://tile.hackforplay.xyz/example/0/7.png',
+          placement: {
+            type: 'Ground'
+          },
+          author: {
+            name: 'ぴぽや',
+            url: 'http://blog.pipoya.net/'
+          }
+        }
+      }
     },
     {
       index: 101,
