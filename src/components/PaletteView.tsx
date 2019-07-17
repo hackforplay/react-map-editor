@@ -15,11 +15,11 @@ const transparent = 'rgba(255,255,255,0)';
 const color = 'rgba(255,255,255,1)';
 const tileSize = 32 + 1;
 const floatThrethold = 300;
-const getPos = (num: number): Pos => ({
-  row: (num / 8) >> 0,
-  col: num % 8,
-  num
-});
+const initPos: Pos = {
+  col: -1,
+  row: 0,
+  num: -1
+};
 
 const cn = {
   root: style(csstips.vertical, {
@@ -136,8 +136,8 @@ export function PaletteContainer(props: PaletteContainerProps) {
 
 function TileSetsView() {
   const [mutate] = React.useState({
-    start: getPos(-1),
-    end: getPos(-1),
+    start: initPos,
+    end: initPos,
     pressed: false
   });
 
@@ -152,7 +152,7 @@ function TileSetsView() {
   const handleMouseDown = (num: number) => {
     mutate.pressed = true;
     mutate.start = getPos(num);
-    mutate.end = getPos(-1);
+    mutate.end = initPos;
     handleMove(num);
   };
   const dispatch = useDispatch();
@@ -215,6 +215,35 @@ function PageView(props: IPage) {
     }
   }, [canClose]);
 
+  const dispatch = useDispatch();
+  const start = (pos: Pos) => {
+    dispatch(
+      actions.setSelection({
+        start: pos,
+        end: pos
+      })
+    );
+  };
+  const handleMouseDown = React.useCallback<React.MouseEventHandler>(
+    e => {
+      if (collapsed) return;
+      start(
+        getPos(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect())
+      );
+    },
+    [collapsed]
+  );
+  const handleTouchStart = React.useCallback<React.TouchEventHandler>(
+    e => {
+      const p = e.touches.item(0);
+      if (collapsed || !p) return;
+      start(
+        getPos(p.clientX, p.clientY, e.currentTarget.getBoundingClientRect())
+      );
+    },
+    [collapsed]
+  );
+
   return (
     <div style={{ paddingTop: padding }}>
       <div
@@ -237,6 +266,8 @@ function PageView(props: IPage) {
             width: '100%',
             transition: 'padding-top 200ms'
           }}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
         >
           <img
             src={props.src}
@@ -296,4 +327,19 @@ function NibView() {
         ))}
     </div>
   );
+}
+
+function getPos(
+  x: number,
+  y: number,
+  bound: { left: number; top: number; width: number; height: number }
+): Pos {
+  const tileSize = bound.width / 8;
+  const col = ((x - bound.left) / tileSize) | 0;
+  const row = ((y - bound.top) / tileSize) | 0;
+  return {
+    row,
+    col,
+    num: col + row * 8
+  };
 }
