@@ -1,13 +1,9 @@
-import { Placement, Square, TileAuthor } from '@hackforplay/next';
-import { values } from 'lodash';
+import { Placement, TileAuthor } from '@hackforplay/next';
 import { combineEpics } from 'redux-observable';
-import { map } from 'rxjs/operators';
 import actionCreatorFactory from 'typescript-fsa';
-import { Epic } from '.';
+import { CursorMode } from '../utils/cursor';
 import { getMatrix, Selection } from '../utils/selection';
 import { reducerWithImmer } from './reducerWithImmer';
-import { ofAction } from './typescript-fsa-redux-observable';
-import { CursorMode } from '../utils/cursor';
 
 export interface IPagesResult {
   pages: IPage[];
