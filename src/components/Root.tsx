@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { style } from 'typestyle/lib';
 import { actions as canvasActions } from '../redux/canvas';
+import { actions as paletteActions } from '../redux/palette';
 import { CanvasView } from './CanvasView';
 import { LayerView } from './LayerView';
 import { MenuBar, menuBarHeight } from './MenuBar';
@@ -28,6 +29,7 @@ export function Root(props: RootProps) {
     if (props.map) {
       dispatch(canvasActions.initMap(props.map));
     }
+    dispatch(paletteActions.loadPages.started({}));
   }, []);
 
   return (
