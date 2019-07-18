@@ -1,5 +1,5 @@
 import { Scene } from '@hackforplay/next';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { Root, RootProps } from './components/Root';
