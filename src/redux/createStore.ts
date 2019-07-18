@@ -17,7 +17,15 @@ export default function createStore() {
   const composeEnhancers =
     (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || redux.compose;
 
-  const logger = createLogger({});
+  let previousState: any = null;
+  const logger = createLogger({
+    collapsed(getState, action) {
+      const currentState = getState();
+      const changed = previousState !== currentState;
+      previousState = currentState;
+      return !changed;
+    }
+  });
 
   const store = redux.createStore(
     rootReducer,
