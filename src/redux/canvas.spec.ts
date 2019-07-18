@@ -24,7 +24,7 @@ test('draw canvas', t => {
 
   t.not(origin, result, 'draw関数は Immutable でなければならない');
   t.is(result.tables.length, expect.tables.length);
-  t.deepEqual(result, expect);
+  t.deepEqual(result.tables, expect.tables);
 });
 
 function createSceneMap(tables: number[][][]): SceneMap {
