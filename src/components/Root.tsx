@@ -1,17 +1,15 @@
-import { SceneMap, Square } from '@hackforplay/next';
+import { SceneMap } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { style } from 'typestyle/lib';
 import { actions as canvasActions } from '../redux/canvas';
-import { actions } from '../redux/palette';
 import { CanvasView } from './CanvasView';
 import { LayerView } from './LayerView';
 import { MenuBar, menuBarHeight } from './MenuBar';
 import { PaletteView } from './PaletteView';
 
 export interface RootProps {
-  tileset?: Square[];
   map?: SceneMap;
 }
 
@@ -29,9 +27,6 @@ export function Root(props: RootProps) {
   React.useEffect(() => {
     if (props.map) {
       dispatch(canvasActions.initMap(props.map));
-    }
-    if (props.tileset) {
-      dispatch(actions.addTileset(props.tileset));
     }
   }, []);
 

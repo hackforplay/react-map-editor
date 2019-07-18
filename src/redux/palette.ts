@@ -62,15 +62,11 @@ const nope: ITile = {
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
   setSelection: actionCreator<Selection | null>('SET_SELECTION'),
-  setCursorMode: actionCreator<CursorMode>('SET_CURSOR_MODE'),
-  addTileset: actionCreator<Square[]>('ADD_TILESET'),
-  setTilesetMap: actionCreator<{ [key: number]: Square }>('SET_TILESET_MAP')
+  setCursorMode: actionCreator<CursorMode>('SET_CURSOR_MODE')
 };
 
 export interface State {
   pages: IPage[];
-  tileSet: Square[];
-  tileSetMap: { [key: number]: Square };
   selection: Selection | null;
   nib: ITile[][];
   cursorMode: CursorMode;
@@ -78,18 +74,12 @@ export interface State {
 
 const initialState: State = {
   pages: Object.values(require('./dev.json').pages),
-  tileSet: [] as Square[],
-  tileSetMap: {},
   selection: null,
   nib: [[]],
   cursorMode: 'nope'
 };
 
 export default reducerWithImmer(initialState)
-  .case(actions.setTilesetMap, (draft, payload) => {
-    draft.tileSetMap = payload;
-    draft.tileSet = values(payload);
-  })
   .case(actions.setSelection, (draft, payload) => {
     draft.selection = payload;
     if (payload) {
@@ -111,14 +101,4 @@ export default reducerWithImmer(initialState)
   })
   .toReducer();
 
-const addTilesetEpic: Epic = (action$, state$) =>
-  action$.pipe(
-    ofAction(actions.addTileset),
-    map(action => action.payload.map(square => ({ [square.index]: square }))),
-    map(array =>
-      Object.assign({ ...state$.value.palette.tileSetMap }, ...array)
-    ),
-    map(tilesetMap => actions.setTilesetMap(tilesetMap))
-  );
-
-export const epics = combineEpics(addTilesetEpic);
+export const epics = combineEpics();
