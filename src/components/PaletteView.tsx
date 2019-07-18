@@ -135,65 +135,13 @@ export function PaletteContainer(props: PaletteContainerProps) {
 }
 
 function TileSetsView() {
-  const [mutate] = React.useState({
-    start: initPos,
-    end: initPos,
-    pressed: false
-  });
-
-  const tileSet = useTypedSelector(state => state.palette.tileSet);
   const pages = useTypedSelector(state => state.palette.pages);
 
-  const nib = useTypedSelector(state => state.palette.nib);
-  const nibSquares = flatten(nib);
-  const selected = (square: Square) =>
-    nibSquares.some(n => n.index === square.index) ? 'selected' : '';
-
-  const handleMouseDown = (num: number) => {
-    mutate.pressed = true;
-    mutate.start = getPos(num);
-    mutate.end = initPos;
-    handleMove(num);
-  };
-  const dispatch = useDispatch();
-  const handleMove = (num: number) => {
-    if (!mutate.pressed) return;
-    if (mutate.end.num !== num) {
-      mutate.end = getPos(num);
-      dispatch(
-        actions.setSelection({
-          start: mutate.start,
-          end: mutate.end
-        })
-      );
-    }
-  };
-  const handleUnset = () => {
-    if (!mutate.pressed) return;
-    mutate.pressed = false;
-    dispatch(actions.setSelection(null));
-  };
-
   return (
-    <div
-      className={cn.table}
-      onMouseUp={handleUnset}
-      onMouseLeave={handleUnset}
-    >
+    <div className={cn.table}>
       {pages.map(page => (
         <PageView key={page.index} {...page} />
       ))}
-      {/* {tileSet.map((square, num) => (
-        <img
-          key={square.index}
-          src={square.tile.image.src}
-          alt="tile"
-          className={selected(square)}
-          draggable={false}
-          onMouseDown={() => handleMouseDown(num)}
-          onMouseMove={() => handleMove(num)}
-        />
-      ))} */}
     </div>
   );
 }
