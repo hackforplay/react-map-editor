@@ -7,7 +7,7 @@
       "tiles": {
         "0": {
           "index": 10000,
-          "src": "https://tile.hackforplay.xyz/tiles/10000/page.png",
+          "src": "https://tile.hackforplay.xyz/tiles/10000.png",
           "placement": { "type": "Ground" },
           "author": { "name": "ぴぽや", "url": "http://blog.pipoya.net/" }
         },
