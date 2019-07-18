@@ -77,10 +77,7 @@ export interface State {
 }
 
 const initialState: State = {
-  pages:
-    process.env.NODE_ENV === 'production'
-      ? []
-      : Object.values(require('./dev.json').pages),
+  pages: [],
   selection: null,
   nib: [[]],
   cursorMode: 'nope'
