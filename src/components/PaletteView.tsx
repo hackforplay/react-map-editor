@@ -1,8 +1,6 @@
-import { Square } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
-import { flatten } from 'lodash';
 import * as React from 'react';
-import { useDispatch, shallowEqual } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import { classes, style } from 'typestyle/lib';
 import { useTypedSelector } from '../hooks/useTypedSelector';
@@ -15,11 +13,6 @@ const transparent = 'rgba(255,255,255,0)';
 const color = 'rgba(255,255,255,1)';
 const tileSize = 32 + 1;
 const floatThrethold = 300;
-const initPos: Pos = {
-  col: -1,
-  row: 0,
-  num: -1
-};
 
 const cn = {
   root: style(csstips.vertical, {
