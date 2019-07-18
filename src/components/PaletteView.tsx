@@ -355,7 +355,7 @@ function NibView() {
                 <img
                   key={tile.index}
                   src={tile.src}
-                  alt="selected tile"
+                  alt="NOT FOUND"
                   draggable={false}
                 />
               ) : null
