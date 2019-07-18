@@ -1,4 +1,4 @@
-import { render } from '@hackforplay/next';
+import { CanvasRenderer } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -23,8 +23,17 @@ export function CanvasView() {
 
   const [height] = React.useState(10 * 32); // TODO: 可変
   const [width] = React.useState(15 * 32); // TODO: 可変
+  const canvasRendererRef = React.useRef<CanvasRenderer>();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container || canvasRendererRef.current) return;
+    canvasRendererRef.current = new CanvasRenderer(container, {
+      width,
+      height
+    });
+  }, [containerRef.current]);
 
-  const renderRoot = React.useRef<HTMLDivElement>(null);
   const [mutate] = React.useState({
     px: -1,
     py: -1,
@@ -32,27 +41,19 @@ export function CanvasView() {
     id: 0
   });
 
-  const images = useTypedSelector(state => state.asset.images);
-  const loading = useTypedSelector(state => state.asset.loading);
   const sceneMap = useTypedSelector(state => state.canvas);
   React.useEffect(() => {
-    if (renderRoot.current && !loading) {
-      render(
-        {
-          debug: true,
-          map: sceneMap,
-          assets: {
-            images
-          },
-          screen: {
-            width,
-            height
-          }
-        },
-        renderRoot.current
-      );
-    }
-  }, [loading, sceneMap, images, width, height]);
+    const canvasRenderer = canvasRendererRef.current;
+    if (!canvasRenderer) return;
+    canvasRenderer.update({
+      debug: true,
+      map: sceneMap,
+      screen: {
+        width,
+        height
+      }
+    });
+  }, [sceneMap, width, height]);
 
   const dispatch = useDispatch();
   const handleMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -118,7 +119,7 @@ export function CanvasView() {
 
   return (
     <div className={cn.root}>
-      <div className={cn.renderRoot} ref={renderRoot}>
+      <div className={cn.renderRoot} ref={containerRef}>
         <canvas
           className={cursor}
           width={width}
