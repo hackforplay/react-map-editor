@@ -144,7 +144,7 @@ function TileSetsView() {
   const tileSet = useTypedSelector(state => state.palette.tileSet);
   const pages = useTypedSelector(state => state.palette.pages);
 
-  const nib = useTypedSelector(state => state.mode.nib);
+  const nib = useTypedSelector(state => state.palette.nib);
   const nibSquares = flatten(nib);
   const selected = (square: Square) =>
     nibSquares.some(n => n.index === square.index) ? 'selected' : '';

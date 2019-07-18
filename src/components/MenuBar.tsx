@@ -5,7 +5,7 @@ import { classes, style } from 'typestyle/lib';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
-import { actions } from '../redux/mode';
+import { actions } from '../redux/palette';
 
 export const menuBarHeight = 48;
 
@@ -55,14 +55,14 @@ const edit = {
 };
 
 export function MenuBar() {
-  const cursorMode = useTypedSelector(state => state.mode.cursorMode);
+  const cursorMode = useTypedSelector(state => state.palette.cursorMode);
 
   const dispatch = useDispatch();
   const handleEraser = React.useCallback(() => {
-    dispatch(actions.setEraser());
+    dispatch(actions.setCursorMode('eraser'));
   }, []);
   const handlePen = React.useCallback(() => {
-    dispatch(actions.setPen());
+    dispatch(actions.setCursorMode('pen'));
   }, []);
 
   return (

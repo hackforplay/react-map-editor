@@ -18,9 +18,9 @@ const cn = {
 };
 
 export function CanvasView() {
-  const mode = useTypedSelector(state => state.mode);
+  const cursorMode = useTypedSelector(state => state.palette.cursorMode);
   const nib = useTypedSelector(state => state.palette.nib);
-  const cursor = cursorClasses[mode.cursorMode];
+  const cursor = cursorClasses[cursorMode];
 
   const [height] = React.useState(10 * 32); // TODO: 可変
   const [width] = React.useState(15 * 32); // TODO: 可変
@@ -73,7 +73,7 @@ export function CanvasView() {
     if (x !== mutate.px || y !== mutate.py) {
       mutate.px = x;
       mutate.py = y;
-      dispatch(actions.draw(new Cursor(x, y, mode.cursorMode, nib, mutate.id)));
+      dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
     }
   };
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -103,7 +103,7 @@ export function CanvasView() {
     if (x !== mutate.px || y !== mutate.py) {
       mutate.px = x;
       mutate.py = y;
-      dispatch(actions.draw(new Cursor(x, y, mode.cursorMode, nib, mutate.id)));
+      dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
     }
   };
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {

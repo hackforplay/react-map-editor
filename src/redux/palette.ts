@@ -7,6 +7,7 @@ import { Epic } from '.';
 import { getMatrix, Selection } from '../utils/selection';
 import { reducerWithImmer } from './reducerWithImmer';
 import { ofAction } from './typescript-fsa-redux-observable';
+import { CursorMode } from '../utils/cursor';
 
 export interface IPagesResult {
   pages: IPage[];
@@ -61,6 +62,7 @@ const nope: ITile = {
 const actionCreator = actionCreatorFactory('react-map-editor/palette');
 export const actions = {
   setSelection: actionCreator<Selection | null>('SET_SELECTION'),
+  setCursorMode: actionCreator<CursorMode>('SET_CURSOR_MODE'),
   addTileset: actionCreator<Square[]>('ADD_TILESET'),
   setTilesetMap: actionCreator<{ [key: number]: Square }>('SET_TILESET_MAP')
 };
@@ -71,6 +73,7 @@ export interface State {
   tileSetMap: { [key: number]: Square };
   selection: Selection | null;
   nib: ITile[][];
+  cursorMode: CursorMode;
 }
 
 const initialState: State = {
@@ -222,7 +225,8 @@ const initialState: State = {
   tileSet: [] as Square[],
   tileSetMap: {},
   selection: null,
-  nib: [[]]
+  nib: [[]],
+  cursorMode: 'nope'
 };
 
 export default reducerWithImmer(initialState)
@@ -241,7 +245,13 @@ export default reducerWithImmer(initialState)
           return page.tiles[num] || nope;
         })
       );
+      draft.cursorMode = 'pen';
     }
+  })
+  .case(actions.setCursorMode, (draft, payload) => {
+    // nib がセットされていないとペンモードにはならない
+    if (payload === 'pen' && draft.nib[0].length < 1) return;
+    draft.cursorMode = payload;
   })
   .toReducer();
 
