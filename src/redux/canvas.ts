@@ -1,4 +1,4 @@
-import { Placement, SceneMap, Square } from '@hackforplay/next';
+import { Placement, SceneMap } from '@hackforplay/next';
 import { cloneDeep, flattenDepth } from 'lodash';
 import { combineEpics } from 'redux-observable';
 import { filter, map } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import { Epic } from '.';
 import Cursor from '../utils/cursor';
+import { ITile } from './palette';
 import { ofAction } from './typescript-fsa-redux-observable';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
@@ -30,11 +31,20 @@ const penEpic: Epic = (action$, state$) =>
       let { tables, squares } = state$.value.canvas;
       const { nib } = action.payload;
       if (!nib) throw new Error('Nib is null');
-      let addFlag = false;
-      for (const item of flattenDepth<Square>(nib, 2)) {
+      for (const item of flattenDepth<ITile>(nib, 2)) {
         if (squares.every(s => s.index !== item.index)) {
-          addFlag = true;
-          squares = squares.concat(item);
+          squares = squares.concat({
+            index: item.index,
+            placement: item.placement,
+            tile: {
+              size: [32, 32],
+              image: {
+                type: 'url',
+                src: item.src
+              },
+              author: item.author
+            }
+          });
         }
       }
       return {

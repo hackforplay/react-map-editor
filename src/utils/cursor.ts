@@ -1,5 +1,5 @@
-import { Square } from '@hackforplay/next';
 import { style } from 'typestyle/lib';
+import { ITile } from '../redux/palette';
 
 export type CursorMode = 'nope' | 'pen' | 'eraser';
 
@@ -7,7 +7,7 @@ export default class Cursor {
   x: number;
   y: number;
   mode: CursorMode;
-  nib: Square[][] | null;
+  nib: ITile[][] | null;
   _layer: number | null = null;
   dragId: number;
 
@@ -15,7 +15,7 @@ export default class Cursor {
     x: number,
     y: number,
     mode: CursorMode,
-    nib: Square[][] | null,
+    nib: ITile[][] | null,
     dragId: number
   ) {
     this.x = x;
