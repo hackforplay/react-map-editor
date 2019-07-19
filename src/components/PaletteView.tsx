@@ -269,7 +269,14 @@ function PageView(props: IPage) {
           <img
             src={props.src}
             alt=""
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%' }}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transformOrigin: 'top',
+              transform: collapsed ? 'scaleY(0.5)' : 'none'
+            }}
             draggable={false}
           />
           {selection && selection.page === props.index && !collapsed ? (
