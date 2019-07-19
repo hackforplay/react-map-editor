@@ -344,6 +344,7 @@ function SelectionView({ selection: { start, end }, row }: SelectionViewProps) {
 
 function NibView() {
   const nib = useTypedSelector(state => state.palette.nib);
+  const author = nib && nib[0] && nib[0][0] && nib[0][0].author;
 
   return (
     <div className={cn.nibView}>
@@ -362,6 +363,14 @@ function NibView() {
             )}
           </div>
         ))}
+      {author ? (
+        <small style={{ position: 'absolute', right: 0, bottom: 0 }}>
+          {`Illustrated by `}
+          <a href={author.url} target="_blank" referrerPolicy="no-referrer">
+            {author.name}
+          </a>
+        </small>
+      ) : null}
     </div>
   );
 }
