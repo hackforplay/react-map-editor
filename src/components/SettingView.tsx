@@ -14,7 +14,7 @@ export function SettingView() {
   const debug = useTypedSelector(state => state.canvas.debug);
 
   const toggleDebug = React.useCallback(() => {
-    dispatch(actions.initMap({ debug: !debug }));
+    dispatch(actions.shallowSet({ debug: !debug }));
   }, [debug]);
 
   return (

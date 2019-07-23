@@ -7,9 +7,8 @@ import Cursor from '../utils/cursor';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
-  initMap: actionCreator<Partial<Scene>>('INIT_MAP'),
-  draw: actionCreator<Cursor>('DRAW'),
-  set: actionCreator<Scene>('SET')
+  shallowSet: actionCreator<Partial<Scene>>('SHALLOW_SET'),
+  draw: actionCreator<Cursor>('DRAW')
 };
 
 export interface State extends Scene {}
@@ -85,12 +84,11 @@ export const draw = produce(
 
 export default reducerWithInitialState(initialState)
   .case(
-    actions.initMap,
+    actions.shallowSet,
     produce((state: Scene, payload: Partial<Scene>) => {
       Object.assign(state, payload);
     })
   )
-  .case(actions.set, (state, payload) => payload)
   .case(actions.draw, draw);
 
 export const epics = combineEpics();

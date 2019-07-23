@@ -28,7 +28,7 @@ export function Root(props: RootProps) {
   React.useEffect(() => {
     if (props.map) {
       dispatch(
-        canvasActions.initMap({
+        canvasActions.shallowSet({
           map: props.map
         })
       );
