@@ -34,13 +34,6 @@ export function CanvasView() {
     });
   }, [containerRef.current]);
 
-  const [mutate] = React.useState({
-    px: -1,
-    py: -1,
-    pressed: false,
-    id: 0
-  });
-
   const scene = useTypedSelector(state => state.canvas);
   React.useEffect(() => {
     const canvasRenderer = canvasRendererRef.current;
@@ -48,63 +41,89 @@ export function CanvasView() {
     canvasRenderer.update(scene);
   }, [scene]);
 
-  const dispatch = useDispatch();
-  const handleMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!mutate.pressed) return;
-    const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
-    const x =
-      ((e.clientX -
-        offsetLeft +
-        (parentElement ? parentElement.scrollLeft : 0)) /
-        32) >>
-      0;
-    const y =
-      ((e.clientY - offsetTop + (parentElement ? parentElement.scrollTop : 0)) /
-        32) >>
-      0;
-    if (x !== mutate.px || y !== mutate.py) {
-      mutate.px = x;
-      mutate.py = y;
-      dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
-    }
-  };
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const [mutate] = React.useState({
+    px: -1,
+    py: -1,
+    pressed: false,
+    id: 0
+  });
+  const start = React.useCallback(() => {
     mutate.px = -1;
     mutate.py = -1;
     mutate.pressed = true;
     mutate.id++;
-    handleMove(e);
-  };
+  }, []);
+  const update = React.useCallback((x: number, y: number) => {
+    mutate.px = x;
+    mutate.py = y;
+  }, []);
+  const stop = React.useCallback(() => {
+    mutate.pressed = false;
+  }, []);
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (!mutate.pressed) return;
-    const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
-    const primary = e.touches.item(0);
-    const x =
-      ((primary.clientX -
-        offsetLeft +
-        (parentElement ? parentElement.scrollLeft : 0)) /
-        32) >>
-      0;
-    const y =
-      ((primary.clientY -
-        offsetTop +
-        (parentElement ? parentElement.scrollTop : 0)) /
-        32) >>
-      0;
-    if (x !== mutate.px || y !== mutate.py) {
-      mutate.px = x;
-      mutate.py = y;
-      dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
-    }
-  };
-  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    mutate.px = -1;
-    mutate.py = -1;
-    mutate.pressed = true;
-    mutate.id++;
-    handleTouchMove(e);
-  };
+  const dispatch = useDispatch();
+  const handleMove = React.useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!mutate.pressed) return;
+      const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
+      const x =
+        ((e.clientX -
+          offsetLeft +
+          (parentElement ? parentElement.scrollLeft : 0)) /
+          32) >>
+        0;
+      const y =
+        ((e.clientY -
+          offsetTop +
+          (parentElement ? parentElement.scrollTop : 0)) /
+          32) >>
+        0;
+      if (x !== mutate.px || y !== mutate.py) {
+        update(x, y);
+        dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
+      }
+    },
+    [cursorMode, nib]
+  );
+  const handleMouseDown = React.useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      start();
+      handleMove(e);
+    },
+    [handleMove]
+  );
+
+  const handleTouchMove = React.useCallback(
+    (e: React.TouchEvent<HTMLCanvasElement>) => {
+      if (!mutate.pressed) return;
+      const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
+      const primary = e.touches.item(0);
+      const x =
+        ((primary.clientX -
+          offsetLeft +
+          (parentElement ? parentElement.scrollLeft : 0)) /
+          32) >>
+        0;
+      const y =
+        ((primary.clientY -
+          offsetTop +
+          (parentElement ? parentElement.scrollTop : 0)) /
+          32) >>
+        0;
+      if (x !== mutate.px || y !== mutate.py) {
+        update(x, y);
+        dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
+      }
+    },
+    [cursorMode, nib]
+  );
+  const handleTouchStart = React.useCallback(
+    (e: React.TouchEvent<HTMLCanvasElement>) => {
+      start();
+      handleTouchMove(e);
+    },
+    [handleTouchMove]
+  );
 
   return (
     <div className={cn.root}>
@@ -114,12 +133,12 @@ export function CanvasView() {
           width={width}
           height={height}
           onTouchStart={handleTouchStart}
-          onTouchCancel={() => (mutate.pressed = false)}
-          onTouchEnd={() => (mutate.pressed = false)}
+          onTouchCancel={stop}
+          onTouchEnd={stop}
           onTouchMove={handleTouchMove}
           onMouseDown={handleMouseDown}
-          onMouseUp={() => (mutate.pressed = false)}
-          onMouseLeave={() => (mutate.pressed = false)}
+          onMouseUp={stop}
+          onMouseLeave={stop}
           onMouseMove={handleMove}
         />
       </div>
