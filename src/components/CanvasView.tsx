@@ -131,6 +131,14 @@ export function CanvasView() {
     [handleTouchMove]
   );
 
+  // Disable scroll on mobile browser
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.ontouchmove = e => e.preventDefault();
+  }, [canvasRef.current]);
+
   return (
     <div className={cn.root}>
       <div className={cn.renderRoot} ref={containerRef}>
