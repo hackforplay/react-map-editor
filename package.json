@@ -20,6 +20,7 @@
     "lint": "prettier -l 'src/**/*.{ts,tsx}'",
     "format": "prettier --write 'src/**/*.{ts,tsx}'",
     "build": "webpack -p && tsc",
+    "prepublishOnly": "npm run build",
     "svgr": "svgr --icon --replace-attr-values '#000=currentColor' --template ./svgr-template.js --ext tsx -d src/icons src/svg"
   },
   "repository": {
