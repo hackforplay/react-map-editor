@@ -12,6 +12,7 @@ import { PaletteView } from './PaletteView';
 
 export interface RootProps {
   map?: SceneMap;
+  style?: React.CSSProperties;
 }
 
 const root = style({
@@ -37,7 +38,7 @@ export function Root(props: RootProps) {
   }, []);
 
   return (
-    <div className={root}>
+    <div className={root} style={props.style}>
       <div className={container}>
         <SettingView />
         <CanvasView />
