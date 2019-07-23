@@ -1,4 +1,4 @@
-import { SceneMap } from '@hackforplay/next';
+import { Scene } from '@hackforplay/next';
 import test from 'ava';
 import Cursor from '../utils/cursor';
 import { draw } from './canvas';
@@ -17,19 +17,27 @@ test('draw canvas', t => {
   };
 
   const cursor = new Cursor(1, 0, 'pen', [[sky], [sky]], 1);
-  const origin = createSceneMap([[[0, 0, 0], [0, 0, 0], [0, 0, 0]]]);
-  const expect = createSceneMap([[[0, 1, 0], [0, 1, 0], [0, 0, 0]]]);
+  const origin = createScene([[[0, 0, 0], [0, 0, 0], [0, 0, 0]]]);
+  const expect = createScene([[[0, 1, 0], [0, 1, 0], [0, 0, 0]]]);
 
   const result = draw(origin, cursor);
 
   t.not(origin, result, 'draw関数は Immutable でなければならない');
-  t.is(result.tables.length, expect.tables.length);
-  t.deepEqual(result.tables, expect.tables);
+  t.is(result.map.tables.length, expect.map.tables.length);
+  t.deepEqual(result.map.tables, expect.map.tables);
 });
 
-function createSceneMap(tables: number[][][]): SceneMap {
+function createScene(tables: number[][][]): Scene {
   return {
-    tables,
-    squares: []
+    debug: false,
+    map: {
+      base: -1,
+      tables,
+      squares: []
+    },
+    screen: {
+      width: 480,
+      height: 320
+    }
   };
 }

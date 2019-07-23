@@ -28,6 +28,7 @@ function defaultMap(): SceneMap {
     Array.from({ length: 10 }).map(() => row(index));
 
   return {
+    base: 1000,
     tables: [table(-888), table(-888), table(1000)],
     squares: [
       {
