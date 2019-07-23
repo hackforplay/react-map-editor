@@ -1,4 +1,4 @@
-import { Placement, SceneMap } from '@hackforplay/next';
+import { SceneMap } from '@hackforplay/next';
 import produce from 'immer';
 import { combineEpics } from 'redux-observable';
 import actionCreatorFactory from 'typescript-fsa';
@@ -17,20 +17,35 @@ const initialState: State = init();
 
 export const draw = produce(({ tables, squares }: SceneMap, cursor: Cursor) => {
   if (!cursor.nib || !Array.isArray(tables)) return;
+  const bottom = tables.length - 1; // 最下層のレイヤー
 
   if (cursor.mode === 'pen') {
     for (const [y, row] of cursor.nib.entries()) {
       for (const [x, tile] of row.entries()) {
-        // drawing
-        const layer = autoLayer(tile.placement);
+        if (tile.placement.type === 'Nope') continue; // skip
         const X = cursor.x + x;
         const Y = cursor.y + y;
-
-        const table = tables && tables[layer];
-        const tableRow = table && table[Y];
-        if (0 <= X && X < tableRow.length) {
-          tableRow[X] = tile.index;
+        try {
+          // オートレイヤー
+          if (tile.placement.type === 'Ground') {
+            // Ground だけは例外的に最も下のレイヤーに塗り重ねる
+            tables[bottom][Y][X] = tile.index;
+          } else {
+            // 上のレイヤーから塗っていく. 既存のレイヤーは Ground 以外を下にずらし, FIFO.
+            if (tables[0][Y][X] === tile.index) continue; // 同じタイル
+            for (let layer = bottom - 1; layer > 0; layer--) {
+              const above = tables[layer - 1][Y][X];
+              if (above > 0) {
+                tables[layer][Y][X] = above;
+              }
+            }
+            tables[0][Y][X] = tile.index;
+          }
+        } catch (error) {
+          // 領域外
+          continue;
         }
+
         // add tile info
         if (squares.every(s => s.index !== tile.index)) {
           squares.push({
@@ -57,8 +72,9 @@ export const draw = produce(({ tables, squares }: SceneMap, cursor: Cursor) => {
       if (index > -1) {
         // 空白じゃないマスを見つけた.
         // しかし, オートレイヤー状態では一番下のレイヤーは消せない
-        if (layer !== tables.length - 1) {
+        if (layer < bottom) {
           tableRow[cursor.x] = -888; // ４桁にしたい
+          break;
         }
       }
     }
@@ -80,23 +96,8 @@ export function init(): SceneMap {
   const table = () => Array.from({ length: 10 }).map(() => row());
 
   return {
+    base: -1,
     tables: [table(), table(), table()],
     squares: []
   };
-}
-
-function autoLayer(placement: Placement): number {
-  switch (placement.type) {
-    case 'Nope':
-    case 'Ground':
-      return 2;
-    case 'Wall':
-    case 'Road':
-    case 'Rug':
-    case 'Barrier':
-      return 1;
-    case 'Float':
-    case 'Sky':
-      return 0;
-  }
 }
