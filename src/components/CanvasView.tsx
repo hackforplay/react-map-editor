@@ -92,6 +92,12 @@ export function CanvasView() {
     },
     [handleMove]
   );
+  React.useEffect(() => {
+    window.addEventListener('mouseup', stop, { passive: true });
+    return () => {
+      window.removeEventListener('mouseup', stop);
+    };
+  }, []);
 
   const handleTouchMove = React.useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -138,7 +144,6 @@ export function CanvasView() {
           onTouchMove={handleTouchMove}
           onMouseDown={handleMouseDown}
           onMouseUp={stop}
-          onMouseLeave={stop}
           onMouseMove={handleMove}
         />
       </div>
