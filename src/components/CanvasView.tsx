@@ -22,8 +22,7 @@ export function CanvasView() {
   const nib = useTypedSelector(state => state.palette.nib);
   const cursor = cursorClasses[cursorMode];
 
-  const [height] = React.useState(10 * 32); // TODO: 可変
-  const [width] = React.useState(15 * 32); // TODO: 可変
+  const { width, height } = useTypedSelector(state => state.canvas.screen);
   const canvasRendererRef = React.useRef<CanvasRenderer>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -42,19 +41,12 @@ export function CanvasView() {
     id: 0
   });
 
-  const sceneMap = useTypedSelector(state => state.canvas);
+  const scene = useTypedSelector(state => state.canvas);
   React.useEffect(() => {
     const canvasRenderer = canvasRendererRef.current;
     if (!canvasRenderer) return;
-    canvasRenderer.update({
-      debug: true,
-      map: sceneMap,
-      screen: {
-        width,
-        height
-      }
-    });
-  }, [sceneMap, width, height]);
+    canvasRenderer.update(scene);
+  }, [scene]);
 
   const dispatch = useDispatch();
   const handleMove = (e: React.MouseEvent<HTMLCanvasElement>) => {

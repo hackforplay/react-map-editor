@@ -27,7 +27,11 @@ export function Root(props: RootProps) {
 
   React.useEffect(() => {
     if (props.map) {
-      dispatch(canvasActions.initMap(props.map));
+      dispatch(
+        canvasActions.initMap({
+          map: props.map
+        })
+      );
     }
     dispatch(paletteActions.loadPages.started({}));
   }, []);
