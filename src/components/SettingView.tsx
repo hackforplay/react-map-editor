@@ -6,6 +6,6 @@ const container = style(csstips.flex1, {
   minWidth: 120
 });
 
-export function LayerView() {
+export function SettingView() {
   return <div className={container} />;
 }

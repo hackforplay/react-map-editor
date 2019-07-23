@@ -6,7 +6,7 @@ import { style } from 'typestyle/lib';
 import { actions as canvasActions } from '../redux/canvas';
 import { actions as paletteActions } from '../redux/palette';
 import { CanvasView } from './CanvasView';
-import { LayerView } from './LayerView';
+import { SettingView } from './SettingView';
 import { MenuBar, menuBarHeight } from './MenuBar';
 import { PaletteView } from './PaletteView';
 
@@ -35,7 +35,7 @@ export function Root(props: RootProps) {
   return (
     <div className={root}>
       <div className={container}>
-        <LayerView />
+        <SettingView />
         <CanvasView />
         <PaletteView />
       </div>
