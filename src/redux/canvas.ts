@@ -27,7 +27,7 @@ export const draw = produce(
           if (tile.placement.type === 'Nope') continue; // skip
           const X = cursor.x + x;
           const Y = cursor.y + y;
-          const contains = 0 <= X && X < width && 0 < Y && Y < height;
+          const contains = 0 <= X && X < width && 0 <= Y && Y < height;
           if (!contains) continue; // 領域外
           // オートレイヤー
           if (tile.placement.type === 'Ground') {
