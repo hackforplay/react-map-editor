@@ -29,7 +29,7 @@ function defaultMap(): SceneMap {
 
   return {
     base: 1000,
-    tables: [table(-888), table(-888), table(1000)],
+    tables: [table(-88888), table(-88888), table(1000)],
     squares: [
       {
         index: 1000,

@@ -72,7 +72,7 @@ export const draw = produce(
           // 空白じゃないマスを見つけた.
           // しかし, オートレイヤー状態では一番下のレイヤーは消せない
           if (layer < bottom) {
-            tableRow[cursor.x] = -888; // ４桁にしたい
+            tableRow[cursor.x] = -88888; // ６桁にしたい
             break;
           }
         }
