@@ -1,5 +1,5 @@
 import test from 'ava';
-import { Pos, getMatrix } from './selection';
+import { getMatrix } from './selection';
 
 const cases = [
   {
@@ -51,6 +51,51 @@ const cases = [
       [27, 28], // row=0
       [35, 36] // row=1
     ]
+  },
+  {
+    message: 'right-bottom to left-top',
+    end: {
+      row: 0,
+      col: 3,
+      num: 3
+    },
+    start: {
+      row: 1,
+      col: 4,
+      num: 12
+    },
+    expect: [
+      [3, 4], // row=0
+      [11, 12] // row=1
+    ]
+  },
+  {
+    message: 'minus value is invalid',
+    end: {
+      row: 0,
+      col: 3,
+      num: 3
+    },
+    start: {
+      row: -1,
+      col: 4,
+      num: 12
+    },
+    expect: [[]]
+  },
+  {
+    message: 'NaN is invalid',
+    end: {
+      row: 0,
+      col: 3,
+      num: 3
+    },
+    start: {
+      row: NaN,
+      col: 4,
+      num: 12
+    },
+    expect: [[]]
   }
 ];
 

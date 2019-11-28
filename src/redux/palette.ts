@@ -84,7 +84,7 @@ const initialState: State = {
 };
 
 export default reducerWithImmer(initialState)
-  .case(actions.setSelection, (draft, payload) => {
+  .case<Selection | null>(actions.setSelection, (draft, payload) => {
     draft.selection = payload;
     if (payload) {
       // Update nib
@@ -98,7 +98,7 @@ export default reducerWithImmer(initialState)
       draft.cursorMode = 'pen';
     }
   })
-  .case(actions.setCursorMode, (draft, payload) => {
+  .case<CursorMode>(actions.setCursorMode, (draft, payload) => {
     // nib がセットされていないとペンモードにはならない
     if (payload === 'pen' && draft.nib[0].length < 1) return;
     draft.cursorMode = payload;

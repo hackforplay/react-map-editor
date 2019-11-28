@@ -381,8 +381,8 @@ function getPos(
   bound: { left: number; top: number; width: number; height: number }
 ): Pos {
   const tileSize = bound.width / 8;
-  const col = ((x - bound.left) / tileSize) | 0;
-  const row = ((y - bound.top) / tileSize) | 0;
+  const col = Math.max(0, (x - bound.left) / tileSize) | 0;
+  const row = Math.max(0, (y - bound.top) / tileSize) | 0;
   return {
     row,
     col,
