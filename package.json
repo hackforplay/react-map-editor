@@ -8,6 +8,7 @@
     "umd": "umd"
   },
   "files": [
+    "src",
     "lib",
     "umd"
   ],
