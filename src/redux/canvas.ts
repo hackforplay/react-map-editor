@@ -4,6 +4,7 @@ import { combineEpics } from 'redux-observable';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import Cursor from '../utils/cursor';
+import { initScene } from '../utils/initScene';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
 export const actions = {
@@ -12,7 +13,6 @@ export const actions = {
 };
 
 export interface State extends Scene {}
-const initialState: State = init();
 
 export const draw = produce(
   ({ map: { tables, squares } }: Scene, cursor: Cursor) => {
@@ -80,6 +80,7 @@ export const draw = produce(
     }
   }
 );
+const initialState: State = initScene();
 
 export default reducerWithInitialState(initialState)
   .case(
@@ -91,24 +92,3 @@ export default reducerWithInitialState(initialState)
   .case(actions.draw, draw);
 
 export const epics = combineEpics();
-
-/**
- * マップの初期値
- */
-export function init(): Scene {
-  const row = () => Array.from({ length: 10 }).map(() => -1);
-  const table = () => Array.from({ length: 10 }).map(() => row());
-
-  return {
-    debug: true,
-    map: {
-      base: -1,
-      tables: [table(), table(), table()],
-      squares: []
-    },
-    screen: {
-      width: 480,
-      height: 320
-    }
-  };
-}
