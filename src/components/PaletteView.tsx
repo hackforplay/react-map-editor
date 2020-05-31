@@ -1,12 +1,13 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { shallowEqual, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
 import { classes, style } from 'typestyle/lib';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { actions, IPage } from '../redux/palette';
 import { Pos, Selection } from '../utils/selection';
 import { selectedColor } from './MenuBar';
+import { shallowEqual } from '../utils/shallowEqual';
 
 const padding = 4;
 const transparent = 'rgba(255,255,255,0)';
