@@ -4,7 +4,7 @@ import { combineEpics } from 'redux-observable';
 import actionCreatorFactory from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
 import Cursor from '../utils/cursor';
-import { initScene } from '../utils/initScene';
+import { initSceneMap, initSceneScreen } from '../utils/initScene';
 import { updateScene } from '../utils/updateScene';
 
 const actionCreator = actionCreatorFactory('react-map-editor/canvas');
@@ -14,7 +14,11 @@ export const actions = {
 };
 
 export interface State extends Scene {}
-const initialState: State = initScene();
+const initialState: State = {
+  debug: true,
+  map: initSceneMap(),
+  screen: initSceneScreen()
+};
 
 export default reducerWithInitialState(initialState)
   .case(
