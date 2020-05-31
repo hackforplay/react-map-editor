@@ -17,8 +17,20 @@ test('draw canvas', t => {
   };
 
   const cursor = new Cursor(1, 0, 'pen', [[sky], [sky]], 1);
-  const origin = createScene([[[0, 0, 0], [0, 0, 0], [0, 0, 0]]]);
-  const expect = createScene([[[0, 1, 0], [0, 1, 0], [0, 0, 0]]]);
+  const origin = createScene([
+    [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ]
+  ]);
+  const expect = createScene([
+    [
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 0, 0]
+    ]
+  ]);
 
   const result = draw(origin, cursor);
 
