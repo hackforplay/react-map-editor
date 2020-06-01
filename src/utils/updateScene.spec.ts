@@ -2,7 +2,6 @@ import { Scene } from '@hackforplay/next';
 import test from 'ava';
 import Cursor from './cursor';
 import { updateScene } from './updateScene';
-import { ITile } from '../redux/palette';
 
 test('draw canvas', t => {
   const sky: ITile = {

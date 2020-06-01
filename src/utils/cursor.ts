@@ -1,5 +1,4 @@
 import { style } from 'typestyle/lib';
-import { ITile } from '../redux/palette';
 
 export type CursorMode = 'nope' | 'pen' | 'eraser';
 
