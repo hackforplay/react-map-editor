@@ -2,8 +2,8 @@ import { Scene } from '@hackforplay/next';
 import produce from 'immer';
 import Cursor from './cursor';
 
-export const updateScene = produce(
-  ({ map: { tables, squares } }: Scene, cursor: Cursor) => {
+export const updateSceneMap = produce(
+  ({ tables, squares }: Scene['map'], cursor: Cursor) => {
     if (!cursor.nib || !Array.isArray(tables)) return;
     const bottom = tables.length - 1; // 最下層のレイヤー
     const height = tables && tables[0].length;
@@ -68,3 +68,8 @@ export const updateScene = produce(
     }
   }
 );
+
+export const updateScene = (scene: Scene, cursor: Cursor) => {
+  const map = updateSceneMap(scene.map, cursor);
+  return map === scene.map ? scene : { ...scene, map };
+};
