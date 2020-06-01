@@ -41,6 +41,7 @@
   },
   "homepage": "https://github.com/hackforplay/react-map-editor#readme",
   "dependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.10.1",
     "@babel/runtime": "^7.0.0-beta.54",
     "@hackforplay/next": "^0.8.4",
     "@types/lodash-es": "^4.17.3",
