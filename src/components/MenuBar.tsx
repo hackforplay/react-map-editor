@@ -1,11 +1,10 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { classes, style } from 'typestyle/lib';
-import { useTypedSelector } from '../hooks/useTypedSelector';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
-import { actions } from '../redux/palette';
+import { cursorModeState, paletteSelectionState } from '../recoils';
 
 export const menuBarHeight = 48;
 
@@ -36,34 +35,39 @@ const icons = style({
 export const selectedColor = '#2196f3';
 
 const eraser = {
-  enabled: style({
+  on: style({
     color: '#ffffff',
     stroke: selectedColor
   }),
-  disabled: style({
+  off: style({
     color: '#ffffff',
     stroke: '#000000'
   })
 };
 const edit = {
-  enabled: style({
+  on: style({
     color: selectedColor
   }),
-  disabled: style({
+  off: style({
     color: '#000000'
+  }),
+  disabled: style({
+    opacity: 0.5,
+    pointerEvents: 'none'
   })
 };
 
 export function MenuBar() {
-  const cursorMode = useTypedSelector(state => state.palette.cursorMode);
+  const [cursorMode, setCusrorMode] = useRecoilState(cursorModeState);
+  const cannotSetPen = useRecoilValue(paletteSelectionState) === null;
 
-  const dispatch = useDispatch();
   const handleEraser = React.useCallback(() => {
-    dispatch(actions.setCursorMode('eraser'));
+    setCusrorMode('eraser');
   }, []);
   const handlePen = React.useCallback(() => {
-    dispatch(actions.setCursorMode('pen'));
-  }, []);
+    if (cannotSetPen) return;
+    setCusrorMode('pen');
+  }, [cannotSetPen]);
 
   return (
     <div className={classes(container)}>
@@ -77,14 +81,15 @@ export function MenuBar() {
         <Eraser
           className={classes(
             icons,
-            cursorMode === 'eraser' ? eraser.enabled : eraser.disabled
+            cursorMode === 'eraser' ? eraser.on : eraser.off
           )}
           onClick={handleEraser}
         />
         <Edit
           className={classes(
             icons,
-            cursorMode === 'pen' ? edit.enabled : edit.disabled
+            cursorMode === 'pen' ? edit.on : edit.off,
+            cannotSetPen && edit.disabled
           )}
           onClick={handlePen}
         />

@@ -1,11 +1,21 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { shallowEqual, useDispatch } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
+import {
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState
+} from 'recoil';
 import { classes, style } from 'typestyle/lib';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { actions, IPage } from '../redux/palette';
+import {
+  paletteNibState,
+  palettePagesState,
+  paletteSelectionState,
+  cursorModeState
+} from '../recoils';
 import { Pos, Selection } from '../utils/selection';
+import { shallowEqual } from '../utils/shallowEqual';
 import { selectedColor } from './MenuBar';
 
 const padding = 4;
@@ -128,13 +138,15 @@ export function PaletteContainer(props: PaletteContainerProps) {
 }
 
 function TileSetsView() {
-  const pages = useTypedSelector(state => state.palette.pages);
+  const pages = useRecoilValueLoadable(palettePagesState);
 
   return (
     <div className={cn.table}>
-      {pages.map(page => (
-        <PageView key={page.index} {...page} />
-      ))}
+      {pages.state === 'loading'
+        ? 'Loading...'
+        : pages.state === 'hasError'
+        ? `Error: ${pages.contents.message}`
+        : pages.contents.map(page => <PageView key={page.index} {...page} />)}
     </div>
   );
 }
@@ -142,7 +154,8 @@ function TileSetsView() {
 function PageView(props: IPage) {
   const [collapsed, setCollapsed] = React.useState(props.row > 1);
 
-  const selection = useTypedSelector(state => state.palette.selection);
+  const setSelection = useSetRecoilState(paletteSelectionState);
+  const setCursorMode = useSetRecoilState(cursorModeState);
   const touchRef = React.useRef(0); // save last touch indentifier of onTouchStart
 
   const draggingRef = React.useRef(false); // is dragging or swiping?
@@ -172,31 +185,28 @@ function PageView(props: IPage) {
     }
   }, [canClose]);
 
-  const dispatch = useDispatch();
   const start = React.useCallback((pos: Pos) => {
     draggingRef.current = true;
-    dispatch(
-      actions.setSelection({
-        page: props.index,
-        start: pos,
-        end: pos
-      })
-    );
+    setSelection({
+      page: props.index,
+      start: pos,
+      end: pos
+    });
+    setCursorMode('pen');
   }, []);
-  const move = React.useCallback(
-    (pos: Pos) => {
-      if (!selection || !draggingRef.current) return;
-      if (shallowEqual(pos, selection.end)) return;
-      dispatch(
-        actions.setSelection({
-          page: selection.page,
-          start: selection.start,
-          end: pos
-        })
-      );
-    },
-    [selection]
-  );
+  const move = React.useCallback((pos: Pos) => {
+    if (!draggingRef.current) return;
+    setSelection(selection => {
+      if (!selection) return selection;
+      if (shallowEqual(pos, selection.end)) return selection;
+
+      return {
+        page: selection.page,
+        start: selection.start,
+        end: pos
+      };
+    });
+  }, []);
   const handleMouseDown = React.useCallback<React.MouseEventHandler>(
     e => {
       if (collapsed) return;
@@ -279,9 +289,9 @@ function PageView(props: IPage) {
             }}
             draggable={false}
           />
-          {selection && selection.page === props.index && !collapsed ? (
-            <SelectionView selection={selection} row={props.row} />
-          ) : null}
+          {collapsed ? null : (
+            <SelectionView page={props.index} row={props.row} />
+          )}
           {collapsed ? (
             <div
               style={{
@@ -315,11 +325,15 @@ function PageView(props: IPage) {
 }
 
 interface SelectionViewProps {
-  selection: Selection;
+  page: number;
   row: number;
 }
 
-function SelectionView({ selection: { start, end }, row }: SelectionViewProps) {
+function SelectionView({ page, row }: SelectionViewProps) {
+  const selection = useRecoilValue(paletteSelectionState);
+  if (!selection || selection.page !== page) return null;
+
+  const { start, end } = selection;
   const left = Math.min(start.col, end.col);
   const top = Math.min(start.row, end.row);
   const right = Math.max(start.col, end.col) + 1;
@@ -343,7 +357,7 @@ function SelectionView({ selection: { start, end }, row }: SelectionViewProps) {
 }
 
 function NibView() {
-  const nib = useTypedSelector(state => state.palette.nib);
+  const nib = useRecoilValue(paletteNibState);
   const author = nib && nib[0] && nib[0][0] && nib[0][0].author;
 
   return (

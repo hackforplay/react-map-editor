@@ -1,14 +1,13 @@
 import { SceneMap } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { RecoilRoot } from 'recoil';
 import { style } from 'typestyle/lib';
-import { actions as canvasActions } from '../redux/canvas';
-import { actions as paletteActions } from '../redux/palette';
+import { sceneMapState } from '../recoils';
 import { CanvasView } from './CanvasView';
-import { SettingView } from './SettingView';
 import { MenuBar, menuBarHeight } from './MenuBar';
 import { PaletteView } from './PaletteView';
+import { SettingView } from './SettingView';
 
 export interface RootProps {
   map?: SceneMap;
@@ -24,27 +23,22 @@ const container = style(csstips.flex, csstips.horizontal, {
 });
 
 export function Root(props: RootProps) {
-  const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    if (props.map) {
-      dispatch(
-        canvasActions.shallowSet({
-          map: props.map
-        })
-      );
-    }
-    dispatch(paletteActions.loadPages.started({}));
-  }, []);
-
   return (
-    <div className={root} style={props.style}>
-      <div className={container}>
-        <SettingView />
-        <CanvasView />
-        <PaletteView />
+    <RecoilRoot
+      initializeState={({ set }) => {
+        if (props.map) {
+          set(sceneMapState, props.map);
+        }
+      }}
+    >
+      <div className={root} style={props.style}>
+        <div className={container}>
+          <SettingView />
+          <CanvasView />
+          <PaletteView />
+        </div>
+        <MenuBar />
       </div>
-      <MenuBar />
-    </div>
+    </RecoilRoot>
   );
 }

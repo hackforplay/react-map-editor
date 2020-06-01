@@ -1,21 +1,19 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useRecoilState } from 'recoil';
 import { style } from 'typestyle/lib';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { actions } from '../redux/canvas';
+import { debugState } from '../recoils';
 
 const container = style(csstips.flex1, {
   minWidth: 120
 });
 
 export function SettingView() {
-  const dispatch = useDispatch();
-  const debug = useTypedSelector(state => state.canvas.debug);
+  const [debug, setDebug] = useRecoilState(debugState);
 
   const toggleDebug = React.useCallback(() => {
-    dispatch(actions.shallowSet({ debug: !debug }));
-  }, [debug]);
+    setDebug(debug => !debug);
+  }, []);
 
   return (
     <div className={container}>

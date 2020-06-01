@@ -1,21 +1,9 @@
 import { Scene } from '@hackforplay/next';
 import produce from 'immer';
-import { combineEpics } from 'redux-observable';
-import actionCreatorFactory from 'typescript-fsa';
-import { reducerWithInitialState } from 'typescript-fsa-reducers/dist';
-import Cursor from '../utils/cursor';
+import Cursor from './cursor';
 
-const actionCreator = actionCreatorFactory('react-map-editor/canvas');
-export const actions = {
-  shallowSet: actionCreator<Partial<Scene>>('SHALLOW_SET'),
-  draw: actionCreator<Cursor>('DRAW')
-};
-
-export interface State extends Scene {}
-const initialState: State = init();
-
-export const draw = produce(
-  ({ map: { tables, squares } }: Scene, cursor: Cursor) => {
+export const updateSceneMap = produce(
+  ({ tables, squares }: Scene['map'], cursor: Cursor) => {
     if (!cursor.nib || !Array.isArray(tables)) return;
     const bottom = tables.length - 1; // 最下層のレイヤー
     const height = tables && tables[0].length;
@@ -81,34 +69,7 @@ export const draw = produce(
   }
 );
 
-export default reducerWithInitialState(initialState)
-  .case(
-    actions.shallowSet,
-    produce((state: Scene, payload: Partial<Scene>) => {
-      Object.assign(state, payload);
-    })
-  )
-  .case(actions.draw, draw);
-
-export const epics = combineEpics();
-
-/**
- * マップの初期値
- */
-export function init(): Scene {
-  const row = () => Array.from({ length: 10 }).map(() => -1);
-  const table = () => Array.from({ length: 10 }).map(() => row());
-
-  return {
-    debug: true,
-    map: {
-      base: -1,
-      tables: [table(), table(), table()],
-      squares: []
-    },
-    screen: {
-      width: 480,
-      height: 320
-    }
-  };
-}
+export const updateScene = (scene: Scene, cursor: Cursor) => {
+  const map = updateSceneMap(scene.map, cursor);
+  return map === scene.map ? scene : { ...scene, map };
+};
