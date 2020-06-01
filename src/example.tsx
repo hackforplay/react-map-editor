@@ -2,7 +2,7 @@ import { SceneMap } from '@hackforplay/next';
 import { normalize, setupPage } from 'csstips/lib';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import RootComponent from '.';
+import { ReactMapEditor } from '.';
 
 const rootId = 'root';
 
@@ -13,13 +13,7 @@ document.body.appendChild(container);
 normalize();
 setupPage(`#${rootId}`);
 
-ReactDOM.render(
-  <RootComponent
-    ref={ref => ((window as any).root = ref)}
-    map={defaultMap()}
-  />,
-  container
-);
+ReactDOM.render(<ReactMapEditor map={defaultMap()} />, container);
 
 function defaultMap(): SceneMap {
   // 15x10 の草原からスタート

@@ -1,11 +1,17 @@
 import { CanvasRenderer } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { style } from 'typestyle/lib';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { actions } from '../redux/canvas';
+import {
+  cursorModeState,
+  paletteNibState,
+  sceneMapState,
+  sceneScreenState,
+  sceneState
+} from '../recoils';
 import Cursor, { cursorClasses } from '../utils/cursor';
+import { updateSceneMap } from '../utils/updateScene';
 
 const cn = {
   root: style(csstips.flex8),
@@ -19,11 +25,12 @@ const cn = {
 };
 
 export function CanvasView() {
-  const cursorMode = useTypedSelector(state => state.palette.cursorMode);
-  const nib = useTypedSelector(state => state.palette.nib);
+  const cursorMode = useRecoilValue(cursorModeState);
+  const nib = useRecoilValue(paletteNibState);
+
   const cursor = cursorClasses[cursorMode];
 
-  const { width, height } = useTypedSelector(state => state.canvas.screen);
+  const { width, height } = useRecoilValue(sceneScreenState);
   const canvasRendererRef = React.useRef<CanvasRenderer>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -35,7 +42,7 @@ export function CanvasView() {
     });
   }, [containerRef.current]);
 
-  const scene = useTypedSelector(state => state.canvas);
+  const scene = useRecoilValue(sceneState);
   React.useEffect(() => {
     const canvasRenderer = canvasRendererRef.current;
     if (!canvasRenderer) return;
@@ -62,7 +69,7 @@ export function CanvasView() {
     mutate.pressed = false;
   }, []);
 
-  const dispatch = useDispatch();
+  const setSceneMap = useSetRecoilState(sceneMapState);
   const handleMove = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
@@ -81,7 +88,8 @@ export function CanvasView() {
         0;
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
-        dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
+        const cursor = new Cursor(x, y, cursorMode, nib, mutate.id);
+        setSceneMap(current => updateSceneMap(current, cursor));
       }
     },
     [cursorMode, nib]
@@ -119,7 +127,8 @@ export function CanvasView() {
         0;
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
-        dispatch(actions.draw(new Cursor(x, y, cursorMode, nib, mutate.id)));
+        const cursor = new Cursor(x, y, cursorMode, nib, mutate.id);
+        setSceneMap(current => updateSceneMap(current, cursor));
       }
     },
     [cursorMode, nib]
