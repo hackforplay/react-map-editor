@@ -1,8 +1,8 @@
 import { Scene } from '@hackforplay/next';
 import test from 'ava';
-import Cursor from '../utils/cursor';
-import { draw } from './canvas';
-import { ITile } from './palette';
+import Cursor from './cursor';
+import { updateScene } from './updateScene';
+import { ITile } from '../redux/palette';
 
 test('draw canvas', t => {
   const sky: ITile = {
@@ -32,7 +32,7 @@ test('draw canvas', t => {
     ]
   ]);
 
-  const result = draw(origin, cursor);
+  const result = updateScene(origin, cursor);
 
   t.not(origin, result, 'draw関数は Immutable でなければならない');
   t.is(result.map.tables.length, expect.map.tables.length);
