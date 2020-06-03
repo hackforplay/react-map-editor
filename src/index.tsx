@@ -3,3 +3,4 @@ import * as recoils from './recoils';
 
 export type Props = RootProps;
 export { recoils, Root as ReactMapEditor };
+export default ReactMapEditor;
