@@ -2,7 +2,7 @@ import { SceneMap } from '@hackforplay/next';
 import { normalize, setupPage } from 'csstips/lib';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { ReactMapEditor } from '.';
+import ReactMapEditor from '.';
 
 const rootId = 'root';
 
