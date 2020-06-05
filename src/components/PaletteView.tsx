@@ -14,7 +14,7 @@ import {
   paletteSelectionState,
   cursorModeState
 } from '../recoils';
-import { Pos, Selection } from '../utils/selection';
+import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { selectedColor } from './MenuBar';
 

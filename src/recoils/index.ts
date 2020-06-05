@@ -1,5 +1,5 @@
 import { Scene } from '@hackforplay/next';
-import { atom, selector, selectorFamily } from 'recoil';
+import { atom, selector } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { initSceneMap, initSceneScreen } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
