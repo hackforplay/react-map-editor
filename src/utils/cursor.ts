@@ -1,4 +1,5 @@
 import { style } from 'typestyle/lib';
+import { ITile } from '../recoils/types';
 
 export type CursorMode = 'nope' | 'pen' | 'eraser';
 

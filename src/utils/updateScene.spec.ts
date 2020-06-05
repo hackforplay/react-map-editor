@@ -1,5 +1,6 @@
 import { Scene } from '@hackforplay/next';
 import test from 'ava';
+import { ITile } from '../recoils/types';
 import Cursor from './cursor';
 import { updateScene } from './updateScene';
 

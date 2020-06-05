@@ -3,6 +3,7 @@ import { atom, selector } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { initSceneMap, initSceneScreen } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
+import { IPage, ITile } from './types';
 
 const pagesEndpoint = 'https://tile.hackforplay.xyz/pages.json';
 

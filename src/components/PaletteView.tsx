@@ -2,18 +2,18 @@ import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {
-  useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState
 } from 'recoil';
 import { classes, style } from 'typestyle/lib';
 import {
+  cursorModeState,
   paletteNibState,
   palettePagesState,
-  paletteSelectionState,
-  cursorModeState
+  paletteSelectionState
 } from '../recoils';
+import { IPage } from '../recoils/types';
 import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { selectedColor } from './MenuBar';
