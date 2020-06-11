@@ -16,6 +16,7 @@ import {
 import { IPage } from '../recoils/types';
 import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
+import { ErrorBoundary } from './ErrorBoundary';
 import { selectedColor } from './MenuBar';
 
 const padding = 4;
@@ -132,7 +133,11 @@ export function PaletteContainer(props: PaletteContainerProps) {
   return (
     <div className={classes(props.className, cn.vertical)}>
       <TileSetsView />
-      <NibView />
+      <ErrorBoundary>
+        <React.Suspense fallback="Loading...">
+          <NibView />
+        </React.Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
@@ -357,9 +362,7 @@ function SelectionView({ page, row }: SelectionViewProps) {
 }
 
 function NibView() {
-  const nibLoadable = useRecoilValueLoadable(paletteNibState);
-  const nib =
-    nibLoadable.state === 'hasValue' ? nibLoadable.contents : undefined;
+  const nib = useRecoilValue(paletteNibState);
   const author = nib && nib[0] && nib[0][0] && nib[0][0].author;
 
   return (

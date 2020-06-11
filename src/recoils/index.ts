@@ -35,12 +35,9 @@ export const paletteSelectionIsNull = selector<boolean>({
   get: ({ get }) => get(paletteSelectionState) === null
 });
 
-/**
- * 例外をスローするかも知れないので Loadable で受け取る
- */
 export const paletteNibState = selector<ITile[][]>({
   key: 'paletteNibState',
-  get: ({ get }) => {
+  get: async ({ get }) => {
     const selection = get(paletteSelectionState);
     if (!selection) return [[]]; // 空のペン先
     const pages = get(palettePagesState);
