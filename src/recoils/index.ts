@@ -36,7 +36,7 @@ export const paletteSelectionIsNull = selector<boolean>({
 });
 
 /**
- * nope を無くしてエラーを投げてみたけど、Component で吸収できるかな？
+ * 例外をスローするかも知れないので Loadable で受け取る
  */
 export const paletteNibState = selector<ITile[][]>({
   key: 'paletteNibState',

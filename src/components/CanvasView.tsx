@@ -1,7 +1,11 @@
 import { CanvasRenderer } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState
+} from 'recoil';
 import { style } from 'typestyle/lib';
 import {
   cursorModeState,
@@ -26,7 +30,7 @@ const cn = {
 
 export function CanvasView() {
   const cursorMode = useRecoilValue(cursorModeState);
-  const nib = useRecoilValue(paletteNibState);
+  const nibLoadable = useRecoilValueLoadable(paletteNibState);
 
   const cursor = cursorClasses[cursorMode];
 
@@ -73,6 +77,7 @@ export function CanvasView() {
   const handleMove = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
+      if (nibLoadable.state !== 'hasValue') return;
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const x =
         ((e.clientX -
@@ -88,11 +93,17 @@ export function CanvasView() {
         0;
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
-        const cursor = new Cursor(x, y, cursorMode, nib, mutate.id);
+        const cursor = new Cursor(
+          x,
+          y,
+          cursorMode,
+          nibLoadable.contents,
+          mutate.id
+        );
         setSceneMap(current => updateSceneMap(current, cursor));
       }
     },
-    [cursorMode, nib]
+    [cursorMode, nibLoadable]
   );
   const handleMouseDown = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -111,6 +122,7 @@ export function CanvasView() {
   const handleTouchMove = React.useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
+      if (nibLoadable.state !== 'hasValue') return;
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const primary = e.touches.item(0);
       const x =
@@ -127,11 +139,17 @@ export function CanvasView() {
         0;
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
-        const cursor = new Cursor(x, y, cursorMode, nib, mutate.id);
+        const cursor = new Cursor(
+          x,
+          y,
+          cursorMode,
+          nibLoadable.contents,
+          mutate.id
+        );
         setSceneMap(current => updateSceneMap(current, cursor));
       }
     },
-    [cursorMode, nib]
+    [cursorMode, nibLoadable]
   );
   const handleTouchStart = React.useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {

@@ -357,7 +357,9 @@ function SelectionView({ page, row }: SelectionViewProps) {
 }
 
 function NibView() {
-  const nib = useRecoilValue(paletteNibState);
+  const nibLoadable = useRecoilValueLoadable(paletteNibState);
+  const nib =
+    nibLoadable.state === 'hasValue' ? nibLoadable.contents : undefined;
   const author = nib && nib[0] && nib[0][0] && nib[0][0].author;
 
   return (
