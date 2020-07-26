@@ -289,6 +289,7 @@ function PageView(props: IPage) {
               top: 0,
               left: 0,
               width: '100%',
+              touchAction: 'none',
               transformOrigin: 'top',
               transform: collapsed ? 'scaleY(0.5)' : 'none'
             }}

@@ -6,7 +6,7 @@ import {
   useRecoilValueLoadable,
   useSetRecoilState
 } from 'recoil';
-import { style } from 'typestyle/lib';
+import { classes, style } from 'typestyle/lib';
 import {
   cursorModeState,
   paletteNibState,
@@ -25,6 +25,13 @@ const cn = {
     padding: 16,
     boxSizing: 'border-box',
     overflow: 'scroll'
+  }),
+  disableTouchAction: style({
+    /**
+     * https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action
+     * iOS 11 Safari では 'manipulation' だと Double Tap Zoom を防げなかった
+     */
+    touchAction: 'none'
   })
 };
 
@@ -171,7 +178,7 @@ export function CanvasView() {
     <div className={cn.root}>
       <div className={cn.renderRoot} ref={containerRef}>
         <canvas
-          className={cursor}
+          className={classes(cursor, cn.disableTouchAction)}
           width={width}
           height={height}
           onTouchStart={handleTouchStart}
