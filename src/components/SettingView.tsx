@@ -4,47 +4,38 @@ import { classes, style } from 'typestyle/lib';
 import GridOn from '../icons/GridOn';
 import { debugState } from '../recoils';
 import { colors } from '../utils/colors';
+import { IconButton } from './IconButton';
 
 const root = style({
   paddingTop: 16,
   paddingRight: 16
 });
 const container = style({
-  height: 48,
+  display: 'flex',
+  alignItems: 'center',
+  height: 56,
   minWidth: 120,
   backgroundColor: colors.paper
 });
-
-const collider = {
-  icon: style({
-    margin: 8,
-    width: '1.25em',
-    height: '1.25em',
-    fontSize: 24
-  }),
-  on: style({
-    fill: colors.selected
-  }),
-  off: style({
-    fill: colors.icon
-  })
-};
 
 export function SettingView() {
   const [debug, setDebug] = useRecoilState(debugState);
 
   const toggleDebug = React.useCallback(() => {
-    console.log('clicked');
     setDebug(debug => !debug);
   }, []);
 
   return (
     <div className={root}>
       <div className={container}>
-        <GridOn
-          className={classes(collider.icon, debug ? collider.on : collider.off)}
+        <IconButton
+          active={debug}
+          label="はんてい"
+          margin
           onClick={toggleDebug}
-        />
+        >
+          <GridOn />
+        </IconButton>
       </div>
     </div>
   );

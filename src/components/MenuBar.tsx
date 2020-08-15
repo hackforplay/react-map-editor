@@ -6,52 +6,19 @@ import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
 import { cursorModeState, paletteSelectionState } from '../recoils';
 import { colors } from '../utils/colors';
+import { IconButton } from './IconButton';
 
 const root = style(csstips.content, {
   margin: 16,
   marginBottom: 8,
   backgroundColor: colors.paper,
-  height: 48,
+  height: 56,
   position: 'relative',
   zIndex: 1,
-  fontSize: 24 // SVG アイコンのサイズ
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center'
 });
-const layerView = style(csstips.flex1, {
-  minWidth: 120
-});
-const canvasView = style(csstips.horizontal, csstips.aroundJustified);
-const paletteView = style(csstips.flex1, {
-  minWidth: 120
-});
-const icons = style({
-  marginTop: (48 - 24) / 2,
-  width: '1em',
-  height: '1em',
-  overflow: 'visible !important'
-});
-
-const eraser = {
-  on: style({
-    color: '#ffffff',
-    stroke: colors.selected
-  }),
-  off: style({
-    color: '#ffffff',
-    stroke: '#000000'
-  })
-};
-const edit = {
-  on: style({
-    color: colors.selected
-  }),
-  off: style({
-    color: '#000000'
-  }),
-  disabled: style({
-    opacity: 0.5,
-    pointerEvents: 'none'
-  })
-};
 
 export function MenuBar() {
   const [cursorMode, setCusrorMode] = useRecoilState(cursorModeState);
@@ -67,30 +34,22 @@ export function MenuBar() {
 
   return (
     <div className={classes(root)}>
-      <div className={layerView} />
-      <div className={canvasView}>
-        <Edit
-          className={classes(
-            icons,
-            cursorMode === 'pen' ? edit.on : edit.off,
-            cannotSetPen && edit.disabled
-          )}
-          onClick={handlePen}
-        />
-        <Eraser
-          className={classes(
-            icons,
-            cursorMode === 'eraser' ? eraser.on : eraser.off
-          )}
-          onClick={handleEraser}
-        />
-
-        {/* 仮設置 */}
-        <div className={icons} />
-        <div className={icons} />
-        {/* 仮設置 */}
-      </div>
-      <div className={paletteView} />
+      <IconButton
+        active={cursorMode === 'pen'}
+        label="えんぴつ"
+        margin
+        onClick={handlePen}
+      >
+        <Edit />
+      </IconButton>
+      <IconButton
+        active={cursorMode === 'eraser'}
+        label="消しゴム"
+        margin
+        onClick={handleEraser}
+      >
+        <Eraser />
+      </IconButton>
     </div>
   );
 }
