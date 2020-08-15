@@ -1,12 +1,17 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState
+} from 'recoil';
 import { style } from 'typestyle/lib';
 import ExpandLess from '../icons/ExpandLess';
 import {
   cursorModeState,
   palettePagesState,
-  paletteSelectionState
+  paletteSelectionState,
+  preloadNibState
 } from '../recoils';
 import { IPage } from '../recoils/types';
 import { colors } from '../utils/colors';
@@ -270,6 +275,7 @@ interface SelectionViewProps {
 
 function SelectionView({ page, row }: SelectionViewProps) {
   const selection = useRecoilValue(paletteSelectionState);
+  const preloaded = useRecoilValueLoadable(preloadNibState);
   if (!selection || selection.page !== page) return null;
 
   const { start, end } = selection;
@@ -280,6 +286,12 @@ function SelectionView({ page, row }: SelectionViewProps) {
   return (
     <div
       style={{
+        cursor:
+          preloaded.state === 'loading'
+            ? 'progress'
+            : preloaded.state === 'hasError'
+            ? 'not-allowed'
+            : 'initial',
         borderWidth: 2,
         borderStyle: 'solid',
         borderColor: colors.selected,

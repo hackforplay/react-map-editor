@@ -1,5 +1,5 @@
 import { Scene } from '@hackforplay/next';
-import { atom, selector } from 'recoil';
+import { atom, selector, selectorFamily } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { initSceneMap, initSceneScreen } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
@@ -85,4 +85,21 @@ export const sceneState = selector<Scene>({
 export const cursorState = atom<Cursor | null>({
   key: 'cursorState',
   default: null
+});
+
+const preloadSrcState = selectorFamily<any, string>({
+  key: 'preloadSrcState',
+  get: src => () => fetch(src)
+});
+
+export const preloadNibState = selector({
+  key: 'preloadNibState',
+  get: ({ get }) => {
+    const nib = get(paletteNibState);
+    for (const row of nib) {
+      for (const tile of row) {
+        get(preloadSrcState(tile.src));
+      }
+    }
+  }
 });
