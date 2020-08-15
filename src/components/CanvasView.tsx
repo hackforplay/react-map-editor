@@ -14,7 +14,6 @@ import {
   sceneScreenState,
   sceneState
 } from '../recoils';
-import { colors } from '../utils/colors';
 import Cursor, { cursorClasses } from '../utils/cursor';
 import { updateSceneMap } from '../utils/updateScene';
 import { Paper } from './Paper';
@@ -22,7 +21,8 @@ import { Paper } from './Paper';
 const cn = {
   root: style(csstips.flex1, {
     padding: 16,
-    paddingLeft: 0
+    paddingLeft: 0,
+    paddingTop: 8
   }),
   renderRoot: style({
     width: '100%',

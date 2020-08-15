@@ -1,7 +1,7 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { classes, style } from 'typestyle/lib';
+import { style } from 'typestyle/lib';
 import ExpandLess from '../icons/ExpandLess';
 import {
   cursorModeState,
@@ -16,7 +16,6 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { IconButton } from './IconButton';
 import { Paper } from './Paper';
 
-const padding = 4;
 const transparent = 'rgba(255,255,255,0)';
 const tileSize = 32 + 1;
 const floatThrethold = 300;
@@ -68,6 +67,9 @@ const cn = {
         backgroundColor: 'rgb(62,62,62)'
       }
     }
+  }),
+  pageView: style({
+    marginBottom: 4
   })
 };
 
@@ -195,11 +197,11 @@ function PageView(props: IPage) {
   );
 
   return (
-    <div style={{ paddingTop: padding }}>
+    <div className={cn.pageView}>
       <Paper
         style={{
-          padding,
-          paddingBottom: collapsed ? 0 : padding,
+          padding: 4,
+          paddingBottom: collapsed ? 0 : 4,
           width: '100%',
           overflow: 'hidden',
           cursor: canOpen ? 'pointer' : 'inherit'
