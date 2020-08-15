@@ -1,40 +1,31 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import ReactResizeDetector from 'react-resize-detector';
-import {
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useSetRecoilState
-} from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { classes, style } from 'typestyle/lib';
 import {
   cursorModeState,
-  paletteNibState,
   palettePagesState,
   paletteSelectionState
 } from '../recoils';
 import { IPage } from '../recoils/types';
+import { colors } from '../utils/colors';
 import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { ErrorBoundary } from './ErrorBoundary';
-import { selectedColor } from './MenuBar';
 
 const padding = 4;
 const transparent = 'rgba(255,255,255,0)';
-const color = 'rgba(255,255,255,1)';
 const tileSize = 32 + 1;
 const floatThrethold = 300;
 
 const cn = {
-  root: style(csstips.vertical, {
+  root: style(csstips.flex1, csstips.vertical, {
+    margin: 16,
+    marginTop: 0,
     flexBasis: floatThrethold,
     height: '100%',
     position: 'relative',
-    $nest: {
-      '&>*': {
-        height: '100%'
-      }
-    }
+    overflow: 'hidden'
   }),
   floating: style({
     position: 'absolute',
@@ -70,7 +61,7 @@ const cn = {
         marginBottom: -3 // うまく height が計算されない？列方向に謎の空白が生まれる
       },
       '&>img.selected': {
-        borderColor: selectedColor
+        borderColor: colors.selected
       },
       '&::-webkit-scrollbar': {
         width: 10
@@ -104,23 +95,9 @@ export function PaletteView() {
 
   return (
     <div className={cn.root}>
-      <ReactResizeDetector
-        handleWidth
-        onResize={width => setFloating(width < floatThrethold)}
-      >
-        {floating ? (
-          <div className={cn.floating}>
-            <button onClick={() => setCollapsed(!collapsed)}>
-              {collapsed ? '◀︎' : '▶︎'}
-            </button>
-            <PaletteContainer
-              className={classes(cn.resizeWrapper, collapsed && cn.collapsed)}
-            />
-          </div>
-        ) : (
-          <PaletteContainer />
-        )}
-      </ReactResizeDetector>
+      <PaletteContainer
+        className={classes(cn.resizeWrapper, collapsed && cn.collapsed)}
+      />
     </div>
   );
 }
@@ -130,12 +107,13 @@ export interface PaletteContainerProps {
 }
 
 export function PaletteContainer(props: PaletteContainerProps) {
+  // const nib = useRecoilValue(paletteNibState);
+
   return (
     <div className={classes(props.className, cn.vertical)}>
-      <TileSetsView />
       <ErrorBoundary>
         <React.Suspense fallback="Loading...">
-          <NibView />
+          <TileSetsView />
         </React.Suspense>
       </ErrorBoundary>
     </div>
@@ -143,16 +121,17 @@ export function PaletteContainer(props: PaletteContainerProps) {
 }
 
 function TileSetsView() {
-  const pages = useRecoilValueLoadable(palettePagesState);
+  const pages = useRecoilValue(palettePagesState);
 
-  return (
-    <div className={cn.table}>
-      {pages.state === 'loading'
-        ? 'Loading...'
-        : pages.state === 'hasError'
-        ? `Error: ${pages.contents.message}`
-        : pages.contents.map(page => <PageView key={page.index} {...page} />)}
-    </div>
+  return React.useMemo(
+    () => (
+      <div className={cn.table}>
+        {pages.map(page => (
+          <PageView key={page.index} {...page} />
+        ))}
+      </div>
+    ),
+    [pages]
   );
 }
 
@@ -259,7 +238,7 @@ function PageView(props: IPage) {
           padding,
           paddingBottom: collapsed ? 0 : padding,
           width: '100%',
-          backgroundColor: color,
+          backgroundColor: colors.paper,
           borderRadius: 2,
           overflow: 'hidden',
           cursor: canOpen ? 'pointer' : 'inherit'
@@ -302,7 +281,7 @@ function PageView(props: IPage) {
             <div
               style={{
                 position: 'absolute',
-                background: `linear-gradient(${transparent},${transparent},${color})`,
+                background: `linear-gradient(${transparent},${transparent},${colors.paper})`,
                 height: '100%',
                 width: '100%',
                 top: 0,
@@ -349,7 +328,7 @@ function SelectionView({ page, row }: SelectionViewProps) {
       style={{
         borderWidth: 1,
         borderStyle: 'solid',
-        borderColor: selectedColor,
+        borderColor: colors.selected,
         boxSizing: 'border-box',
         position: 'absolute',
         left: `${left * 12.5}%`,
@@ -359,39 +338,6 @@ function SelectionView({ page, row }: SelectionViewProps) {
         zIndex: 1
       }}
     />
-  );
-}
-
-function NibView() {
-  const nib = useRecoilValue(paletteNibState);
-  const author = nib && nib[0] && nib[0][0] && nib[0][0].author;
-
-  return (
-    <div className={cn.nibView}>
-      {nib &&
-        nib.map((row, i) => (
-          <div key={i}>
-            {row.map(tile =>
-              tile.index > 0 ? (
-                <img
-                  key={tile.index}
-                  src={tile.src}
-                  alt="NOT FOUND"
-                  draggable={false}
-                />
-              ) : null
-            )}
-          </div>
-        ))}
-      {author ? (
-        <small style={{ position: 'absolute', right: 0, bottom: 0 }}>
-          {`Illustrated by `}
-          <a href={author.url} target="_blank" referrerPolicy="no-referrer">
-            {author.name}
-          </a>
-        </small>
-      ) : null}
-    </div>
   );
 }
 

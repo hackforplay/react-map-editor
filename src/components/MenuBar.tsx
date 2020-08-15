@@ -5,11 +5,13 @@ import { classes, style } from 'typestyle/lib';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
 import { cursorModeState, paletteSelectionState } from '../recoils';
+import { colors } from '../utils/colors';
 
-export const menuBarHeight = 48;
-
-const container = style(csstips.content, {
-  height: menuBarHeight,
+const root = style(csstips.content, {
+  margin: 16,
+  marginBottom: 8,
+  backgroundColor: colors.paper,
+  height: 48,
   position: 'relative',
   zIndex: 1,
   fontSize: 24 // SVG アイコンのサイズ
@@ -17,11 +19,7 @@ const container = style(csstips.content, {
 const layerView = style(csstips.flex1, {
   minWidth: 120
 });
-const canvasView = style(
-  csstips.flex8,
-  csstips.horizontal,
-  csstips.aroundJustified
-);
+const canvasView = style(csstips.horizontal, csstips.aroundJustified);
 const paletteView = style(csstips.flex1, {
   minWidth: 120
 });
@@ -32,12 +30,10 @@ const icons = style({
   overflow: 'visible !important'
 });
 
-export const selectedColor = '#2196f3';
-
 const eraser = {
   on: style({
     color: '#ffffff',
-    stroke: selectedColor
+    stroke: colors.selected
   }),
   off: style({
     color: '#ffffff',
@@ -46,7 +42,7 @@ const eraser = {
 };
 const edit = {
   on: style({
-    color: selectedColor
+    color: colors.selected
   }),
   off: style({
     color: '#000000'
@@ -70,21 +66,9 @@ export function MenuBar() {
   }, [cannotSetPen]);
 
   return (
-    <div className={classes(container)}>
+    <div className={classes(root)}>
       <div className={layerView} />
       <div className={canvasView}>
-        {/* 仮設置 */}
-        <div className={icons} />
-        <div className={icons} />
-        <div className={icons} />
-        {/* 仮設置 */}
-        <Eraser
-          className={classes(
-            icons,
-            cursorMode === 'eraser' ? eraser.on : eraser.off
-          )}
-          onClick={handleEraser}
-        />
         <Edit
           className={classes(
             icons,
@@ -93,6 +77,18 @@ export function MenuBar() {
           )}
           onClick={handlePen}
         />
+        <Eraser
+          className={classes(
+            icons,
+            cursorMode === 'eraser' ? eraser.on : eraser.off
+          )}
+          onClick={handleEraser}
+        />
+
+        {/* 仮設置 */}
+        <div className={icons} />
+        <div className={icons} />
+        {/* 仮設置 */}
       </div>
       <div className={paletteView} />
     </div>

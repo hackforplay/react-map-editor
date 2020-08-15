@@ -16,15 +16,20 @@ import {
 } from '../recoils';
 import Cursor, { cursorClasses } from '../utils/cursor';
 import { updateSceneMap } from '../utils/updateScene';
+import { colors } from '../utils/colors';
 
 const cn = {
-  root: style(csstips.flex8),
+  root: style(csstips.flex1, {
+    padding: 16,
+    paddingLeft: 0
+  }),
   renderRoot: style({
     width: '100%',
     height: '100%',
     padding: 16,
     boxSizing: 'border-box',
-    overflow: 'scroll'
+    overflow: 'scroll',
+    backgroundColor: colors.paper
   }),
   disableTouchAction: style({
     /**
