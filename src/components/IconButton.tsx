@@ -35,8 +35,9 @@ const disabled = style({
   pointerEvents: 'none'
 });
 const label = style({
-  marginTop: 1,
-  fontSize: '0.75em'
+  marginTop: 2,
+  fontSize: '0.75em',
+  fontWeight: 700
 });
 const marginHorizontal = style({
   marginLeft: 16,
