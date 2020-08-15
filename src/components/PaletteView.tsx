@@ -30,26 +30,11 @@ const cn = {
     position: 'relative',
     overflow: 'hidden'
   }),
-  floating: style({
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    display: 'flex'
-  }),
-  resizeWrapper: style({
-    transition: 'width 250ms',
-    backgroundColor: 'rgb(218,218,218)',
-    overflow: 'hidden'
-  }),
-  collapsed: style({
-    width: 0
-  }),
   expandLessWrapper: style({
     width: '100%',
     marginTop: 8,
     textAlign: 'center'
   }),
-  vertical: style(csstips.vertical),
   table: style({
     flex: 1,
     overflowY: 'scroll',
@@ -87,27 +72,8 @@ const cn = {
 };
 
 export function PaletteView() {
-  const [floating, setFloating] = React.useState(false);
-  const [collapsed, setCollapsed] = React.useState(false);
-
   return (
     <div className={cn.root}>
-      <PaletteContainer
-        className={classes(cn.resizeWrapper, collapsed && cn.collapsed)}
-      />
-    </div>
-  );
-}
-
-export interface PaletteContainerProps {
-  className?: string;
-}
-
-export function PaletteContainer(props: PaletteContainerProps) {
-  // const nib = useRecoilValue(paletteNibState);
-
-  return (
-    <div className={classes(props.className, cn.vertical)}>
       <ErrorBoundary>
         <React.Suspense fallback="Loading...">
           <TileSetsView />
