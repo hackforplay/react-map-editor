@@ -12,6 +12,7 @@ import { colors } from '../utils/colors';
 import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { ErrorBoundary } from './ErrorBoundary';
+import { Paper } from './Paper';
 
 const padding = 4;
 const transparent = 'rgba(255,255,255,0)';
@@ -233,13 +234,11 @@ function PageView(props: IPage) {
 
   return (
     <div style={{ paddingTop: padding }}>
-      <div
+      <Paper
         style={{
           padding,
           paddingBottom: collapsed ? 0 : padding,
           width: '100%',
-          backgroundColor: colors.paper,
-          borderRadius: 2,
           overflow: 'hidden',
           cursor: canOpen ? 'pointer' : 'inherit'
         }}
@@ -304,7 +303,7 @@ function PageView(props: IPage) {
             ー
           </div>
         ) : null}
-      </div>
+      </Paper>
     </div>
   );
 }

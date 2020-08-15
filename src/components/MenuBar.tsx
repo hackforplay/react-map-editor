@@ -1,17 +1,15 @@
-import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { classes, style } from 'typestyle/lib';
+import { style } from 'typestyle/lib';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
 import { cursorModeState, paletteSelectionState } from '../recoils';
-import { colors } from '../utils/colors';
 import { IconButton } from './IconButton';
+import { Paper } from './Paper';
 
-const root = style(csstips.content, {
+const root = style({
   margin: 16,
   marginBottom: 8,
-  backgroundColor: colors.paper,
   height: 56,
   position: 'relative',
   zIndex: 1,
@@ -33,7 +31,7 @@ export function MenuBar() {
   }, [cannotSetPen]);
 
   return (
-    <div className={classes(root)}>
+    <Paper className={root}>
       <IconButton
         active={cursorMode === 'pen'}
         label="えんぴつ"
@@ -50,6 +48,6 @@ export function MenuBar() {
       >
         <Eraser />
       </IconButton>
-    </div>
+    </Paper>
   );
 }

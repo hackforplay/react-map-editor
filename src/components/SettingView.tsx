@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useRecoilState } from 'recoil';
-import { classes, style } from 'typestyle/lib';
+import { style } from 'typestyle/lib';
 import GridOn from '../icons/GridOn';
 import { debugState } from '../recoils';
-import { colors } from '../utils/colors';
 import { IconButton } from './IconButton';
+import { Paper } from './Paper';
 
 const root = style({
   paddingTop: 16,
@@ -14,8 +14,7 @@ const container = style({
   display: 'flex',
   alignItems: 'center',
   height: 56,
-  minWidth: 120,
-  backgroundColor: colors.paper
+  minWidth: 120
 });
 
 export function SettingView() {
@@ -27,7 +26,7 @@ export function SettingView() {
 
   return (
     <div className={root}>
-      <div className={container}>
+      <Paper className={container}>
         <IconButton
           active={debug}
           label="はんてい"
@@ -36,7 +35,7 @@ export function SettingView() {
         >
           <GridOn />
         </IconButton>
-      </div>
+      </Paper>
     </div>
   );
 }

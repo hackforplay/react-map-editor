@@ -14,9 +14,10 @@ import {
   sceneScreenState,
   sceneState
 } from '../recoils';
+import { colors } from '../utils/colors';
 import Cursor, { cursorClasses } from '../utils/cursor';
 import { updateSceneMap } from '../utils/updateScene';
-import { colors } from '../utils/colors';
+import { Paper } from './Paper';
 
 const cn = {
   root: style(csstips.flex1, {
@@ -28,8 +29,7 @@ const cn = {
     height: '100%',
     padding: 16,
     boxSizing: 'border-box',
-    overflow: 'scroll',
-    backgroundColor: colors.paper
+    overflow: 'scroll'
   }),
   disableTouchAction: style({
     /**
@@ -181,7 +181,7 @@ export function CanvasView() {
 
   return (
     <div className={cn.root}>
-      <div className={cn.renderRoot} ref={containerRef}>
+      <Paper className={cn.renderRoot} ref={containerRef}>
         <canvas
           className={classes(cursor, cn.disableTouchAction)}
           width={width}
@@ -194,7 +194,7 @@ export function CanvasView() {
           onMouseUp={stop}
           onMouseMove={handleMove}
         />
-      </div>
+      </Paper>
     </div>
   );
 }
