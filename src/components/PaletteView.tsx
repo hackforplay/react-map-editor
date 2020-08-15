@@ -2,6 +2,7 @@ import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { classes, style } from 'typestyle/lib';
+import ExpandLess from '../icons/ExpandLess';
 import {
   cursorModeState,
   palettePagesState,
@@ -12,6 +13,7 @@ import { colors } from '../utils/colors';
 import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { ErrorBoundary } from './ErrorBoundary';
+import { IconButton } from './IconButton';
 import { Paper } from './Paper';
 
 const padding = 4;
@@ -41,6 +43,11 @@ const cn = {
   }),
   collapsed: style({
     width: 0
+  }),
+  expandLessWrapper: style({
+    width: '100%',
+    marginTop: 8,
+    textAlign: 'center'
   }),
   vertical: style(csstips.vertical),
   table: style({
@@ -290,18 +297,9 @@ function PageView(props: IPage) {
           ) : null}
         </div>
         {canClose ? (
-          <div
-            style={{
-              height: 32,
-              textAlign: 'center',
-              width: '100%',
-              cursor: 'pointer',
-              fontSize: 28 // TODO: SVG にする
-            }}
-            onClick={close}
-          >
-            ー
-          </div>
+          <IconButton className={cn.expandLessWrapper} onClick={close}>
+            <ExpandLess />
+          </IconButton>
         ) : null}
       </Paper>
     </div>

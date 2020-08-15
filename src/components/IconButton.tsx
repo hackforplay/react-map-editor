@@ -6,6 +6,7 @@ export interface IconButtonProps {
   active?: boolean;
   disabled?: boolean;
   children: React.ReactNode;
+  className?: string;
   label?: string;
   margin?: boolean;
   onClick?: () => void;
@@ -51,7 +52,8 @@ export function IconButton(props: IconButtonProps) {
         icon,
         props.active && active,
         props.disabled && disabled,
-        props.margin && marginHorizontal
+        props.margin && marginHorizontal,
+        props.className
       )}
       onClick={props.onClick}
     >
