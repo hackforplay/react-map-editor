@@ -326,7 +326,7 @@ function SelectionView({ page, row }: SelectionViewProps) {
   return (
     <div
       style={{
-        borderWidth: 1,
+        borderWidth: 2,
         borderStyle: 'solid',
         borderColor: colors.selected,
         boxSizing: 'border-box',
