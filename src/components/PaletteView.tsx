@@ -83,17 +83,6 @@ const cn = {
         backgroundColor: 'rgb(62,62,62)'
       }
     }
-  }),
-  nibView: style(csstips.selfCenter, csstips.vertical, {
-    flex: 0,
-    flexBasis: tileSize * 5,
-    minHeight: tileSize * 5,
-    justifyContent: 'center',
-    $nest: {
-      '&>div': {
-        height: tileSize
-      }
-    }
   })
 };
 
