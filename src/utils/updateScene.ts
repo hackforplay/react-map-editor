@@ -8,7 +8,7 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
   const next = produce(
     editing.sceneMap,
     draft => {
-      const { tables, squares } = draft;
+      const { base, tables, squares } = draft;
       if (!cursor.nib || !Array.isArray(tables)) return;
       const bottom = tables.length - 1; // 最下層のレイヤー
       const height = tables && tables[0].length;
@@ -62,18 +62,17 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
           const tableRow = table && table[cursor.y];
           const index = tableRow && tableRow[cursor.x];
           if (index > -1) {
-            // 空白じゃないマスを見つけた.
-            // しかし, オートレイヤー状態では一番下のレイヤーは消せない
-            if (layer < bottom) {
+            if (layer <= bottom) {
+              tableRow[cursor.x] = base;
+            } else {
               tableRow[cursor.x] = -88888; // ６桁にしたい
-              break;
             }
+            break;
           }
         }
       }
     },
     (_, _invertPatches) => {
-      console.log(_invertPatches);
       invertPatches.push(..._invertPatches);
     }
   );
