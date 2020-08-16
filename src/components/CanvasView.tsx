@@ -181,7 +181,7 @@ export function CanvasView() {
 
   return (
     <div className={cn.root}>
-      <Paper className={cn.renderRoot} ref={containerRef}>
+      <Paper id="rme-canvas-view" className={cn.renderRoot} ref={containerRef}>
         <canvas
           className={classes(cursor, cn.disableTouchAction)}
           width={width}

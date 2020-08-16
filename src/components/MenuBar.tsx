@@ -50,7 +50,7 @@ export function MenuBar() {
   }, [selection, palettePageLoadable]);
 
   return (
-    <Paper className={root}>
+    <Paper id="rme-menu-bar" className={root}>
       <IconButton
         active={cursorMode === 'pen'}
         label="えんぴつ"

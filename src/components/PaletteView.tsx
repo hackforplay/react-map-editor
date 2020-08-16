@@ -204,6 +204,7 @@ function PageView(props: IPage) {
   return (
     <div className={cn.pageView}>
       <Paper
+        id="rme-palette-view"
         style={{
           padding: 4,
           paddingBottom: collapsed ? 0 : 4,
