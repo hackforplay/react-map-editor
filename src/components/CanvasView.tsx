@@ -9,13 +9,13 @@ import {
 import { classes, style } from 'typestyle/lib';
 import {
   cursorModeState,
+  editingState,
   paletteNibState,
-  sceneMapState,
   sceneScreenState,
   sceneState
 } from '../recoils';
 import Cursor, { cursorClasses } from '../utils/cursor';
-import { updateSceneMap } from '../utils/updateScene';
+import { editWithCursor } from '../utils/updateScene';
 import { Paper } from './Paper';
 
 const cn = {
@@ -85,7 +85,7 @@ export function CanvasView() {
     mutate.pressed = false;
   }, []);
 
-  const setSceneMap = useSetRecoilState(sceneMapState);
+  const setEditing = useSetRecoilState(editingState);
   const handleMove = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
@@ -112,7 +112,7 @@ export function CanvasView() {
           nibLoadable.contents,
           mutate.id
         );
-        setSceneMap(current => updateSceneMap(current, cursor));
+        setEditing(current => editWithCursor(current, cursor));
       }
     },
     [cursorMode, nibLoadable]
@@ -158,7 +158,7 @@ export function CanvasView() {
           nibLoadable.contents,
           mutate.id
         );
-        setSceneMap(current => updateSceneMap(current, cursor));
+        setEditing(current => editWithCursor(current, cursor));
       }
     },
     [cursorMode, nibLoadable]

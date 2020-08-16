@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { style } from 'typestyle/lib';
 import GridOn from '../icons/GridOn';
-import { debugState } from '../recoils';
+import Undo from '../icons/Undo';
+import { debugState, editingState } from '../recoils';
+import { undoEditing } from '../utils/undoEditing';
 import { IconButton } from './IconButton';
 import { Paper } from './Paper';
 
@@ -19,14 +21,21 @@ const container = style({
 
 export function SettingView() {
   const [debug, setDebug] = useRecoilState(debugState);
-
   const toggleDebug = React.useCallback(() => {
     setDebug(debug => !debug);
+  }, []);
+
+  const setEditing = useSetRecoilState(editingState);
+  const undo = React.useCallback(() => {
+    setEditing(current => undoEditing(current));
   }, []);
 
   return (
     <div className={root}>
       <Paper className={container}>
+        <IconButton label="もどす" margin onClick={undo}>
+          <Undo />
+        </IconButton>
         <IconButton
           active={debug}
           label="はんてい"

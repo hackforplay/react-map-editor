@@ -1,9 +1,10 @@
 import { Scene } from '@hackforplay/next';
-import { atom, selector, selectorFamily } from 'recoil';
+import { Patch } from 'immer';
+import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { initSceneMap, initSceneScreen } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
-import { IPage, ITile } from './types';
+import { IEditing, IPage, ITile } from './types';
 
 const pagesEndpoint = 'https://tile.hackforplay.xyz/pages.json';
 
@@ -79,6 +80,30 @@ export const sceneState = selector<Scene>({
     const map = get(sceneMapState);
     const screen = get(sceneScreenState);
     return { debug, map, screen };
+  }
+});
+
+const undoPatchesState = atom<Patch[][]>({
+  key: 'undoPatchesState',
+  default: []
+});
+
+export const editingState = selector<IEditing>({
+  key: 'editingState',
+  get: ({ get }) => {
+    return {
+      sceneMap: get(sceneMapState),
+      undoPatches: get(undoPatchesState)
+    };
+  },
+  set: ({ set, reset }, payload) => {
+    if (payload instanceof DefaultValue) {
+      reset(sceneMapState);
+      reset(undoPatchesState);
+    } else {
+      set(sceneMapState, payload.sceneMap);
+      set(undoPatchesState, payload.undoPatches);
+    }
   }
 });
 
