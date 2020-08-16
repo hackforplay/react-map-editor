@@ -78,7 +78,7 @@ export const sceneState = selector<Scene>({
   }
 });
 
-const undoPatchesState = atom<Patch[][]>({
+export const undoPatchesState = atom<Patch[][]>({
   key: 'undoPatchesState',
   default: []
 });

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import { style } from 'typestyle/lib';
 import GridOn from '../icons/GridOn';
 import Undo from '../icons/Undo';
-import { debugState, editingState } from '../recoils';
+import { debugState, editingState, undoPatchesState } from '../recoils';
 import { undoEditing } from '../utils/undoEditing';
 import { IconButton } from './IconButton';
 import { Paper } from './Paper';
@@ -29,11 +29,17 @@ export function SettingView() {
   const undo = React.useCallback(() => {
     setEditing(current => undoEditing(current));
   }, []);
+  const undoPatches = useRecoilValue(undoPatchesState);
 
   return (
     <div className={root}>
       <Paper className={container}>
-        <IconButton label="もどす" margin onClick={undo}>
+        <IconButton
+          label="もどす"
+          margin
+          disabled={undoPatches.length === 0}
+          onClick={undo}
+        >
           <Undo />
         </IconButton>
         <IconButton
