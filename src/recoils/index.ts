@@ -31,11 +31,6 @@ export const paletteSelectionState = atom<Selection | null>({
   default: null
 });
 
-export const paletteSelectionIsNull = selector<boolean>({
-  key: 'paletteSelectionIsNull',
-  get: ({ get }) => get(paletteSelectionState) === null
-});
-
 export const paletteNibState = selector<ITile[][]>({
   key: 'paletteNibState',
   get: async ({ get }) => {
