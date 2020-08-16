@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { style } from 'typestyle/lib';
 import GridOn from '../icons/GridOn';
 import Undo from '../icons/Undo';
