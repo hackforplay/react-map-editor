@@ -3,6 +3,11 @@ import produce, { Patch } from 'immer';
 import { IEditing } from '../recoils/types';
 import Cursor from './cursor';
 
+/**
+ * カーソルに応じた変更をマップに加える
+ * immer を使うことで変更の履歴を生成する
+ * 変更がない場合は履歴を追加しない
+ */
 export function editWithCursor(editing: IEditing, cursor: Cursor) {
   const invertPatches: Patch[] = [];
   const next = produce(
@@ -63,9 +68,11 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
           const index = tableRow && tableRow[cursor.x];
           if (index > -1) {
             if (layer <= bottom) {
-              tableRow[cursor.x] = base;
+              tableRow[cursor.x] = base; // TODO: 最下層レイヤーも空にする (base を描画する必要があるので、common 0.38 以上が必要)
             } else {
-              tableRow[cursor.x] = -88888; // ６桁にしたい
+              if (tableRow[cursor.x] >= 0) {
+                tableRow[cursor.x] = -88888; // ６桁にしたい
+              }
             }
             break;
           }
@@ -78,7 +85,10 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
   );
   return {
     sceneMap: next,
-    undoPatches: [invertPatches, ...editing.undoPatches]
+    undoPatches:
+      invertPatches.length > 0
+        ? [invertPatches, ...editing.undoPatches]
+        : editing.undoPatches // 変更がない
   };
 }
 
