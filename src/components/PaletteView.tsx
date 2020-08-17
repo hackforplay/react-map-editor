@@ -1,56 +1,44 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
-import ReactResizeDetector from 'react-resize-detector';
 import {
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState
 } from 'recoil';
-import { classes, style } from 'typestyle/lib';
+import { style } from 'typestyle/lib';
+import ExpandLess from '../icons/ExpandLess';
 import {
   cursorModeState,
-  paletteNibState,
   palettePagesState,
-  paletteSelectionState
+  paletteSelectionState,
+  preloadNibState
 } from '../recoils';
 import { IPage } from '../recoils/types';
+import { colors } from '../utils/colors';
 import { Pos } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { ErrorBoundary } from './ErrorBoundary';
-import { selectedColor } from './MenuBar';
+import { IconButton } from './IconButton';
+import { Paper } from './Paper';
 
-const padding = 4;
 const transparent = 'rgba(255,255,255,0)';
-const color = 'rgba(255,255,255,1)';
 const tileSize = 32 + 1;
 const floatThrethold = 300;
 
 const cn = {
-  root: style(csstips.vertical, {
+  root: style(csstips.flex1, csstips.vertical, {
+    margin: 16,
+    marginTop: 0,
     flexBasis: floatThrethold,
     height: '100%',
     position: 'relative',
-    $nest: {
-      '&>*': {
-        height: '100%'
-      }
-    }
-  }),
-  floating: style({
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    display: 'flex'
-  }),
-  resizeWrapper: style({
-    transition: 'width 250ms',
-    backgroundColor: 'rgb(218,218,218)',
     overflow: 'hidden'
   }),
-  collapsed: style({
-    width: 0
+  expandLessWrapper: style({
+    width: '100%',
+    marginTop: 8,
+    textAlign: 'center'
   }),
-  vertical: style(csstips.vertical),
   table: style({
     flex: 1,
     overflowY: 'scroll',
@@ -70,7 +58,7 @@ const cn = {
         marginBottom: -3 // うまく height が計算されない？列方向に謎の空白が生まれる
       },
       '&>img.selected': {
-        borderColor: selectedColor
+        borderColor: colors.selected
       },
       '&::-webkit-scrollbar': {
         width: 10
@@ -85,57 +73,17 @@ const cn = {
       }
     }
   }),
-  nibView: style(csstips.selfCenter, csstips.vertical, {
-    flex: 0,
-    flexBasis: tileSize * 5,
-    minHeight: tileSize * 5,
-    justifyContent: 'center',
-    $nest: {
-      '&>div': {
-        height: tileSize
-      }
-    }
+  pageView: style({
+    marginBottom: 4
   })
 };
 
 export function PaletteView() {
-  const [floating, setFloating] = React.useState(false);
-  const [collapsed, setCollapsed] = React.useState(false);
-
   return (
     <div className={cn.root}>
-      <ReactResizeDetector
-        handleWidth
-        onResize={width => setFloating(width < floatThrethold)}
-      >
-        {floating ? (
-          <div className={cn.floating}>
-            <button onClick={() => setCollapsed(!collapsed)}>
-              {collapsed ? '◀︎' : '▶︎'}
-            </button>
-            <PaletteContainer
-              className={classes(cn.resizeWrapper, collapsed && cn.collapsed)}
-            />
-          </div>
-        ) : (
-          <PaletteContainer />
-        )}
-      </ReactResizeDetector>
-    </div>
-  );
-}
-
-export interface PaletteContainerProps {
-  className?: string;
-}
-
-export function PaletteContainer(props: PaletteContainerProps) {
-  return (
-    <div className={classes(props.className, cn.vertical)}>
-      <TileSetsView />
       <ErrorBoundary>
         <React.Suspense fallback="Loading...">
-          <NibView />
+          <TileSetsView />
         </React.Suspense>
       </ErrorBoundary>
     </div>
@@ -143,16 +91,17 @@ export function PaletteContainer(props: PaletteContainerProps) {
 }
 
 function TileSetsView() {
-  const pages = useRecoilValueLoadable(palettePagesState);
+  const pages = useRecoilValue(palettePagesState);
 
-  return (
-    <div className={cn.table}>
-      {pages.state === 'loading'
-        ? 'Loading...'
-        : pages.state === 'hasError'
-        ? `Error: ${pages.contents.message}`
-        : pages.contents.map(page => <PageView key={page.index} {...page} />)}
-    </div>
+  return React.useMemo(
+    () => (
+      <div className={cn.table}>
+        {pages.map(page => (
+          <PageView key={page.index} {...page} />
+        ))}
+      </div>
+    ),
+    [pages]
   );
 }
 
@@ -191,6 +140,8 @@ function PageView(props: IPage) {
   }, [canClose]);
 
   const start = React.useCallback((pos: Pos) => {
+    if (pos.row >= props.row) return; // 超過している
+
     draggingRef.current = true;
     setSelection({
       page: props.index,
@@ -204,6 +155,7 @@ function PageView(props: IPage) {
     setSelection(selection => {
       if (!selection) return selection;
       if (shallowEqual(pos, selection.end)) return selection;
+      if (pos.row >= props.row) return selection; // 超過している
 
       return {
         page: selection.page,
@@ -253,14 +205,13 @@ function PageView(props: IPage) {
   );
 
   return (
-    <div style={{ paddingTop: padding }}>
-      <div
+    <div className={cn.pageView}>
+      <Paper
+        id="rme-palette-view"
         style={{
-          padding,
-          paddingBottom: collapsed ? 0 : padding,
+          padding: 4,
+          paddingBottom: collapsed ? 0 : 4,
           width: '100%',
-          backgroundColor: color,
-          borderRadius: 2,
           overflow: 'hidden',
           cursor: canOpen ? 'pointer' : 'inherit'
         }}
@@ -302,7 +253,7 @@ function PageView(props: IPage) {
             <div
               style={{
                 position: 'absolute',
-                background: `linear-gradient(${transparent},${transparent},${color})`,
+                background: `linear-gradient(${transparent},${transparent},${colors.paper})`,
                 height: '100%',
                 width: '100%',
                 top: 0,
@@ -312,20 +263,11 @@ function PageView(props: IPage) {
           ) : null}
         </div>
         {canClose ? (
-          <div
-            style={{
-              height: 32,
-              textAlign: 'center',
-              width: '100%',
-              cursor: 'pointer',
-              fontSize: 28 // TODO: SVG にする
-            }}
-            onClick={close}
-          >
-            ー
-          </div>
+          <IconButton className={cn.expandLessWrapper} onClick={close}>
+            <ExpandLess />
+          </IconButton>
         ) : null}
-      </div>
+      </Paper>
     </div>
   );
 }
@@ -337,6 +279,7 @@ interface SelectionViewProps {
 
 function SelectionView({ page, row }: SelectionViewProps) {
   const selection = useRecoilValue(paletteSelectionState);
+  const preloaded = useRecoilValueLoadable(preloadNibState);
   if (!selection || selection.page !== page) return null;
 
   const { start, end } = selection;
@@ -347,9 +290,15 @@ function SelectionView({ page, row }: SelectionViewProps) {
   return (
     <div
       style={{
-        borderWidth: 1,
+        cursor:
+          preloaded.state === 'loading'
+            ? 'progress'
+            : preloaded.state === 'hasError'
+            ? 'not-allowed'
+            : 'initial',
+        borderWidth: 2,
         borderStyle: 'solid',
-        borderColor: selectedColor,
+        borderColor: colors.selected,
         boxSizing: 'border-box',
         position: 'absolute',
         left: `${left * 12.5}%`,
@@ -359,39 +308,6 @@ function SelectionView({ page, row }: SelectionViewProps) {
         zIndex: 1
       }}
     />
-  );
-}
-
-function NibView() {
-  const nib = useRecoilValue(paletteNibState);
-  const author = nib && nib[0] && nib[0][0] && nib[0][0].author;
-
-  return (
-    <div className={cn.nibView}>
-      {nib &&
-        nib.map((row, i) => (
-          <div key={i}>
-            {row.map(tile =>
-              tile.index > 0 ? (
-                <img
-                  key={tile.index}
-                  src={tile.src}
-                  alt="NOT FOUND"
-                  draggable={false}
-                />
-              ) : null
-            )}
-          </div>
-        ))}
-      {author ? (
-        <small style={{ position: 'absolute', right: 0, bottom: 0 }}>
-          {`Illustrated by `}
-          <a href={author.url} target="_blank" referrerPolicy="no-referrer">
-            {author.name}
-          </a>
-        </small>
-      ) : null}
-    </div>
   );
 }
 

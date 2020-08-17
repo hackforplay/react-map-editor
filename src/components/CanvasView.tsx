@@ -9,16 +9,21 @@ import {
 import { classes, style } from 'typestyle/lib';
 import {
   cursorModeState,
+  editingState,
   paletteNibState,
-  sceneMapState,
   sceneScreenState,
   sceneState
 } from '../recoils';
 import Cursor, { cursorClasses } from '../utils/cursor';
-import { updateSceneMap } from '../utils/updateScene';
+import { editWithCursor } from '../utils/updateScene';
+import { Paper } from './Paper';
 
 const cn = {
-  root: style(csstips.flex8),
+  root: style(csstips.flex1, {
+    padding: 16,
+    paddingLeft: 0,
+    paddingTop: 8
+  }),
   renderRoot: style({
     width: '100%',
     height: '100%',
@@ -80,22 +85,20 @@ export function CanvasView() {
     mutate.pressed = false;
   }, []);
 
-  const setSceneMap = useSetRecoilState(sceneMapState);
+  const setEditing = useSetRecoilState(editingState);
   const handleMove = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const x =
-        ((e.clientX -
+        ((e.pageX -
           offsetLeft +
           (parentElement ? parentElement.scrollLeft : 0)) /
           32) >>
         0;
       const y =
-        ((e.clientY -
-          offsetTop +
-          (parentElement ? parentElement.scrollTop : 0)) /
+        ((e.pageY - offsetTop + (parentElement ? parentElement.scrollTop : 0)) /
           32) >>
         0;
       if (x !== mutate.px || y !== mutate.py) {
@@ -107,7 +110,7 @@ export function CanvasView() {
           nibLoadable.contents,
           mutate.id
         );
-        setSceneMap(current => updateSceneMap(current, cursor));
+        setEditing(current => editWithCursor(current, cursor));
       }
     },
     [cursorMode, nibLoadable]
@@ -130,16 +133,17 @@ export function CanvasView() {
     (e: React.TouchEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
+      e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const primary = e.touches.item(0);
       const x =
-        ((primary.clientX -
+        ((primary.pageX -
           offsetLeft +
           (parentElement ? parentElement.scrollLeft : 0)) /
           32) >>
         0;
       const y =
-        ((primary.clientY -
+        ((primary.pageY -
           offsetTop +
           (parentElement ? parentElement.scrollTop : 0)) /
           32) >>
@@ -153,7 +157,7 @@ export function CanvasView() {
           nibLoadable.contents,
           mutate.id
         );
-        setSceneMap(current => updateSceneMap(current, cursor));
+        setEditing(current => editWithCursor(current, cursor));
       }
     },
     [cursorMode, nibLoadable]
@@ -176,7 +180,7 @@ export function CanvasView() {
 
   return (
     <div className={cn.root}>
-      <div className={cn.renderRoot} ref={containerRef}>
+      <Paper id="rme-canvas-view" className={cn.renderRoot} ref={containerRef}>
         <canvas
           className={classes(cursor, cn.disableTouchAction)}
           width={width}
@@ -189,7 +193,7 @@ export function CanvasView() {
           onMouseUp={stop}
           onMouseMove={handleMove}
         />
-      </div>
+      </Paper>
     </div>
   );
 }

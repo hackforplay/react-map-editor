@@ -1,4 +1,14 @@
-import { Placement, TileAuthor } from '@hackforplay/next';
+import { Placement, Scene, TileAuthor } from '@hackforplay/next';
+import { Patch } from 'immer';
+
+/**
+ * 現在の状態と undo のヒストリーをアトミックに変更するための
+ * インターフェース
+ */
+export interface IEditing {
+  sceneMap: Scene['map'];
+  undoPatches: Patch[][];
+}
 
 export interface ITile {
   /**

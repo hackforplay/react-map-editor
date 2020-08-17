@@ -1,8 +1,7 @@
-import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import { style } from 'typestyle/lib';
 import { CanvasView } from './CanvasView';
-import { MenuBar, menuBarHeight } from './MenuBar';
+import { MenuBar } from './MenuBar';
 import { PaletteView } from './PaletteView';
 import { SettingView } from './SettingView';
 
@@ -11,22 +10,39 @@ export interface RootProps {
 }
 
 const root = style({
-  height: '100%'
-});
-const container = style(csstips.flex, csstips.horizontal, {
-  height: `calc(100% - ${menuBarHeight}px)`,
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'stretch',
   backgroundColor: 'lightgrey'
+});
+const sidePannel = style({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+  width: 306
+});
+const mainPannel = style({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+  overflow: 'hidden'
 });
 
 export function Root(props: RootProps) {
   return (
     <div className={root} style={props.style}>
-      <div className={container}>
-        <SettingView />
-        <CanvasView />
+      <div className={sidePannel}>
+        <MenuBar />
         <PaletteView />
       </div>
-      <MenuBar />
+      <div className={mainPannel}>
+        <SettingView />
+        <CanvasView />
+      </div>
     </div>
   );
 }

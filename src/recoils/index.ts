@@ -1,9 +1,10 @@
 import { Scene } from '@hackforplay/next';
-import { atom, selector } from 'recoil';
+import { Patch } from 'immer';
+import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { initSceneMap, initSceneScreen } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
-import { IPage, ITile } from './types';
+import { IEditing, IPage, ITile } from './types';
 
 const pagesEndpoint = 'https://tile.hackforplay.xyz/pages.json';
 
@@ -28,11 +29,6 @@ export const palettePagesState = selector<IPage[]>({
 export const paletteSelectionState = atom<Selection | null>({
   key: 'paletteSelectionState',
   default: null
-});
-
-export const paletteSelectionIsNull = selector<boolean>({
-  key: 'paletteSelectionIsNull',
-  get: ({ get }) => get(paletteSelectionState) === null
 });
 
 export const paletteNibState = selector<ITile[][]>({
@@ -82,7 +78,48 @@ export const sceneState = selector<Scene>({
   }
 });
 
+export const undoPatchesState = atom<Patch[][]>({
+  key: 'undoPatchesState',
+  default: []
+});
+
+export const editingState = selector<IEditing>({
+  key: 'editingState',
+  get: ({ get }) => {
+    return {
+      sceneMap: get(sceneMapState),
+      undoPatches: get(undoPatchesState)
+    };
+  },
+  set: ({ set, reset }, payload) => {
+    if (payload instanceof DefaultValue) {
+      reset(sceneMapState);
+      reset(undoPatchesState);
+    } else {
+      set(sceneMapState, payload.sceneMap);
+      set(undoPatchesState, payload.undoPatches);
+    }
+  }
+});
+
 export const cursorState = atom<Cursor | null>({
   key: 'cursorState',
   default: null
+});
+
+const preloadSrcState = selectorFamily<any, string>({
+  key: 'preloadSrcState',
+  get: src => () => fetch(src)
+});
+
+export const preloadNibState = selector({
+  key: 'preloadNibState',
+  get: ({ get }) => {
+    const nib = get(paletteNibState);
+    for (const row of nib) {
+      for (const tile of row) {
+        get(preloadSrcState(tile.src));
+      }
+    }
+  }
 });

@@ -1,0 +1,6 @@
+{
+  "url-loader": {
+    "exts": ["png"],
+    "limit": 100000
+  }
+}
