@@ -140,6 +140,8 @@ function PageView(props: IPage) {
   }, [canClose]);
 
   const start = React.useCallback((pos: Pos) => {
+    if (pos.row >= props.row) return; // 超過している
+
     draggingRef.current = true;
     setSelection({
       page: props.index,
@@ -153,6 +155,7 @@ function PageView(props: IPage) {
     setSelection(selection => {
       if (!selection) return selection;
       if (shallowEqual(pos, selection.end)) return selection;
+      if (pos.row >= props.row) return selection; // 超過している
 
       return {
         page: selection.page,
