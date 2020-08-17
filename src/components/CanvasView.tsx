@@ -133,6 +133,7 @@ export function CanvasView() {
     (e: React.TouchEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
+      e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const primary = e.touches.item(0);
       const x =
