@@ -13,7 +13,7 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
   const next = produce(
     editing.sceneMap,
     draft => {
-      const { base, tables, squares } = draft;
+      const { tables, squares } = draft;
       if (!cursor.nib || !Array.isArray(tables)) return;
       const bottom = tables.length - 1; // 最下層のレイヤー
       const height = tables && tables[0].length;
@@ -27,21 +27,15 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
             const Y = cursor.y + y;
             const contains = 0 <= X && X < width && 0 <= Y && Y < height;
             if (!contains) continue; // 領域外
-            // オートレイヤー
-            if (tile.placement.type === 'Ground') {
-              // Ground だけは例外的に最も下のレイヤーに塗り重ねる
-              tables[bottom][Y][X] = tile.index;
-            } else {
-              // 上のレイヤーから塗っていく. 既存のレイヤーは Ground 以外を下にずらし, FIFO.
-              if (tables[0][Y][X] === tile.index) continue; // 同じタイル
-              for (let layer = bottom - 1; layer > 0; layer--) {
-                const above = tables[layer - 1][Y][X];
-                if (above > 0) {
-                  tables[layer][Y][X] = above;
-                }
+            // 上のレイヤーから塗っていく. 既存のレイヤーを下にずらし, FIFO.
+            if (tables[0][Y][X] === tile.index) continue; // 同じタイル
+            for (let layer = bottom; layer > 0; layer--) {
+              const above = tables[layer - 1][Y][X];
+              if (above > 0) {
+                tables[layer][Y][X] = above;
               }
-              tables[0][Y][X] = tile.index;
             }
+            tables[0][Y][X] = tile.index;
 
             // add tile info
             if (squares.every(s => s.index !== tile.index)) {
@@ -63,17 +57,11 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
       }
 
       if (cursor.mode === 'eraser') {
-        for (const [layer, table] of tables.entries()) {
+        for (const table of tables.values()) {
           const tableRow = table && table[cursor.y];
           const index = tableRow && tableRow[cursor.x];
           if (index > -1) {
-            if (layer <= bottom) {
-              tableRow[cursor.x] = base; // TODO: 最下層レイヤーも空にする (base を描画する必要があるので、common 0.38 以上が必要)
-            } else {
-              if (tableRow[cursor.x] >= 0) {
-                tableRow[cursor.x] = -88888; // ６桁にしたい
-              }
-            }
+            tableRow[cursor.x] = -1;
             break;
           }
         }
