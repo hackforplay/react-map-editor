@@ -1,5 +1,6 @@
 import { style } from 'typestyle/lib';
 import { ITile } from '../recoils/types';
+import { eraser, pen } from '../cursors';
 
 export type CursorMode = 'nope' | 'pen' | 'eraser';
 
@@ -45,9 +46,9 @@ export const cursorClasses: Record<CursorMode, string> = {
     cursor: 'not-allowed'
   }),
   pen: style({
-    cursor: `url(${require('../cursors/pen.png')}), pointer`
+    cursor: `url(${pen}), pointer`
   }),
   eraser: style({
-    cursor: `url(${require('../cursors/eraser.png')}), pointer`
+    cursor: `url(${eraser}), pointer`
   })
 };
