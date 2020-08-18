@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const prettier = require('prettier');
 
 const cursorsDir = path.resolve(__dirname, './src/cursors');
 
@@ -21,4 +22,16 @@ const content = fileNames.reduce((content, fileName) => {
   );
 }, '');
 
-fs.writeFileSync(path.join(cursorsDir, 'index.ts'), content);
+const prettierrc = fs.readFileSync(
+  path.resolve(__dirname, './.prettierrc'),
+  'utf-8'
+);
+const prettierOption = JSON.parse(prettierrc);
+const filepath = path.join(cursorsDir, 'index.ts');
+fs.writeFileSync(
+  filepath,
+  prettier.format(content, {
+    ...prettierOption,
+    filepath
+  })
+);
