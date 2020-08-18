@@ -17,12 +17,13 @@
   },
   "scripts": {
     "start": "npm run watch",
-    "test": "npm run lint && tsc && ava",
+    "test": "npm run lint && npm run cursor && tsc && ava",
     "watch": "webpack-dev-server",
     "lint": "prettier -l 'src/**/*.{ts,tsx}'",
     "format": "prettier --write 'src/**/*.{ts,tsx}'",
     "build": "webpack -p && tsc",
     "prepublishOnly": "npm run build",
+    "cursor": "node convert-cursors.js",
     "svgr": "svgr --icon --replace-attr-values '#000=currentColor' --template ./svgr-template.js --ext tsx -d src/icons src/svg"
   },
   "repository": {
