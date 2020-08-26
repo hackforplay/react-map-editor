@@ -1,6 +1,7 @@
 import { Scene } from '@hackforplay/next';
 import produce, { Patch } from 'immer';
-import { IEditing } from '../recoils/types';
+import { last } from 'lodash-es';
+import { IEditing, IEditPatch } from '../recoils/types';
 import Cursor from './cursor';
 
 /**
@@ -73,10 +74,11 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
   );
   return {
     sceneMap: next,
-    undoPatches:
-      invertPatches.length > 0
-        ? [invertPatches, ...editing.undoPatches]
-        : editing.undoPatches // 変更がない
+    undoPatches: mergeUndoPatches(
+      editing.undoPatches,
+      invertPatches,
+      cursor.dragId
+    )
   };
 }
 
@@ -87,3 +89,27 @@ export const updateScene = (scene: Scene, cursor: Cursor) => {
   );
   return sceneMap === scene.map ? scene : { ...scene, map: sceneMap };
 };
+
+function mergeUndoPatches(
+  undoPatches: IEditPatch[],
+  invertPatches: Patch[],
+  dragId?: number
+) {
+  if (invertPatches.length === 0) {
+    return undoPatches; // 変更がない
+  }
+  const lastUndo = last(undoPatches);
+  if (dragId === undefined || !lastUndo || lastUndo.dragId !== dragId) {
+    // ユニットを追加
+    return undoPatches.concat({
+      dragId,
+      patches: invertPatches
+    });
+  }
+
+  // 末尾のユニットにパッチを追加
+  return undoPatches.slice(0, undoPatches.length - 1).concat({
+    dragId,
+    patches: lastUndo.patches.concat(invertPatches)
+  });
+}

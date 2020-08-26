@@ -1,16 +1,17 @@
 import { applyPatches } from 'immer';
+import { last } from 'lodash-es';
 import { IEditing } from '../recoils/types';
 
 export function undoEditing(editing: IEditing) {
-  const [head, ...last] = editing.undoPatches;
-  if (!head) {
+  const lastUndo = last(editing.undoPatches);
+  if (!lastUndo) {
     return editing;
   }
 
-  const next = applyPatches(editing.sceneMap, head);
+  const next = applyPatches(editing.sceneMap, lastUndo.patches);
 
   return {
     sceneMap: next,
-    undoPatches: last
+    undoPatches: editing.undoPatches.slice(0, editing.undoPatches.length - 1)
   };
 }

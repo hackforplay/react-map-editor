@@ -1,13 +1,26 @@
 import { Placement, Scene, TileAuthor } from '@hackforplay/next';
 import { Patch } from 'immer';
 
+export interface IEditPatch {
+  /**
+   * １回のドラッグ（スワイプ）によって行われた変更をグルーピングするための識別子
+   */
+  dragId?: number;
+  patches: Patch[];
+}
+
 /**
  * 現在の状態と undo のヒストリーをアトミックに変更するための
  * インターフェース
  */
 export interface IEditing {
   sceneMap: Scene['map'];
-  undoPatches: Patch[][];
+  /**
+   * ImmerJS の invertPatches を記録したヒストリー
+   * 新しいものをどんどん末尾に追加していく
+   * Cursor::dragId ごとにマージする
+   */
+  undoPatches: IEditPatch[];
 }
 
 export interface ITile {
