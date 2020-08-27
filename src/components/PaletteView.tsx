@@ -22,7 +22,7 @@ import { IconButton } from './IconButton';
 import { Paper } from './Paper';
 
 const transparent = 'rgba(255,255,255,0)';
-const tileSize = 32 + 1;
+const tileSize = 32;
 const floatThrethold = 300;
 
 const cn = {
@@ -43,7 +43,6 @@ const cn = {
     flex: 1,
     overflowY: 'scroll',
     overflowX: 'hidden',
-    width: tileSize * 8,
     boxSizing: 'content-box',
     paddingRight: 10,
     $nest: {
@@ -75,6 +74,9 @@ const cn = {
   }),
   pageView: style({
     marginBottom: 4
+  }),
+  paletteWrapper: style({
+    position: 'relative'
   })
 };
 
@@ -211,20 +213,14 @@ function PageView(props: IPage) {
         style={{
           padding: 4,
           paddingBottom: collapsed ? 0 : 4,
-          width: '100%',
-          overflow: 'hidden',
-          cursor: canOpen ? 'pointer' : 'inherit'
+          cursor: canOpen ? 'pointer' : 'inherit',
+          width: tileSize * 8,
+          boxSizing: 'content-box'
         }}
         onClick={open}
       >
         <div
-          style={{
-            position: 'relative',
-            height: 0,
-            paddingTop: collapsed ? '12.5%' : `${12.5 * props.row}%`,
-            width: '100%',
-            transition: 'padding-top 200ms'
-          }}
+          className={cn.paletteWrapper}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={release}
@@ -232,20 +228,29 @@ function PageView(props: IPage) {
           onTouchMove={handleTouchMove}
           onTouchEnd={release}
         >
-          <img
-            src={props.src}
-            alt=""
+          <div
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              touchAction: 'none',
-              transformOrigin: 'top',
-              transform: collapsed ? 'scaleY(0.5)' : 'none'
+              height: collapsed ? tileSize : tileSize * props.row,
+              overflow: 'hidden',
+              position: 'relative',
+              transition: 'height 200ms'
             }}
-            draggable={false}
-          />
+          >
+            <img
+              src={props.src}
+              alt=""
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: tileSize * 8,
+                touchAction: 'none',
+                transformOrigin: 'top',
+                transform: collapsed ? 'scaleY(0.5)' : 'none'
+              }}
+              draggable={false}
+            />
+          </div>
           {collapsed ? null : (
             <SelectionView page={props.index} row={props.row} />
           )}

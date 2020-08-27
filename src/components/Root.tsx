@@ -21,7 +21,7 @@ const sidePannel = style({
   flexDirection: 'column',
   justifyContent: 'flex-start',
   alignItems: 'stretch',
-  width: 306
+  width: 310
 });
 const mainPannel = style({
   flex: 1,
