@@ -282,34 +282,53 @@ interface SelectionViewProps {
   row: number;
 }
 
-function SelectionView({ page, row }: SelectionViewProps) {
+function SelectionView({ page }: SelectionViewProps) {
   const selection = useRecoilValue(paletteSelectionState);
   const preloaded = useRecoilValueLoadable(preloadNibState);
   if (!selection || selection.page !== page) return null;
 
   const { start, end } = selection;
-  const left = Math.min(start.col, end.col);
-  const top = Math.min(start.row, end.row);
-  const right = Math.max(start.col, end.col) + 1;
-  const bottom = Math.max(start.row, end.row) + 1;
+  return (
+    <Rect
+      left={Math.min(start.col, end.col)}
+      top={Math.min(start.row, end.row)}
+      right={Math.max(start.col, end.col) + 1}
+      bottom={Math.max(start.row, end.row) + 1}
+      cursor={
+        preloaded.state === 'loading'
+          ? 'progress'
+          : preloaded.state === 'hasError'
+          ? 'not-allowed'
+          : 'initial'
+      }
+    />
+  );
+}
+
+interface RectProps {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  cursor?: string;
+}
+
+function Rect({ left, top, right, bottom, cursor }: RectProps) {
+  const borderWidth = 2;
+
   return (
     <div
       style={{
-        cursor:
-          preloaded.state === 'loading'
-            ? 'progress'
-            : preloaded.state === 'hasError'
-            ? 'not-allowed'
-            : 'initial',
-        borderWidth: 2,
+        cursor,
+        borderWidth,
         borderStyle: 'solid',
         borderColor: colors.selected,
         boxSizing: 'border-box',
         position: 'absolute',
-        left: `${left * 12.5}%`,
-        top: `${(top / row) * 100}%`,
-        width: `${(right - left) * 12.5}%`,
-        height: `${((bottom - top) / row) * 100}%`,
+        left: `${left * tileSize - borderWidth}px`,
+        top: `${top * tileSize - borderWidth}px`,
+        width: `${(right - left) * tileSize + borderWidth * 2}px`,
+        height: `${(bottom - top) * tileSize + borderWidth * 2}px`,
         zIndex: 1
       }}
     />
