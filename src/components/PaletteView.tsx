@@ -1,6 +1,7 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import {
+  useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState
@@ -8,6 +9,7 @@ import {
 import { style } from 'typestyle/lib';
 import ExpandLess from '../icons/ExpandLess';
 import {
+  baseSelectionState,
   cursorModeState,
   palettePagesState,
   paletteSelectionState,
@@ -15,7 +17,7 @@ import {
 } from '../recoils';
 import { IPage } from '../recoils/types';
 import { colors } from '../utils/colors';
-import { Pos } from '../utils/selection';
+import { Pos, Selection } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { ErrorBoundary } from './ErrorBoundary';
 import { IconButton } from './IconButton';
@@ -111,7 +113,8 @@ function PageView(props: IPage) {
   const [collapsed, setCollapsed] = React.useState(props.row > 1);
 
   const setSelection = useSetRecoilState(paletteSelectionState);
-  const setCursorMode = useSetRecoilState(cursorModeState);
+  const setBaseSelection = useSetRecoilState(baseSelectionState);
+  const [cursorMode, setCursorMode] = useRecoilState(cursorModeState);
   const touchRef = React.useRef(0); // save last touch indentifier of onTouchStart
 
   const draggingRef = React.useRef(false); // is dragging or swiping?
@@ -141,17 +144,29 @@ function PageView(props: IPage) {
     }
   }, [canClose]);
 
-  const start = React.useCallback((pos: Pos) => {
-    if (pos.row >= props.row) return; // 超過している
+  const start = React.useCallback(
+    (pos: Pos) => {
+      if (pos.row >= props.row) return; // 超過している
 
-    draggingRef.current = true;
-    setSelection({
-      page: props.index,
-      start: pos,
-      end: pos
-    });
-    setCursorMode('pen');
-  }, []);
+      const selection: Selection = {
+        page: props.index,
+        start: pos,
+        end: pos
+      };
+
+      if (cursorMode === 'base') {
+        // base の場合は sceneMap を変更する
+        setBaseSelection(selection);
+      } else {
+        // それ以外の場合は nib として選ぶ
+        draggingRef.current = true;
+        setSelection(selection);
+        setCursorMode('pen');
+      }
+    },
+    [cursorMode]
+  );
+
   const move = React.useCallback((pos: Pos) => {
     if (!draggingRef.current) return;
     setSelection(selection => {
@@ -251,9 +266,7 @@ function PageView(props: IPage) {
               draggable={false}
             />
           </div>
-          {collapsed ? null : (
-            <SelectionView page={props.index} row={props.row} />
-          )}
+          {collapsed ? null : <SelectionView page={props.index} />}
           {collapsed ? (
             <div
               style={{
@@ -279,12 +292,15 @@ function PageView(props: IPage) {
 
 interface SelectionViewProps {
   page: number;
-  row: number;
 }
 
 function SelectionView({ page }: SelectionViewProps) {
-  const selection = useRecoilValue(paletteSelectionState);
+  const nibSelection = useRecoilValue(paletteSelectionState);
+  const baseSelection = useRecoilValue(baseSelectionState);
   const preloaded = useRecoilValueLoadable(preloadNibState);
+  const cursorMode = useRecoilValue(cursorModeState);
+
+  const selection = cursorMode === 'base' ? baseSelection : nibSelection;
   if (!selection || selection.page !== page) return null;
 
   const { start, end } = selection;

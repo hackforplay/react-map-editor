@@ -122,3 +122,80 @@ export const preloadNibState = selector({
     }
   }
 });
+
+/**
+ * 【注意】
+ * Scene['map']['base'] が表すタイルがパレット上のどこにあるかを表す
+ * パレットとシーンの間でタイルの index を共通にすることを暗黙的な前提としている
+ * しかし設計上そのような制約はないため、この Selection は疑わしい値とすべき
+ * 例えば base の初期値はパレットに存在しない草原なので、本来表示することはできないが、
+ * 便宜上、最も若い page の最も左上の座標を baseSelection として提供する
+ */
+export const baseSelectionState = selector<Selection>({
+  key: 'baseSelectionState',
+  get: ({ get }) => {
+    const pages = get(palettePagesState);
+    const { base } = get(sceneMapState);
+
+    for (const item of pages) {
+      for (const [number, tile] of Object.entries(item.tiles)) {
+        if (tile?.index === base) {
+          // 同じ index が見つかった
+          const num = parseInt(number);
+          const col = num % 8;
+          const row = Math.floor(num / 8);
+          return {
+            page: item.index,
+            start: { col, row, num },
+            end: { col, row, num }
+          };
+        }
+      }
+    }
+
+    // 見つからないので最も若い page の最も左上の座標を返す
+    return {
+      page: pages[0].index,
+      start: { col: 0, row: 0, num: 0 },
+      end: { col: 0, row: 0, num: 0 }
+    };
+  },
+  set: ({ get, set }, newValue) => {
+    const pages = get(palettePagesState);
+    let { squares } = get(sceneMapState);
+    if (newValue instanceof DefaultValue) {
+      // squares の一番先頭の値をセットする
+      const tile = squares[0];
+      if (tile) {
+        set(sceneMapState, prevValue => ({
+          ...prevValue,
+          base: tile.index
+        }));
+      }
+      return;
+    }
+    const page = pages.find(item => item.index === newValue.page);
+    const tile = page?.tiles[String(newValue.start.num)];
+    if (!tile) return;
+    if (squares.every(item => item.index !== tile.index)) {
+      // タイルが存在しなかったので追加
+      squares = squares.concat({
+        index: tile.index,
+        placement: tile.placement,
+        tile: {
+          size: [32, 32],
+          image: {
+            type: 'url',
+            src: tile.src
+          },
+          author: tile.author
+        }
+      });
+    }
+    set(sceneMapState, prevValue => ({
+      ...prevValue,
+      base: tile.index,
+      squares
+    }));
+  }
+});

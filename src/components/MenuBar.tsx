@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValueLoadable } from 'recoil';
 import { style } from 'typestyle/lib';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
+import FormatPaint from '../icons/FormatPaint';
 import {
   cursorModeState,
   palettePagesState,
@@ -48,6 +49,9 @@ export function MenuBar() {
     }
     setCusrorMode('pen');
   }, [selection, palettePageLoadable]);
+  const handleBase = React.useCallback(() => {
+    setCusrorMode('base');
+  }, []);
 
   return (
     <Paper id="rme-menu-bar" className={root}>
@@ -67,6 +71,14 @@ export function MenuBar() {
         onClick={handleEraser}
       >
         <Eraser />
+      </IconButton>
+      <IconButton
+        active={cursorMode === 'base'}
+        label="じめん"
+        margin
+        onClick={handleBase}
+      >
+        <FormatPaint />
       </IconButton>
     </Paper>
   );
