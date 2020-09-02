@@ -1,7 +1,7 @@
-import { Scene } from '@hackforplay/next';
+import { Scene, size } from '@hackforplay/next';
 import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
-import { initSceneMap, initSceneScreen } from '../utils/initScene';
+import { initSceneMap } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
 import { IEditing, IEditPatch, IPage, ITile } from './types';
 
@@ -62,9 +62,20 @@ export const sceneMapState = atom<Scene['map']>({
   default: initSceneMap()
 });
 
-export const sceneScreenState = atom<Scene['screen']>({
+/**
+ * マップデータからスクリーンのサイズを計算する
+ */
+export const sceneScreenState = selector<Scene['screen']>({
   key: 'sceneScreenState',
-  default: initSceneScreen()
+  get: ({ get }) => {
+    const { tables } = get(sceneMapState);
+    const height = tables[0]?.length || 0;
+    const width = tables[0]?.[0].length || 0;
+    return {
+      height: height * size,
+      width: width * size
+    };
+  }
 });
 
 export const sceneState = selector<Scene>({
