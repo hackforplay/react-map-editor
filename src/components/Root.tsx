@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { style } from 'typestyle/lib';
 import { CanvasView } from './CanvasView';
+import { DialogRootProvider } from './Dialog';
 import { MenuBar } from './MenuBar';
 import { PaletteView } from './PaletteView';
 import { SettingView } from './SettingView';
@@ -43,6 +44,7 @@ export function Root(props: RootProps) {
         <SettingView />
         <CanvasView />
       </div>
+      <DialogRootProvider />
     </div>
   );
 }
