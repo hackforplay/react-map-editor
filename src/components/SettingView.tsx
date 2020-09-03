@@ -99,6 +99,9 @@ const cn = {
     top: '-0.8rem',
     left: 0,
     fontSize: '0.5em'
+  }),
+  fripVert: style({
+    transform: 'scaleY(-1)'
   })
 };
 
@@ -142,7 +145,7 @@ export function SettingView() {
             setOpenResize(true);
           }}
         >
-          <PhotoSizeSelectLarge />
+          <PhotoSizeSelectLarge className={cn.fripVert} />
         </IconButton>
       </Paper>
       {openResize ? (
