@@ -35,16 +35,18 @@ const mainPannel = style({
 
 export function Root(props: RootProps) {
   return (
-    <div className={root} style={props.style}>
-      <div className={sidePannel}>
-        <MenuBar />
-        <PaletteView />
+    <React.Suspense fallback="Loading...">
+      <div className={root} style={props.style}>
+        <div className={sidePannel}>
+          <MenuBar />
+          <PaletteView />
+        </div>
+        <div className={mainPannel}>
+          <SettingView />
+          <CanvasView />
+        </div>
+        <DialogRootProvider />
       </div>
-      <div className={mainPannel}>
-        <SettingView />
-        <CanvasView />
-      </div>
-      <DialogRootProvider />
-    </div>
+    </React.Suspense>
   );
 }

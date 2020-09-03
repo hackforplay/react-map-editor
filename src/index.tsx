@@ -19,9 +19,7 @@ export default function ReactMapEditor({ map, ...props }: Props) {
         }
       }}
     >
-      <React.Suspense fallback="Loading...">
-        <Root {...props} />
-      </React.Suspense>
+      <Root {...props} />
     </RecoilRoot>
   );
 }
