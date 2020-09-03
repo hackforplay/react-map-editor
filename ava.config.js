@@ -2,5 +2,5 @@ export default {
   files: ['src/**/*.spec.ts'],
   compileEnhancements: false,
   extensions: ['ts'],
-  require: ['ts-node/register']
+  require: ['ts-node/register', 'esm']
 };
