@@ -3,6 +3,7 @@ import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { getMatrix, Selection } from '../utils/selection';
 import { IEditing, IEditPatch, IPage, ITile } from './types';
+import { updateBase } from '../utils/updateBase';
 
 const pagesEndpoint = 'https://tile.hackforplay.xyz/pages.json';
 
@@ -175,40 +176,12 @@ export const baseSelectionState = selector<Selection>({
   },
   set: ({ get, set }, newValue) => {
     const pages = get(palettePagesState);
-    let { squares } = get(sceneMapState);
     if (newValue instanceof DefaultValue) {
-      // squares の一番先頭の値をセットする
-      const tile = squares[0];
-      if (tile) {
-        set(sceneMapState, prevValue => ({
-          ...prevValue,
-          base: tile.index
-        }));
-      }
-      return;
+      return; // リセットは定義できない（する必要もない）
     }
     const page = pages.find(item => item.index === newValue.page);
     const tile = page?.tiles[String(newValue.start.num)];
     if (!tile) return;
-    if (squares.every(item => item.index !== tile.index)) {
-      // タイルが存在しなかったので追加
-      squares = squares.concat({
-        index: tile.index,
-        placement: tile.placement,
-        tile: {
-          size: [32, 32],
-          image: {
-            type: 'url',
-            src: tile.src
-          },
-          author: tile.author
-        }
-      });
-    }
-    set(sceneMapState, prevValue => ({
-      ...prevValue,
-      base: tile.index,
-      squares
-    }));
+    set(editingState, curr => updateBase(curr, tile));
   }
 });
