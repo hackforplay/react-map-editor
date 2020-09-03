@@ -13,13 +13,3 @@ export function initSceneMap(): Scene['map'] {
     squares: []
   };
 }
-
-/**
- * スクリーンサイズの初期値
- */
-export function initSceneScreen(): Scene['screen'] {
-  return {
-    width: 480,
-    height: 320
-  };
-}
