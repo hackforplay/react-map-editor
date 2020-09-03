@@ -22,7 +22,8 @@ const cn = {
   root: style(csstips.flex1, {
     padding: 16,
     paddingLeft: 0,
-    paddingTop: 8
+    paddingTop: 8,
+    overflow: 'hidden'
   }),
   renderRoot: style({
     width: '100%',
