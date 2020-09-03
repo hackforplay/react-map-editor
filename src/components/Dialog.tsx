@@ -33,9 +33,6 @@ const cn = {
     textAlign: 'center',
     fontSize: '1.25em'
   }),
-  content: style({
-    padding: 8
-  }),
   footer: style({
     marginTop: 16,
     borderTop: `1px solid ${colors.border}`,
@@ -114,9 +111,7 @@ export interface DialogContentProps {
 }
 
 export function DialogContent(props: DialogContentProps) {
-  return (
-    <div className={classes(props.className, cn.content)}>{props.children}</div>
-  );
+  return <div className={props.className}>{props.children}</div>;
 }
 
 export interface DialogFooterProps {
