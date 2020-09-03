@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - '*'
+  pull_request:
+    branches:
+      - '*'
   release:
     types: [published]
 
@@ -22,6 +25,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
+      - run: npm test
+        if: github.ref != 'ref/heads/master'
       - name: Run semantic-release
         run: npx semantic-release
         env:
