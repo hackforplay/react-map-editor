@@ -74,16 +74,23 @@ export interface DialogProps {
 export function Dialog(props: DialogProps) {
   const dialogRoot = useRecoilValue(dialogRootAtom);
 
+  if (!props.open) {
+    return null;
+  }
   if (!dialogRoot) {
     console.error('dialogRoot がマウントされていません');
     return null;
   }
-  if (!props.open) {
-    return null;
-  }
 
   return createPortal(
-    <div className={cn.backdrop}>
+    <div
+      className={cn.backdrop}
+      onClick={event => {
+        if (event.target === event.currentTarget) {
+          props.onClose();
+        }
+      }}
+    >
       <div className={cn.container}>{props.children}</div>
     </div>,
     dialogRoot
