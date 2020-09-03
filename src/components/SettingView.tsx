@@ -145,7 +145,9 @@ export function SettingView() {
           <PhotoSizeSelectLarge />
         </IconButton>
       </Paper>
-      <ResizeDialog open={openResize} onClose={() => setOpenResize(false)} />
+      {openResize ? (
+        <ResizeDialog open onClose={() => setOpenResize(false)} />
+      ) : null}
     </div>
   );
 }
