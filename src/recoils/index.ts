@@ -1,7 +1,6 @@
 import { Scene, size } from '@hackforplay/next';
 import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
 import Cursor, { CursorMode } from '../utils/cursor';
-import { initSceneMap } from '../utils/initScene';
 import { getMatrix, Selection } from '../utils/selection';
 import { IEditing, IEditPatch, IPage, ITile } from './types';
 
@@ -57,9 +56,12 @@ export const debugState = atom<boolean>({
   default: true
 });
 
+/**
+ * 初期値が設定されるまで loading
+ */
 export const sceneMapState = atom<Scene['map']>({
   key: 'sceneMapState',
-  default: initSceneMap()
+  default: new Promise(() => {})
 });
 
 /**
