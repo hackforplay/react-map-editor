@@ -157,6 +157,7 @@ function PageView(props: IPage) {
       if (cursorMode === 'base') {
         // base の場合は sceneMap を変更する
         setBaseSelection(selection);
+        setCursorMode('pen');
       } else {
         // それ以外の場合は nib として選ぶ
         draggingRef.current = true;
