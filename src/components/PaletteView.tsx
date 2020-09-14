@@ -21,6 +21,7 @@ import { Pos, Selection } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
 import { ErrorBoundary } from './ErrorBoundary';
 import { IconButton } from './IconButton';
+import { Img } from './Img';
 import { Paper } from './Paper';
 
 const transparent = 'rgba(255,255,255,0)';
@@ -252,7 +253,7 @@ function PageView(props: IPage) {
               transition: 'height 200ms'
             }}
           >
-            <img
+            <Img
               src={props.src}
               alt=""
               style={{
