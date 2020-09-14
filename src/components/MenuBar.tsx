@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useRecoilState, useRecoilValueLoadable } from 'recoil';
 import { style } from 'typestyle/lib';
+import Colorize from '../icons/Colorize';
 import Edit from '../icons/Edit';
 import Eraser from '../icons/Eraser';
 import FormatPaint from '../icons/FormatPaint';
@@ -52,6 +53,9 @@ export function MenuBar() {
   const handleBase = React.useCallback(() => {
     setCusrorMode('base');
   }, []);
+  const handleDropper = React.useCallback(() => {
+    setCusrorMode('dropper');
+  }, []);
 
   return (
     <Paper id="rme-menu-bar" className={root}>
@@ -79,6 +83,14 @@ export function MenuBar() {
         onClick={handleBase}
       >
         <FormatPaint />
+      </IconButton>
+      <IconButton
+        active={cursorMode === 'dropper'}
+        label="スポイト"
+        margin
+        onClick={handleDropper}
+      >
+        <Colorize />
       </IconButton>
     </Paper>
   );

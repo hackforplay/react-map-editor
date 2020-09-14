@@ -1,8 +1,8 @@
 import { style } from 'typestyle/lib';
+import { dropper, eraser, pen } from '../cursors';
 import { ITile } from '../recoils/types';
-import { eraser, pen } from '../cursors';
 
-export type CursorMode = 'nope' | 'pen' | 'eraser' | 'base';
+export type CursorMode = 'nope' | 'pen' | 'eraser' | 'base' | 'dropper';
 
 export default class Cursor {
   x: number;
@@ -53,5 +53,8 @@ export const cursorClasses: Record<CursorMode, string> = {
   }),
   base: style({
     cursor: 'not-allowed'
+  }),
+  dropper: style({
+    cursor: `url(${dropper}) 2 16, pointer`
   })
 };

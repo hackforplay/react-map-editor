@@ -14,6 +14,7 @@ import {
   sceneScreenState,
   sceneState
 } from '../recoils';
+import { useDropper } from '../recoils/useDropper';
 import Cursor, { cursorClasses } from '../utils/cursor';
 import { editWithCursor } from '../utils/updateScene';
 import { Paper } from './Paper';
@@ -86,6 +87,7 @@ export function CanvasView() {
     mutate.pressed = false;
   }, []);
 
+  const setDropper = useDropper();
   const setEditing = useSetRecoilState(editingState);
   const handleMove = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -102,7 +104,11 @@ export function CanvasView() {
         ((e.pageY - offsetTop + (parentElement ? parentElement.scrollTop : 0)) /
           32) >>
         0;
-      if (x !== mutate.px || y !== mutate.py) {
+      if (cursorMode === 'dropper') {
+        // スポイトで色を吸い取る
+        setDropper(x, y);
+        stop();
+      } else if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
         const cursor = new Cursor(
           x,
