@@ -45,7 +45,7 @@
   "dependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.10.1",
     "@babel/runtime": "^7.0.0-beta.54",
-    "@hackforplay/next": "^0.9.0",
+    "@hackforplay/next": "^0.9.1",
     "@types/lodash-es": "^4.17.3",
     "@types/node": "^11.13.2",
     "@types/react": "^16.8.17",
