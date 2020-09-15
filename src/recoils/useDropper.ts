@@ -1,10 +1,19 @@
-import { useRecoilCallback } from 'recoil';
+import { atom, useRecoilCallback } from 'recoil';
 import {
   cursorModeState,
   palettePagesState,
   paletteSelectionState,
   sceneMapState
 } from '../recoils';
+
+/**
+ * 最後にスポイトで選択された page number を保持する Atom
+ * useEffect の参照一致を潜り抜けるためにオブジェクトにする
+ */
+export const dropperPageAtom = atom<{ index: number }>({
+  key: 'dropperPageAtom',
+  default: { index: 0 }
+});
 
 export function useDropper() {
   return useRecoilCallback(({ getLoadable, set }, x: number, y: number) => {
@@ -35,6 +44,7 @@ export function useDropper() {
                   end: { col: x, row: y, num }
                 });
                 set(cursorModeState, 'pen');
+                set(dropperPageAtom, { index: page.index });
                 return;
               }
             }

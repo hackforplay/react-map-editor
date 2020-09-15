@@ -7,6 +7,7 @@ import {
   useSetRecoilState
 } from 'recoil';
 import { style } from 'typestyle/lib';
+import { useUpdated } from '../hooks/useUpdated';
 import ExpandLess from '../icons/ExpandLess';
 import {
   baseSelectionState,
@@ -16,6 +17,7 @@ import {
   preloadNibState
 } from '../recoils';
 import { IPage } from '../recoils/types';
+import { dropperPageAtom } from '../recoils/useDropper';
 import { colors } from '../utils/colors';
 import { Pos, Selection } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
@@ -224,6 +226,18 @@ function PageView(props: IPage) {
     [collapsed, move]
   );
 
+  const dropperPage = useRecoilValue(dropperPageAtom);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  useUpdated(() => {
+    if (props.index === dropperPage.index) {
+      scrollRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      setCollapsed(false);
+    }
+  }, [props.index, dropperPage]);
+
   return (
     <div className={cn.pageView}>
       <Paper
@@ -247,6 +261,7 @@ function PageView(props: IPage) {
           onTouchEnd={release}
         >
           <div
+            ref={scrollRef}
             style={{
               height: collapsed ? tileSize : tileSize * props.row,
               overflow: 'hidden',
