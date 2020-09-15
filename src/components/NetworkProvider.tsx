@@ -15,7 +15,7 @@ export const request = selectorFamily<Response, string>({
 
     const cache = cacheMap.get(src);
     if (cache) {
-      return cache; // キャッシュを返す
+      return cache.clone(); // キャッシュを返す
     }
 
     const response = await fetch(src);
