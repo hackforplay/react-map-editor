@@ -20,7 +20,7 @@ export const request = selectorFamily<Response, string>({
 
     const response = await fetch(src);
     cacheMap.set(src, response); // 成功した Response をキャッシュ
-    return response;
+    return response.clone();
   }
 });
 
