@@ -11,6 +11,7 @@ import {
   cursorModeState,
   editingState,
   paletteNibState,
+  preloadNibState,
   sceneScreenState,
   sceneState
 } from '../recoils';
@@ -45,8 +46,12 @@ const cn = {
 export function CanvasView() {
   const cursorMode = useRecoilValue(cursorModeState);
   const nibLoadable = useRecoilValueLoadable(paletteNibState);
+  const preloaded = useRecoilValueLoadable(preloadNibState);
 
-  const cursor = cursorClasses[cursorMode];
+  const cursor =
+    cursorMode === 'pen' && preloaded.state !== 'hasValue'
+      ? cursorClasses.nope // not-allowed
+      : cursorClasses[cursorMode];
 
   const { width, height } = useRecoilValue(sceneScreenState);
   const canvasRendererRef = React.useRef<CanvasRenderer>();
@@ -93,6 +98,9 @@ export function CanvasView() {
     (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
+      if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
+        return; // Nib のロードが完了していない
+      }
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const x =
         ((e.pageX -
@@ -120,7 +128,7 @@ export function CanvasView() {
         setEditing(current => editWithCursor(current, cursor));
       }
     },
-    [cursorMode, nibLoadable]
+    [cursorMode, nibLoadable, preloaded]
   );
   const handleMouseDown = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -140,6 +148,9 @@ export function CanvasView() {
     (e: React.TouchEvent<HTMLCanvasElement>) => {
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
+      if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
+        return; // Nib のロードが完了していない
+      }
       e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
       const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const primary = e.touches.item(0);
@@ -167,7 +178,7 @@ export function CanvasView() {
         setEditing(current => editWithCursor(current, cursor));
       }
     },
-    [cursorMode, nibLoadable]
+    [cursorMode, nibLoadable, preloaded]
   );
   const handleTouchStart = React.useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
