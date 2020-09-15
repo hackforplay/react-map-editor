@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useUpdated } from '../hooks/useUpdated';
+import { onOnline } from '../utils/onOnline';
 
 export type ImgProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -18,8 +19,7 @@ export function Img(props: ImgProps) {
   const handleError = React.useCallback(
     (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
       setLoadType('error');
-      onlineCallbacks.add(() => {
-        console.warn('callback!');
+      onOnline(() => {
         setLoadType('reset');
       });
       return props.onError?.(e);
@@ -35,13 +35,3 @@ export function Img(props: ImgProps) {
     />
   );
 }
-
-const onlineCallbacks = new Set<Function>();
-window.addEventListener(
-  'online',
-  () => {
-    onlineCallbacks.forEach(cb => cb());
-    onlineCallbacks.clear();
-  },
-  { passive: true }
-);
