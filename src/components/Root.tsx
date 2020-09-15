@@ -3,6 +3,7 @@ import { style } from 'typestyle/lib';
 import { CanvasView } from './CanvasView';
 import { DialogRootProvider } from './Dialog';
 import { MenuBar } from './MenuBar';
+import { NetworkProvider } from './NetworkProvider';
 import { PaletteView } from './PaletteView';
 import { SettingView } from './SettingView';
 
@@ -46,6 +47,7 @@ export function Root(props: RootProps) {
           <CanvasView />
         </div>
         <DialogRootProvider />
+        <NetworkProvider />
       </div>
     </React.Suspense>
   );

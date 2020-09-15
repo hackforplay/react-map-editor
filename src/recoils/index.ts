@@ -1,9 +1,10 @@
 import { Scene, size } from '@hackforplay/next';
-import { atom, DefaultValue, selector, selectorFamily } from 'recoil';
+import { atom, DefaultValue, selector } from 'recoil';
+import { request } from '../components/NetworkProvider';
 import Cursor, { CursorMode } from '../utils/cursor';
 import { getMatrix, Selection } from '../utils/selection';
-import { IEditing, IEditPatch, IPage, ITile } from './types';
 import { updateBase } from '../utils/updateBase';
+import { IEditing, IEditPatch, IPage, ITile } from './types';
 
 const pagesEndpoint = 'https://tile.hackforplay.xyz/pages.json';
 
@@ -120,18 +121,13 @@ export const cursorState = atom<Cursor | null>({
   default: null
 });
 
-const preloadSrcState = selectorFamily<any, string>({
-  key: 'preloadSrcState',
-  get: src => () => fetch(src)
-});
-
 export const preloadNibState = selector({
   key: 'preloadNibState',
   get: ({ get }) => {
     const nib = get(paletteNibState);
     for (const row of nib) {
       for (const tile of row) {
-        get(preloadSrcState(tile.src));
+        get(request(tile.src));
       }
     }
   }
