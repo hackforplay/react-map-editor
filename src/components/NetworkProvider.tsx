@@ -1,45 +1,52 @@
 import * as React from 'react';
-import { atom, selectorFamily, useSetRecoilState } from 'recoil';
+import { atomFamily, selectorFamily, useRecoilCallback } from 'recoil';
 import { onOnline } from '../utils/onOnline';
 
-const cacheMap = new Map<string, Response>();
+const errorNumbers = new Set<number>();
 
+/**
+ * 任意のタイミングでリトライさせるための Atom
+ * URL ごとに作成される
+ */
+const retrys = atomFamily<number, number>({
+  key: 'retrys',
+  default: () => 0
+});
+
+let _count = 0;
 /**
  * オフラインで失敗したあと、オンラインに復帰したときに
  * 自動的にリトライしてくれる selector
+ * 一度でも取得に成功している場合は同期的に値を返す
  */
 export const request = selectorFamily<Response, string>({
   key: 'request',
-  get: src => async ({ get }) => {
-    get(onlineAtom); // online になる度に再評価する
+  get: src => ({ get }) => {
+    const number = ++_count; // 一意な ID を割り振る
+    get(retrys(number)); // エラーになった場合 online になったら再評価する
 
-    const cache = cacheMap.get(src);
-    if (cache) {
-      return cache.clone(); // キャッシュを返す
-    }
-
-    const response = await fetch(src);
-    cacheMap.set(src, response); // 成功した Response をキャッシュ
-    return response.clone();
+    return fetch(src).catch(error => {
+      errorNumbers.add(number);
+      throw error;
+    });
   }
 });
 
-/**
- * ネットワークが online になる度に 1 ずつ増えるカウンタ
- */
-const onlineAtom = atom({
-  key: 'onlineAtom',
-  default: 0
-});
-
 export function NetworkProvider() {
-  const setOnline = useSetRecoilState(onlineAtom);
+  const retryAllFailedRequests = useRecoilCallback(({ set }) => {
+    const copy = new Set(errorNumbers);
+    errorNumbers.clear();
+    copy.forEach(number => {
+      set(retrys(number), curr => curr + 1);
+    });
+  }, []);
+
   React.useEffect(
     () =>
       onOnline(() => {
-        setOnline(curr => curr + 1);
+        retryAllFailedRequests();
       }),
-    []
+    [retryAllFailedRequests]
   );
 
   return null;
