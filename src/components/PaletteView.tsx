@@ -2,7 +2,6 @@ import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import {
   useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState
