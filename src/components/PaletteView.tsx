@@ -1,6 +1,7 @@
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import {
+  useRecoilCallback,
   useRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
@@ -114,8 +115,6 @@ function PageView(props: IPage) {
   const [collapsed, setCollapsed] = React.useState(props.row > 1);
 
   const setSelection = useSetRecoilState(paletteSelectionState);
-  const setBaseSelection = useSetRecoilState(baseSelectionState);
-  const [cursorMode, setCursorMode] = useRecoilState(cursorModeState);
   const touchRef = React.useRef(0); // save last touch indentifier of onTouchStart
 
   const draggingRef = React.useRef(false); // is dragging or swiping?
@@ -145,29 +144,32 @@ function PageView(props: IPage) {
     }
   }, [canClose]);
 
-  const start = React.useCallback(
-    (pos: Pos) => {
-      if (pos.row >= props.row) return; // 超過している
+  const start = useRecoilCallback(({ getLoadable, set }, pos: Pos) => {
+    if (pos.row >= props.row) return; // 超過している
 
-      const selection: Selection = {
-        page: props.index,
-        start: pos,
-        end: pos
-      };
+    const loadable = getLoadable(cursorModeState);
+    if (loadable.state !== 'hasValue') return;
+    const cursorMode = loadable.contents;
 
-      if (cursorMode === 'base') {
-        // base の場合は sceneMap を変更する
-        setBaseSelection(selection);
-        setCursorMode('pen');
-      } else {
-        // それ以外の場合は nib として選ぶ
-        draggingRef.current = true;
-        setSelection(selection);
-        setCursorMode('pen');
+    const selection: Selection = {
+      page: props.index,
+      start: pos,
+      end: pos
+    };
+
+    if (cursorMode === 'base') {
+      // base の場合は sceneMap を変更する
+      set(baseSelectionState, selection);
+      set(cursorModeState, 'pen');
+    } else {
+      // それ以外の場合は nib として選ぶ
+      draggingRef.current = true;
+      set(paletteSelectionState, selection);
+      if (cursorMode !== 'pen') {
+        set(cursorModeState, 'pen');
       }
-    },
-    [cursorMode]
-  );
+    }
+  }, []);
 
   const move = React.useCallback((pos: Pos) => {
     if (!draggingRef.current) return;
