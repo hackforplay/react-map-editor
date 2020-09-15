@@ -19,8 +19,8 @@ export const cursorModeState = atom<CursorMode>({
 
 export const palettePagesState = selector<IPage[]>({
   key: 'palettePageState',
-  get: async () => {
-    const response = await fetch(pagesEndpoint);
+  get: async ({ get }) => {
+    const response = get(request(pagesEndpoint));
     const result = await response.json();
     return Object.values<IPage>(result.pages);
   }
