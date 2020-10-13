@@ -31,6 +31,8 @@ const cn = {
     width: '100%',
     height: '100%',
     padding: 16,
+    paddingRight: 100,
+    paddingBottom: 100,
     boxSizing: 'border-box',
     overflow: 'scroll'
   }),
