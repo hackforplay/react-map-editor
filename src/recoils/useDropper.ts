@@ -28,7 +28,7 @@ export function useDropper() {
       pagesLoadable.state === 'hasValue' ? pagesLoadable.contents : undefined;
     if (!pages) return;
 
-    for (let layer = sceneMap.tables.length - 1; layer >= 0; layer--) {
+    for (let layer = 0; layer < sceneMap.tables.length; layer++) {
       const index = sceneMap.tables[layer][y][x];
       if (index > 0) {
         // index から page を見つける
