@@ -1,7 +1,7 @@
 import { Scene, size } from '@hackforplay/next';
 import { atom, DefaultValue, selector } from 'recoil';
 import { request } from '../components/NetworkProvider';
-import Cursor, { CursorMode } from '../utils/cursor';
+import { CursorMode } from '../utils/cursor';
 import { getMatrix, Selection } from '../utils/selection';
 import { updateBase } from '../utils/updateBase';
 import { IEditing, IEditPatch, IPage, ITile } from './types';
@@ -114,11 +114,6 @@ export const editingState = selector<IEditing>({
       set(undoPatchesState, payload.undoPatches);
     }
   }
-});
-
-export const cursorState = atom<Cursor | null>({
-  key: 'cursorState',
-  default: null
 });
 
 export const preloadNibState = selector({
