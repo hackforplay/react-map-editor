@@ -31,10 +31,26 @@ const cn = {
     width: '100%',
     height: '100%',
     padding: 16,
-    paddingRight: 100,
-    paddingBottom: 100,
     boxSizing: 'border-box',
     overflow: 'scroll'
+  }),
+  scroller: style({
+    paddingRight: 100,
+    paddingBottom: 100,
+    boxSizing: 'content-box',
+    position: 'relative'
+  }),
+  mainCanvas: style({
+    position: 'absolute',
+    left: 0,
+    top: 0
+  }),
+  nibCanvas: style({
+    position: 'absolute',
+    zIndex: 1,
+    pointerEvents: 'none',
+    left: 0,
+    top: 0
   }),
   disableTouchAction: style({
     /**
@@ -103,17 +119,9 @@ export function CanvasView() {
       if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
         return; // Nib のロードが完了していない
       }
-      const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
-      const x =
-        ((e.pageX -
-          offsetLeft +
-          (parentElement ? parentElement.scrollLeft : 0)) /
-          32) >>
-        0;
-      const y =
-        ((e.pageY - offsetTop + (parentElement ? parentElement.scrollTop : 0)) /
-          32) >>
-        0;
+      const { left, top } = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - left) / 32) >> 0;
+      const y = ((e.clientY - top) / 32) >> 0;
       if (cursorMode === 'dropper') {
         // スポイトで色を吸い取る
         setDropper(x, y);
@@ -154,20 +162,10 @@ export function CanvasView() {
         return; // Nib のロードが完了していない
       }
       e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
-      const { offsetLeft, offsetTop, parentElement } = e.currentTarget;
       const primary = e.touches.item(0);
-      const x =
-        ((primary.pageX -
-          offsetLeft +
-          (parentElement ? parentElement.scrollLeft : 0)) /
-          32) >>
-        0;
-      const y =
-        ((primary.pageY -
-          offsetTop +
-          (parentElement ? parentElement.scrollTop : 0)) /
-          32) >>
-        0;
+      const { left, top } = e.currentTarget.getBoundingClientRect();
+      const x = ((primary.clientX - left) / 32) >> 0;
+      const y = ((primary.clientY - top) / 32) >> 0;
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
         const cursor = new Cursor(
@@ -201,18 +199,27 @@ export function CanvasView() {
   return (
     <div className={cn.root}>
       <Paper id="rme-canvas-view" className={cn.renderRoot} ref={containerRef}>
-        <canvas
-          className={classes(cursor, cn.disableTouchAction)}
-          width={width}
-          height={height}
-          onTouchStart={handleTouchStart}
-          onTouchCancel={stop}
-          onTouchEnd={stop}
-          onTouchMove={handleTouchMove}
-          onMouseDown={handleMouseDown}
-          onMouseUp={stop}
-          onMouseMove={handleMove}
-        />
+        <div
+          style={{
+            width: width,
+            height: height
+          }}
+          className={cn.scroller}
+        >
+          <canvas
+            className={classes(cursor, cn.disableTouchAction, cn.mainCanvas)}
+            width={width}
+            height={height}
+            onTouchStart={handleTouchStart}
+            onTouchCancel={stop}
+            onTouchEnd={stop}
+            onTouchMove={handleTouchMove}
+            onMouseDown={handleMouseDown}
+            onMouseUp={stop}
+            onMouseMove={handleMove}
+          />
+          <canvas className={cn.nibCanvas} width={width} height={height} />
+        </div>
       </Paper>
     </div>
   );
