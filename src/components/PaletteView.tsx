@@ -12,6 +12,7 @@ import ExpandLess from '../icons/ExpandLess';
 import {
   baseSelectionState,
   cursorModeState,
+  nibSizeState,
   palettePagesState,
   paletteSelectionState,
   preloadNibState
@@ -170,6 +171,7 @@ function PageView(props: IPage) {
         set(cursorModeState, 'pen');
       }
     }
+    set(nibSizeState, 1); // nibSize を 1 に戻す
   }, []);
 
   const move = React.useCallback((pos: Pos) => {

@@ -17,6 +17,15 @@ export const cursorModeState = atom<CursorMode>({
   default: 'nope'
 });
 
+/**
+ * ペンの太さを表す値
+ * 1~5 までの数値
+ */
+export const nibSizeState = atom<number>({
+  key: 'nibSizeState',
+  default: 1
+});
+
 export const palettePagesState = selector<IPage[]>({
   key: 'palettePageState',
   get: async ({ get }) => {
@@ -38,7 +47,15 @@ export const paletteNibState = selector<ITile[][]>({
     if (!selection) return [[]]; // 空のペン先
     const pages = get(palettePagesState);
     const page = pages.find(page => page.index === selection.page);
-    const matrix = getMatrix(selection);
+    let matrix = getMatrix(selection);
+    const nibSize = get(nibSizeState); // ペン先の大きさ
+    // nibSize が 2 以上の時は、[0][0] のタイルを並べる
+    if (nibSize > 1) {
+      const corner = matrix?.[0]?.[0];
+      matrix = Array.from({ length: nibSize }).map(() =>
+        Array.from({ length: nibSize }).map(() => corner)
+      );
+    }
     const nib = matrix.map(row =>
       row.map(num => {
         const tile = page?.tiles[num];

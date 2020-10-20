@@ -2,6 +2,7 @@ import { CanvasRenderer } from '@hackforplay/next';
 import * as csstips from 'csstips/lib';
 import * as React from 'react';
 import {
+  useRecoilCallback,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState
@@ -10,13 +11,16 @@ import { classes, style } from 'typestyle/lib';
 import {
   cursorModeState,
   editingState,
+  nibSizeState,
   paletteNibState,
+  paletteSelectionState,
   preloadNibState,
   sceneScreenState,
   sceneState
 } from '../recoils';
 import { useDropper } from '../recoils/useDropper';
 import Cursor, { cursorClasses } from '../utils/cursor';
+import { getMatrix } from '../utils/selection';
 import { editWithCursor } from '../utils/updateScene';
 import { Paper } from './Paper';
 
@@ -83,6 +87,43 @@ export function CanvasView() {
     });
   }, [containerRef.current]);
 
+  const nibCanvasRef = React.useRef<HTMLCanvasElement>(null);
+  const updateNibCanvas = useRecoilCallback(
+    async ({ getLoadable }, { x, y }: { x: number; y: number }) => {
+      const canvas = nibCanvasRef.current;
+      const ctx = canvas?.getContext('2d');
+      if (!canvas || !ctx) return;
+      const selectionLoadable = getLoadable(paletteSelectionState);
+      let rows = 0;
+      let cols = 0;
+      if (selectionLoadable.state === 'hasValue') {
+        const selection = selectionLoadable.contents;
+        if (selection) {
+          const matrix = getMatrix(selection);
+          rows = matrix.length;
+          cols = matrix[0]?.length || 0;
+        }
+      }
+      const nibSizeLoadable = getLoadable(nibSizeState);
+      if (
+        nibSizeLoadable.state === 'hasValue' &&
+        nibSizeLoadable.contents > 1
+      ) {
+        rows = cols = nibSizeLoadable.contents;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#333';
+      ctx.strokeRect(x * 32, y * 32, 32 * cols, 32 * rows);
+    },
+    [nibCanvasRef.current]
+  );
+  const clearNibCanvas = React.useCallback(() => {
+    const canvas = nibCanvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, [nibCanvasRef.current]);
+
   const scene = useRecoilValue(sceneState);
   React.useEffect(() => {
     const canvasRenderer = canvasRendererRef.current;
@@ -108,20 +149,22 @@ export function CanvasView() {
   }, []);
   const stop = React.useCallback(() => {
     mutate.pressed = false;
+    clearNibCanvas();
   }, []);
 
   const setDropper = useDropper();
   const setEditing = useSetRecoilState(editingState);
   const handleMove = React.useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const { left, top } = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - left) / 32) >> 0;
+      const y = ((e.clientY - top) / 32) >> 0;
+      updateNibCanvas({ x, y });
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
       if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
         return; // Nib のロードが完了していない
       }
-      const { left, top } = e.currentTarget.getBoundingClientRect();
-      const x = ((e.clientX - left) / 32) >> 0;
-      const y = ((e.clientY - top) / 32) >> 0;
       if (cursorMode === 'dropper') {
         // スポイトで色を吸い取る
         setDropper(x, y);
@@ -156,16 +199,17 @@ export function CanvasView() {
 
   const handleTouchMove = React.useCallback(
     (e: React.TouchEvent<HTMLCanvasElement>) => {
+      const primary = e.touches.item(0);
+      const { left, top } = e.currentTarget.getBoundingClientRect();
+      const x = ((primary.clientX - left) / 32) >> 0;
+      const y = ((primary.clientY - top) / 32) >> 0;
+      updateNibCanvas({ x, y });
       if (!mutate.pressed) return;
       if (nibLoadable.state !== 'hasValue') return;
       if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
         return; // Nib のロードが完了していない
       }
       e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
-      const primary = e.touches.item(0);
-      const { left, top } = e.currentTarget.getBoundingClientRect();
-      const x = ((primary.clientX - left) / 32) >> 0;
-      const y = ((primary.clientY - top) / 32) >> 0;
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
         const cursor = new Cursor(
@@ -217,8 +261,14 @@ export function CanvasView() {
             onMouseDown={handleMouseDown}
             onMouseUp={stop}
             onMouseMove={handleMove}
+            onMouseLeave={stop}
           />
-          <canvas className={cn.nibCanvas} width={width} height={height} />
+          <canvas
+            className={cn.nibCanvas}
+            width={width}
+            height={height}
+            ref={nibCanvasRef}
+          />
         </div>
       </Paper>
     </div>
