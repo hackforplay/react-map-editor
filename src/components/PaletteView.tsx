@@ -319,11 +319,21 @@ function SelectionView({ page }: SelectionViewProps) {
   const baseSelection = useRecoilValue(baseSelectionState);
   const preloaded = useRecoilValueLoadable(preloadNibState);
   const cursorMode = useRecoilValue(cursorModeState);
+  const nibSize = useRecoilValue(nibSizeState);
 
   const selection = cursorMode === 'base' ? baseSelection : nibSelection;
   if (!selection || selection.page !== page) return null;
 
-  const { start, end } = selection;
+  let { start, end } = selection;
+  if (nibSize > 1) {
+    // 太鉛筆の場合は左上のタイルだけが使われる
+    if (start.num < end.num) {
+      end = start;
+    } else {
+      start = end;
+    }
+  }
+
   return (
     <Rect
       left={Math.min(start.col, end.col)}
