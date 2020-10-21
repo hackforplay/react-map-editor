@@ -40,13 +40,13 @@ const root = style({
 const NibIcons = [React.Fragment, Nib1, Nib2, Nib3, Nib4, Nib5];
 
 export function MenuBar() {
-  const [cursorMode, setCusrorMode] = useRecoilState(cursorModeState);
+  const [cursorMode, setCursorMode] = useRecoilState(cursorModeState);
   const [selection, setSelection] = useRecoilState(paletteSelectionState);
   const palettePageLoadable = useRecoilValueLoadable(palettePagesState);
   const [nibSize, setNibSize] = useRecoilState(nibSizeState);
 
   const handleEraser = React.useCallback(() => {
-    setCusrorMode('eraser');
+    setCursorMode('eraser');
     setNibSize(1);
   }, []);
 
@@ -72,17 +72,17 @@ export function MenuBar() {
           end: pos
         });
       }
-      setCusrorMode('pen');
+      setCursorMode('pen');
       setNibSize(1);
     },
     [selection, palettePageLoadable]
   );
   const handleBase = React.useCallback(() => {
-    setCusrorMode('base');
+    setCursorMode('base');
     setNibSize(1);
   }, []);
   const handleDropper = React.useCallback(() => {
-    setCusrorMode('dropper');
+    setCursorMode('dropper');
     setNibSize(1);
   }, []);
 
