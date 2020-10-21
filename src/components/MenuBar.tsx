@@ -18,7 +18,7 @@ import Nib4 from '../icons/Nib4';
 import Nib5 from '../icons/Nib5';
 import {
   cursorModeState,
-  nibSizeState,
+  nibWidthState,
   palettePagesState,
   paletteSelectionState
 } from '../recoils';
@@ -43,11 +43,11 @@ export function MenuBar() {
   const [cursorMode, setCursorMode] = useRecoilState(cursorModeState);
   const [selection, setSelection] = useRecoilState(paletteSelectionState);
   const palettePageLoadable = useRecoilValueLoadable(palettePagesState);
-  const [nibSize, setNibSize] = useRecoilState(nibSizeState);
+  const [nibWidth, setNibWidth] = useRecoilState(nibWidthState);
 
   const handleEraser = React.useCallback(() => {
     setCursorMode('eraser');
-    setNibSize(1);
+    setNibWidth(1);
   }, []);
 
   const [nibAnchorEl, setNibAnchorEl] = React.useState<HTMLElement>();
@@ -73,17 +73,17 @@ export function MenuBar() {
         });
       }
       setCursorMode('pen');
-      setNibSize(1);
+      setNibWidth(1);
     },
     [selection, palettePageLoadable]
   );
   const handleBase = React.useCallback(() => {
     setCursorMode('base');
-    setNibSize(1);
+    setNibWidth(1);
   }, []);
   const handleDropper = React.useCallback(() => {
     setCursorMode('dropper');
-    setNibSize(1);
+    setNibWidth(1);
   }, []);
 
   return (
@@ -95,15 +95,15 @@ export function MenuBar() {
         disabled={palettePageLoadable.state !== 'hasValue'}
         onClick={handlePen}
       >
-        {nibSize === 1 ? (
+        {nibWidth === 1 ? (
           <Edit1 />
-        ) : nibSize === 2 ? (
+        ) : nibWidth === 2 ? (
           <Edit2 />
-        ) : nibSize === 3 ? (
+        ) : nibWidth === 3 ? (
           <Edit3 />
-        ) : nibSize === 4 ? (
+        ) : nibWidth === 4 ? (
           <Edit4 />
-        ) : nibSize === 5 ? (
+        ) : nibWidth === 5 ? (
           <Edit5 />
         ) : (
           <Edit />
@@ -118,9 +118,9 @@ export function MenuBar() {
           size === 0 ? null : (
             <MenuItem
               key={size}
-              selected={nibSize === size}
+              selected={nibWidth === size}
               onClick={() => {
-                setNibSize(size);
+                setNibWidth(size);
                 setNibAnchorEl(undefined);
               }}
             >

@@ -18,11 +18,11 @@ export const cursorModeState = atom<CursorMode>({
 });
 
 /**
- * ペンの太さを表す値
+ * ペンの幅を表す値
  * 1~5 までの数値
  */
-export const nibSizeState = atom<number>({
-  key: 'nibSizeState',
+export const nibWidthState = atom<number>({
+  key: 'nibWidthState',
   default: 1
 });
 
@@ -48,12 +48,12 @@ export const paletteNibState = selector<ITile[][]>({
     const pages = get(palettePagesState);
     const page = pages.find(page => page.index === selection.page);
     let matrix = getMatrix(selection);
-    const nibSize = get(nibSizeState); // ペン先の大きさ
-    // nibSize が 2 以上の時は、[0][0] のタイルを並べる
-    if (nibSize > 1) {
+    const nibWidth = get(nibWidthState); // ペン先の大きさ
+    // ペンの幅が 2 以上の時は、[0][0] のタイルを並べる
+    if (nibWidth > 1) {
       const corner = matrix?.[0]?.[0];
-      matrix = Array.from({ length: nibSize }).map(() =>
-        Array.from({ length: nibSize }).map(() => corner)
+      matrix = Array.from({ length: nibWidth }).map(() =>
+        Array.from({ length: nibWidth }).map(() => corner)
       );
     }
     const nib = matrix.map(row =>
