@@ -12,6 +12,7 @@ import ExpandLess from '../icons/ExpandLess';
 import {
   baseSelectionState,
   cursorModeState,
+  nibWidthState,
   palettePagesState,
   paletteSelectionState,
   preloadNibState
@@ -170,6 +171,7 @@ function PageView(props: IPage) {
         set(cursorModeState, 'pen');
       }
     }
+    set(nibWidthState, 1); // ペンの幅を 1 に戻す
   }, []);
 
   const move = React.useCallback((pos: Pos) => {
@@ -317,11 +319,21 @@ function SelectionView({ page }: SelectionViewProps) {
   const baseSelection = useRecoilValue(baseSelectionState);
   const preloaded = useRecoilValueLoadable(preloadNibState);
   const cursorMode = useRecoilValue(cursorModeState);
+  const nibWidth = useRecoilValue(nibWidthState);
 
   const selection = cursorMode === 'base' ? baseSelection : nibSelection;
   if (!selection || selection.page !== page) return null;
 
-  const { start, end } = selection;
+  let { start, end } = selection;
+  if (nibWidth > 1) {
+    // 太鉛筆の場合は左上のタイルだけが使われる
+    if (start.num < end.num) {
+      end = start;
+    } else {
+      start = end;
+    }
+  }
+
   return (
     <Rect
       left={Math.min(start.col, end.col)}

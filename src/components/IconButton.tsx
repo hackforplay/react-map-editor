@@ -9,7 +9,7 @@ export interface IconButtonProps {
   className?: string;
   label?: string;
   margin?: boolean;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 const icon = style({

@@ -17,6 +17,15 @@ export const cursorModeState = atom<CursorMode>({
   default: 'nope'
 });
 
+/**
+ * ペンの幅を表す値
+ * 1~5 までの数値
+ */
+export const nibWidthState = atom<number>({
+  key: 'nibWidthState',
+  default: 1
+});
+
 export const palettePagesState = selector<IPage[]>({
   key: 'palettePageState',
   get: async ({ get }) => {
@@ -38,7 +47,15 @@ export const paletteNibState = selector<ITile[][]>({
     if (!selection) return [[]]; // 空のペン先
     const pages = get(palettePagesState);
     const page = pages.find(page => page.index === selection.page);
-    const matrix = getMatrix(selection);
+    let matrix = getMatrix(selection);
+    const nibWidth = get(nibWidthState); // ペン先の大きさ
+    // ペンの幅が 2 以上の時は、[0][0] のタイルを並べる
+    if (nibWidth > 1) {
+      const corner = matrix?.[0]?.[0];
+      matrix = Array.from({ length: nibWidth }).map(() =>
+        Array.from({ length: nibWidth }).map(() => corner)
+      );
+    }
     const nib = matrix.map(row =>
       row.map(num => {
         const tile = page?.tiles[num];
@@ -174,5 +191,31 @@ export const baseSelectionState = selector<Selection>({
     const tile = page?.tiles[String(newValue.start.num)];
     if (!tile) return;
     set(editingState, curr => updateBase(curr, tile));
+  }
+});
+
+/**
+ * キャンバスの上に表示するペンの枠の幅と高さ
+ */
+export const nibSizeState = selector<{ rows: number; cols: number }>({
+  key: 'nibSizeState',
+  get: ({ get }) => {
+    // ペン以外の場合は問答無用で 1
+    const cursorMode = get(cursorModeState);
+    if (cursorMode !== 'pen') {
+      return { cols: 1, rows: 1 };
+    }
+    // ペン幅を変えている場合は、その大きさに
+    const nibWidth = get(nibWidthState);
+    if (nibWidth > 1) {
+      return { cols: nibWidth, rows: nibWidth };
+    }
+    // パレットを選択しているなら、その大きさに
+    const selection = get(paletteSelectionState);
+    if (selection) {
+      const matrix = getMatrix(selection);
+      return { rows: matrix.length, cols: matrix[0]?.length || 0 };
+    }
+    return { cols: 1, rows: 1 };
   }
 });

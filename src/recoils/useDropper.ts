@@ -29,7 +29,7 @@ export function useDropper() {
     if (!pages) return;
 
     for (let layer = 0; layer < sceneMap.tables.length; layer++) {
-      const index = sceneMap.tables[layer][y][x];
+      const index = sceneMap.tables[layer]?.[y]?.[x];
       if (index > 0) {
         // index から page を見つける
         for (const page of pages) {
