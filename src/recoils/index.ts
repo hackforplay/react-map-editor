@@ -193,3 +193,29 @@ export const baseSelectionState = selector<Selection>({
     set(editingState, curr => updateBase(curr, tile));
   }
 });
+
+/**
+ * キャンバスの上に表示するペンの枠の幅と高さ
+ */
+export const nibSizeState = selector<{ rows: number; cols: number }>({
+  key: 'nibSizeState',
+  get: ({ get }) => {
+    // ペン以外の場合は問答無用で 1
+    const cursorMode = get(cursorModeState);
+    if (cursorMode !== 'pen') {
+      return { cols: 1, rows: 1 };
+    }
+    // ペン幅を変えている場合は、その大きさに
+    const nibWidth = get(nibWidthState);
+    if (nibWidth > 1) {
+      return { cols: nibWidth, rows: nibWidth };
+    }
+    // パレットを選択しているなら、その大きさに
+    const selection = get(paletteSelectionState);
+    if (selection) {
+      const matrix = getMatrix(selection);
+      return { rows: matrix.length, cols: matrix[0]?.length || 0 };
+    }
+    return { cols: 1, rows: 1 };
+  }
+});

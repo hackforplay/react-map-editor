@@ -13,14 +13,12 @@ import {
   editingState,
   nibSizeState,
   paletteNibState,
-  paletteSelectionState,
   preloadNibState,
   sceneScreenState,
   sceneState
 } from '../recoils';
 import { useDropper } from '../recoils/useDropper';
 import Cursor, { cursorClasses } from '../utils/cursor';
-import { getMatrix } from '../utils/selection';
 import { editWithCursor } from '../utils/updateScene';
 import { Paper } from './Paper';
 
@@ -93,24 +91,9 @@ export function CanvasView() {
       const canvas = nibCanvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
-      const selectionLoadable = getLoadable(paletteSelectionState);
-      let rows = 0;
-      let cols = 0;
-      if (selectionLoadable.state === 'hasValue') {
-        const selection = selectionLoadable.contents;
-        if (selection) {
-          const matrix = getMatrix(selection);
-          rows = matrix.length;
-          cols = matrix[0]?.length || 0;
-        }
-      }
-      const nibSizeLoadable = getLoadable(nibSizeState);
-      if (
-        nibSizeLoadable.state === 'hasValue' &&
-        nibSizeLoadable.contents > 1
-      ) {
-        rows = cols = nibSizeLoadable.contents;
-      }
+      const loadable = getLoadable(nibSizeState);
+      if (loadable.state !== 'hasValue') return;
+      const { cols, rows } = loadable.contents;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.strokeStyle = '#333';
       ctx.strokeRect(x * 32, y * 32, 32 * cols, 32 * rows);
