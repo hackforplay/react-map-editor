@@ -75,7 +75,7 @@ export function MenuBar() {
       setCursorMode('pen');
       setNibWidth(1);
     },
-    [selection, palettePageLoadable]
+    [cursorMode, selection, palettePageLoadable]
   );
   const handleBase = React.useCallback(() => {
     setCursorMode('base');
