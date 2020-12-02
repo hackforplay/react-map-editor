@@ -58,12 +58,19 @@ export function editWithCursor(editing: IEditing, cursor: Cursor) {
       }
 
       if (cursor.mode === 'eraser') {
-        for (const table of tables.values()) {
-          const tableRow = table && table[cursor.y];
-          const index = tableRow && tableRow[cursor.x];
-          if (index > -1) {
-            tableRow[cursor.x] = -1;
-            break;
+        for (let dy = 0; dy < cursor.eraserWidth; dy++) {
+          for (let dx = 0; dx < cursor.eraserWidth; dx++) {
+            for (const table of tables.values()) {
+              const tableRow = table?.[cursor.y + dy];
+              const index = tableRow?.[cursor.x + dx];
+              if (index === undefined) {
+                break;
+              }
+              if (index > -1) {
+                tableRow[cursor.x + dx] = -1;
+                break;
+              }
+            }
           }
         }
       }

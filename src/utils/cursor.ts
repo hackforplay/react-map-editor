@@ -11,19 +11,22 @@ export default class Cursor {
   nib: ITile[][] | null;
   _layer: number | null = null;
   dragId: number;
+  eraserWidth: number;
 
   constructor(
     x: number,
     y: number,
     mode: CursorMode,
     nib: ITile[][] | null,
-    dragId: number
+    dragId: number,
+    eraserSize = 1
   ) {
     this.x = x;
     this.y = y;
     this.mode = mode;
     this.nib = nib;
     this.dragId = dragId;
+    this.eraserWidth = eraserSize;
 
     if (this.mode === 'pen' && this.nib === null) {
       this.mode = 'nope';
@@ -36,7 +39,8 @@ export default class Cursor {
       this.y === other.y &&
       this.mode === other.mode &&
       this.nib === other.nib &&
-      this.dragId === other.dragId
+      this.dragId === other.dragId &&
+      this.eraserWidth === other.eraserWidth
     );
   }
 }
