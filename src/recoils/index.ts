@@ -1,6 +1,7 @@
 import { Scene, size } from '@hackforplay/next';
 import { atom, DefaultValue, selector } from 'recoil';
 import { request } from '../components/NetworkProvider';
+import { eraser } from '../cursors';
 import { CursorMode } from '../utils/cursor';
 import { getMatrix, Selection } from '../utils/selection';
 import { updateBase } from '../utils/updateBase';
@@ -23,6 +24,15 @@ export const cursorModeState = atom<CursorMode>({
  */
 export const nibWidthState = atom<number>({
   key: 'nibWidthState',
+  default: 1
+});
+
+/**
+ * 消しゴムの大きさを表す値
+ * 1~5 までの数値
+ */
+export const eraserWidthState = atom({
+  key: 'eraserWidthState',
   default: 1
 });
 
@@ -195,26 +205,31 @@ export const baseSelectionState = selector<Selection>({
 });
 
 /**
- * キャンバスの上に表示するペンの枠の幅と高さ
+ * キャンバスの上に表示するペン先または消しゴムの枠の幅と高さ
  */
-export const nibSizeState = selector<{ rows: number; cols: number }>({
-  key: 'nibSizeState',
+export const cursorSizeState = selector<{ rows: number; cols: number }>({
+  key: 'cursorSizeState',
   get: ({ get }) => {
-    // ペン以外の場合は問答無用で 1
     const cursorMode = get(cursorModeState);
-    if (cursorMode !== 'pen') {
-      return { cols: 1, rows: 1 };
+    if (cursorMode === 'pen') {
+      // ペン幅を変えている場合は、その大きさに
+      const nibWidth = get(nibWidthState);
+      if (nibWidth > 1) {
+        return { cols: nibWidth, rows: nibWidth };
+      }
+      // パレットを選択しているなら、その大きさに
+      const selection = get(paletteSelectionState);
+      if (selection) {
+        const matrix = getMatrix(selection);
+        return { rows: matrix.length, cols: matrix[0]?.length || 0 };
+      }
     }
-    // ペン幅を変えている場合は、その大きさに
-    const nibWidth = get(nibWidthState);
-    if (nibWidth > 1) {
-      return { cols: nibWidth, rows: nibWidth };
+    if (cursorMode === 'eraser') {
+      const eraserWidth = get(eraserWidthState);
+      return { cols: eraserWidth, rows: eraserWidth };
     }
-    // パレットを選択しているなら、その大きさに
-    const selection = get(paletteSelectionState);
-    if (selection) {
-      const matrix = getMatrix(selection);
-      return { rows: matrix.length, cols: matrix[0]?.length || 0 };
+    if (cursorMode === 'base') {
+      return { cols: 0, rows: 0 };
     }
     return { cols: 1, rows: 1 };
   }

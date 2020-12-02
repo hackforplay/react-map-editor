@@ -11,11 +11,12 @@ import { classes, style } from 'typestyle/lib';
 import {
   cursorModeState,
   editingState,
-  nibSizeState,
+  cursorSizeState,
   paletteNibState,
   preloadNibState,
   sceneScreenState,
-  sceneState
+  sceneState,
+  eraserWidthState
 } from '../recoils';
 import { useDropper } from '../recoils/useDropper';
 import Cursor, { cursorClasses } from '../utils/cursor';
@@ -85,13 +86,14 @@ export function CanvasView() {
     });
   }, [containerRef.current]);
 
+  // ペン先または消しゴムの範囲を示すための Canvas
   const nibCanvasRef = React.useRef<HTMLCanvasElement>(null);
   const updateNibCanvas = useRecoilCallback(
     async ({ getLoadable }, { x, y }: { x: number; y: number }) => {
       const canvas = nibCanvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
-      const loadable = getLoadable(nibSizeState);
+      const loadable = getLoadable(cursorSizeState);
       if (loadable.state !== 'hasValue') return;
       const { cols, rows } = loadable.contents;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -137,8 +139,8 @@ export function CanvasView() {
 
   const setDropper = useDropper();
   const setEditing = useSetRecoilState(editingState);
-  const handleMove = React.useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMove = useRecoilCallback(
+    ({ getLoadable }, e: React.MouseEvent<HTMLCanvasElement>) => {
       const { left, top } = e.currentTarget.getBoundingClientRect();
       const x = ((e.clientX - left) / 32) >> 0;
       const y = ((e.clientY - top) / 32) >> 0;
@@ -154,12 +156,14 @@ export function CanvasView() {
         stop();
       } else if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
+        const eraserLoadable = getLoadable(eraserWidthState);
         const cursor = new Cursor(
           x,
           y,
           cursorMode,
           nibLoadable.contents,
-          mutate.id
+          mutate.id,
+          eraserLoadable.state === 'hasValue' ? eraserLoadable.contents : 1
         );
         setEditing(current => editWithCursor(current, cursor));
       }
@@ -180,8 +184,8 @@ export function CanvasView() {
     };
   }, []);
 
-  const handleTouchMove = React.useCallback(
-    (e: React.TouchEvent<HTMLCanvasElement>) => {
+  const handleTouchMove = useRecoilCallback(
+    ({ getLoadable }, e: React.TouchEvent<HTMLCanvasElement>) => {
       const primary = e.touches.item(0);
       const { left, top } = e.currentTarget.getBoundingClientRect();
       const x = ((primary.clientX - left) / 32) >> 0;
@@ -195,12 +199,14 @@ export function CanvasView() {
       e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
+        const eraserLoadable = getLoadable(eraserWidthState);
         const cursor = new Cursor(
           x,
           y,
           cursorMode,
           nibLoadable.contents,
-          mutate.id
+          mutate.id,
+          eraserLoadable.state === 'hasValue' ? eraserLoadable.contents : 1
         );
         setEditing(current => editWithCursor(current, cursor));
       }

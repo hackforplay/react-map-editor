@@ -10,6 +10,11 @@ import Edit3 from '../icons/Edit3';
 import Edit4 from '../icons/Edit4';
 import Edit5 from '../icons/Edit5';
 import Eraser from '../icons/Eraser';
+import Eraser1 from '../icons/Eraser1';
+import Eraser2 from '../icons/Eraser2';
+import Eraser3 from '../icons/Eraser3';
+import Eraser4 from '../icons/Eraser4';
+import Eraser5 from '../icons/Eraser5';
 import FormatPaint from '../icons/FormatPaint';
 import Nib1 from '../icons/Nib1';
 import Nib2 from '../icons/Nib2';
@@ -18,6 +23,7 @@ import Nib4 from '../icons/Nib4';
 import Nib5 from '../icons/Nib5';
 import {
   cursorModeState,
+  eraserWidthState,
   nibWidthState,
   palettePagesState,
   paletteSelectionState
@@ -44,11 +50,7 @@ export function MenuBar() {
   const [selection, setSelection] = useRecoilState(paletteSelectionState);
   const palettePageLoadable = useRecoilValueLoadable(palettePagesState);
   const [nibWidth, setNibWidth] = useRecoilState(nibWidthState);
-
-  const handleEraser = React.useCallback(() => {
-    setCursorMode('eraser');
-    setNibWidth(1);
-  }, []);
+  const [eraserWidth, setEraserWidth] = useRecoilState(eraserWidthState);
 
   const [nibAnchorEl, setNibAnchorEl] = React.useState<HTMLElement>();
   const handlePen = React.useCallback(
@@ -71,20 +73,38 @@ export function MenuBar() {
           start: pos,
           end: pos
         });
+        setNibWidth(1);
       }
       setCursorMode('pen');
-      setNibWidth(1);
     },
     [cursorMode, selection, palettePageLoadable]
   );
+
+  const [eraserAnchorEl, setEraserAnchorEl] = React.useState<HTMLElement>();
+  const handleEraser = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (cursorMode === 'eraser') {
+        // 消しゴムモードでもう一度アイコンを押すと大きさを変えられる
+        setEraserAnchorEl(e.currentTarget);
+        return;
+      }
+      setCursorMode('eraser');
+    },
+    [cursorMode]
+  );
+
   const handleBase = React.useCallback(() => {
     setCursorMode('base');
-    setNibWidth(1);
   }, []);
   const handleDropper = React.useCallback(() => {
     setCursorMode('dropper');
-    setNibWidth(1);
   }, []);
+
+  // cursorMode が変わったらペンと消しゴムの太さを元に戻す
+  React.useEffect(() => {
+    setNibWidth(1);
+    setEraserWidth(1);
+  }, [cursorMode]);
 
   return (
     <Paper id="rme-menu-bar" className={root}>
@@ -138,8 +158,43 @@ export function MenuBar() {
         margin
         onClick={handleEraser}
       >
-        <Eraser />
+        {eraserWidth === 1 ? (
+          <Eraser1 />
+        ) : eraserWidth === 2 ? (
+          <Eraser2 />
+        ) : eraserWidth === 3 ? (
+          <Eraser3 />
+        ) : eraserWidth === 4 ? (
+          <Eraser4 />
+        ) : eraserWidth === 5 ? (
+          <Eraser5 />
+        ) : (
+          <Eraser />
+        )}
       </IconButton>
+      <Menu
+        open={Boolean(eraserAnchorEl)}
+        anchorEl={eraserAnchorEl}
+        onClose={() => setEraserAnchorEl(undefined)}
+      >
+        {NibIcons.map((Icon, size) =>
+          size === 0 ? null : (
+            <MenuItem
+              key={size}
+              selected={eraserWidth === size}
+              onClick={() => {
+                setEraserWidth(size);
+                setEraserAnchorEl(undefined);
+              }}
+            >
+              <ListItemIcon>
+                <Icon />
+              </ListItemIcon>
+              <Typography>消しゴムのサイズ {size}</Typography>
+            </MenuItem>
+          )
+        )}
+      </Menu>
       <IconButton
         active={cursorMode === 'base'}
         label="じめん"
