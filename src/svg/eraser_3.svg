@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Rectangle Copy 25</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0.0004 0.18 41.35665 0.18 41.35665 36.3671 0.0004 36.3671"></polygon>
+        <polygon id="path-3" points="0 37.0003 47.879 37.0003 47.879 1.0003 0 1.0003"></polygon>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-5-Copy-11">
+            <rect id="Rectangle-Copy-25" x="0" y="0" width="48" height="48"></rect>
+            <g id="Group-5" transform="translate(0.000000, 5.000000)">
+                <g id="Group-3" transform="translate(0.000000, 0.820300)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <path d="M15.7769,14.6641 L26.8729,25.7611 L21.4359,31.1971 L12.1669,31.1971 L5.7049,24.7351 L15.7769,14.6641 Z M28.7469,31.1971 L40.2219,19.7231 C41.7349,18.2081 41.7349,15.7531 40.2219,14.2391 L27.2979,1.3151 C25.7829,-0.1989 23.3289,-0.1989 21.8139,1.3151 L1.1359,21.9941 C-0.3781,23.5081 -0.3781,25.9631 1.1359,27.4771 L8.8899,35.2311 C9.6169,35.9591 10.6039,36.3671 11.6319,36.3671 L22.6799,36.3671 C23.7519,36.3671 24.2899,35.6521 25.2499,34.6911 L28.7469,31.1971 Z" id="Fill-1" fill="currentColor" mask="url(#mask-2)"></path>
+                </g>
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <g id="Clip-4"></g>
+                <text id="3" mask="url(#mask-4)" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="18" font-weight="bold" fill="currentColor">
+                    <tspan x="37.992" y="37">3</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>
