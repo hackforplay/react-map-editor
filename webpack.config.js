@@ -46,6 +46,7 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
+    disableHostCheck: true,
     contentBase: path.resolve(__dirname, 'public')
   }
 };
