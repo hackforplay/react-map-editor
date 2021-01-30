@@ -240,7 +240,11 @@ export function CanvasView() {
           className={cn.scroller}
         >
           <canvas
-            className={classes(cursor, cn.disableTouchAction, cn.mainCanvas)}
+            className={classes(
+              cursor,
+              cursorMode !== 'pan' && cn.disableTouchAction,
+              cn.mainCanvas
+            )}
             width={width}
             height={height}
             onTouchStart={handleTouchStart}
