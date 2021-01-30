@@ -21,6 +21,7 @@ import {
 import { useDropper } from '../recoils/useDropper';
 import Cursor, { cursorClasses } from '../utils/cursor';
 import { editWithCursor } from '../utils/updateScene';
+import { bringFront } from './BackDrop';
 import { Paper } from './Paper';
 
 const cn = {
@@ -230,7 +231,7 @@ export function CanvasView() {
   }, [canvasRef.current]);
 
   return (
-    <div className={cn.root}>
+    <div className={classes(cn.root, cursorMode === 'dropper' && bringFront)}>
       <Paper id="rme-canvas-view" className={cn.renderRoot} ref={containerRef}>
         <div
           style={{

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { style } from 'typestyle/lib';
+import { BackDrop } from './BackDrop';
 import { CanvasView } from './CanvasView';
 import { DialogRootProvider } from './Dialog';
 import { MenuBar } from './MenuBar';
@@ -48,6 +49,7 @@ export function Root(props: RootProps) {
         </div>
         <DialogRootProvider />
         <NetworkProvider />
+        <BackDrop />
       </div>
     </React.Suspense>
   );

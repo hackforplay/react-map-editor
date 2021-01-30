@@ -6,7 +6,7 @@ import {
   useRecoilValueLoadable,
   useSetRecoilState
 } from 'recoil';
-import { style } from 'typestyle/lib';
+import { classes, style } from 'typestyle/lib';
 import { useUpdated } from '../hooks/useUpdated';
 import ExpandLess from '../icons/ExpandLess';
 import {
@@ -22,6 +22,7 @@ import { dropperPageAtom } from '../recoils/useDropper';
 import { colors } from '../utils/colors';
 import { Pos, Selection } from '../utils/selection';
 import { shallowEqual } from '../utils/shallowEqual';
+import { bringFront } from './BackDrop';
 import { ErrorBoundary } from './ErrorBoundary';
 import { IconButton } from './IconButton';
 import { Img } from './Img';
@@ -87,8 +88,10 @@ const cn = {
 };
 
 export function PaletteView() {
+  const cursorMode = useRecoilValue(cursorModeState);
+
   return (
-    <div className={cn.root}>
+    <div className={classes(cn.root, cursorMode === 'base' && bringFront)}>
       <ErrorBoundary>
         <React.Suspense fallback="Loading...">
           <TileSetsView />
