@@ -41,8 +41,12 @@ const label = style({
   fontWeight: 700
 });
 const marginHorizontal = style({
-  marginLeft: 16,
-  marginRight: 0
+  margin: 8,
+  $nest: {
+    '&:first-child': {
+      marginLeft: 16
+    }
+  }
 });
 
 export function IconButton(props: IconButtonProps) {

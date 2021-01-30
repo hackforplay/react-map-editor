@@ -37,13 +37,13 @@ import { Paper } from './Paper';
 const root = style({
   margin: 16,
   marginBottom: 8,
-  height: 56,
   position: 'relative',
   zIndex: 1,
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  overflowX: 'scroll'
+  overflowX: 'scroll',
+  flexWrap: 'wrap'
 });
 
 const NibIcons = [React.Fragment, Nib1, Nib2, Nib3, Nib4, Nib5];

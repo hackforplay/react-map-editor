@@ -18,7 +18,6 @@ const cn = {
   container: style({
     display: 'flex',
     alignItems: 'center',
-    height: 56,
     minWidth: 120
   }),
   fripVert: style({
