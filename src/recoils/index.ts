@@ -1,7 +1,6 @@
 import { Scene, size } from '@hackforplay/next';
 import { atom, DefaultValue, selector } from 'recoil';
 import { request } from '../components/NetworkProvider';
-import { eraser } from '../cursors';
 import { CursorMode } from '../utils/cursor';
 import { getMatrix, Selection } from '../utils/selection';
 import { updateBase } from '../utils/updateBase';
