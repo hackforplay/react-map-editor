@@ -21,6 +21,7 @@ import Nib2 from '../icons/Nib2';
 import Nib3 from '../icons/Nib3';
 import Nib4 from '../icons/Nib4';
 import Nib5 from '../icons/Nib5';
+import PanTool from '../icons/PanTool';
 import {
   cursorModeState,
   eraserWidthState,
@@ -28,6 +29,7 @@ import {
   palettePagesState,
   paletteSelectionState
 } from '../recoils';
+import { isTouchDevice } from '../utils/isTouchDevice';
 import { Pos } from '../utils/selection';
 import { IconButton } from './IconButton';
 import { Paper } from './Paper';
@@ -35,12 +37,13 @@ import { Paper } from './Paper';
 const root = style({
   margin: 16,
   marginBottom: 8,
-  height: 56,
   position: 'relative',
   zIndex: 1,
   display: 'flex',
   justifyContent: 'flex-start',
-  alignItems: 'center'
+  alignItems: 'center',
+  overflowX: 'scroll',
+  flexWrap: 'wrap'
 });
 
 const NibIcons = [React.Fragment, Nib1, Nib2, Nib3, Nib4, Nib5];
@@ -98,6 +101,9 @@ export function MenuBar() {
   }, []);
   const handleDropper = React.useCallback(() => {
     setCursorMode('dropper');
+  }, []);
+  const handlePan = React.useCallback(() => {
+    setCursorMode('pan');
   }, []);
 
   // cursorMode が変わったらペンと消しゴムの太さを元に戻す
@@ -211,6 +217,16 @@ export function MenuBar() {
       >
         <Colorize />
       </IconButton>
+      {isTouchDevice() ? (
+        <IconButton
+          active={cursorMode === 'pan'}
+          label="うごかす"
+          margin
+          onClick={handlePan}
+        >
+          <PanTool />
+        </IconButton>
+      ) : null}
     </Paper>
   );
 }
