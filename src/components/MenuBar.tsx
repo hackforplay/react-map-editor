@@ -1,7 +1,7 @@
 import { ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { useRecoilState, useRecoilValueLoadable } from 'recoil';
-import { style } from 'typestyle/lib';
+import { classes, style } from 'typestyle/lib';
 import Colorize from '../icons/Colorize';
 import Edit from '../icons/Edit';
 import Edit1 from '../icons/Edit1';
@@ -31,6 +31,7 @@ import {
 } from '../recoils';
 import { isTouchDevice } from '../utils/isTouchDevice';
 import { Pos } from '../utils/selection';
+import { bringFront } from './BackDrop';
 import { IconButton } from './IconButton';
 import { Paper } from './Paper';
 
@@ -38,7 +39,6 @@ const root = style({
   margin: 16,
   marginBottom: 8,
   position: 'relative',
-  zIndex: 1,
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
@@ -113,7 +113,7 @@ export function MenuBar() {
   }, [cursorMode]);
 
   return (
-    <Paper id="rme-menu-bar" className={root}>
+    <Paper id="rme-menu-bar" className={classes(root, bringFront)}>
       <IconButton
         active={cursorMode === 'pen'}
         label="えんぴつ"
