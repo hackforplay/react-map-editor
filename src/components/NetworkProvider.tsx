@@ -33,13 +33,16 @@ export const request = selectorFamily<Response, string>({
 });
 
 export function NetworkProvider() {
-  const retryAllFailedRequests = useRecoilCallback(({ set }) => {
-    const copy = new Set(errorNumbers);
-    errorNumbers.clear();
-    copy.forEach(number => {
-      set(retrys(number), curr => curr + 1);
-    });
-  }, []);
+  const retryAllFailedRequests = useRecoilCallback(
+    ({ set }) => () => {
+      const copy = new Set(errorNumbers);
+      errorNumbers.clear();
+      copy.forEach(number => {
+        set(retrys(number), curr => curr + 1);
+      });
+    },
+    []
+  );
 
   React.useEffect(
     () =>
