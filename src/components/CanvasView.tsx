@@ -90,11 +90,11 @@ export function CanvasView() {
   // ペン先または消しゴムの範囲を示すための Canvas
   const nibCanvasRef = React.useRef<HTMLCanvasElement>(null);
   const updateNibCanvas = useRecoilCallback(
-    async ({ getLoadable }, { x, y }: { x: number; y: number }) => {
+    ({ snapshot }) => ({ x, y }: { x: number; y: number }) => {
       const canvas = nibCanvasRef.current;
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
-      const loadable = getLoadable(cursorSizeState);
+      const loadable = snapshot.getLoadable(cursorSizeState);
       if (loadable.state !== 'hasValue') return;
       const { cols, rows } = loadable.contents;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -141,7 +141,7 @@ export function CanvasView() {
   const setDropper = useDropper();
   const setEditing = useSetRecoilState(editingState);
   const handleMove = useRecoilCallback(
-    ({ getLoadable }, e: React.MouseEvent<HTMLCanvasElement>) => {
+    ({ snapshot }) => (e: React.MouseEvent<HTMLCanvasElement>) => {
       const { left, top } = e.currentTarget.getBoundingClientRect();
       const x = ((e.clientX - left) / 32) >> 0;
       const y = ((e.clientY - top) / 32) >> 0;
@@ -157,7 +157,7 @@ export function CanvasView() {
         stop();
       } else if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
-        const eraserLoadable = getLoadable(eraserWidthState);
+        const eraserLoadable = snapshot.getLoadable(eraserWidthState);
         const cursor = new Cursor(
           x,
           y,
@@ -186,7 +186,7 @@ export function CanvasView() {
   }, []);
 
   const handleTouchMove = useRecoilCallback(
-    ({ getLoadable }, e: React.TouchEvent<HTMLCanvasElement>) => {
+    ({ snapshot }) => (e: React.TouchEvent<HTMLCanvasElement>) => {
       const primary = e.touches.item(0);
       const { left, top } = e.currentTarget.getBoundingClientRect();
       const x = ((primary.clientX - left) / 32) >> 0;
@@ -200,7 +200,7 @@ export function CanvasView() {
       e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
       if (x !== mutate.px || y !== mutate.py) {
         update(x, y);
-        const eraserLoadable = getLoadable(eraserWidthState);
+        const eraserLoadable = snapshot.getLoadable(eraserWidthState);
         const cursor = new Cursor(
           x,
           y,
