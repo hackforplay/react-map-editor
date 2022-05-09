@@ -16,7 +16,6 @@
     "access": "public"
   },
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "start": "npm run watch",
     "test": "npm run lint && npm run cursor && tsc && ava",
     "watch": "webpack-dev-server",
