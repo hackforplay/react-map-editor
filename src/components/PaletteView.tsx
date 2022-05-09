@@ -150,33 +150,34 @@ function PageView(props: IPage) {
   }, [canClose]);
 
   const start = useRecoilCallback(
-    ({ snapshot, set }) => (pos: Pos) => {
-      if (pos.row >= props.row) return; // 超過している
+    ({ snapshot, set }) =>
+      (pos: Pos) => {
+        if (pos.row >= props.row) return; // 超過している
 
-      const loadable = snapshot.getLoadable(cursorModeState);
-      if (loadable.state !== 'hasValue') return;
-      const cursorMode = loadable.contents;
+        const loadable = snapshot.getLoadable(cursorModeState);
+        if (loadable.state !== 'hasValue') return;
+        const cursorMode = loadable.contents;
 
-      const selection: Selection = {
-        page: props.index,
-        start: pos,
-        end: pos
-      };
+        const selection: Selection = {
+          page: props.index,
+          start: pos,
+          end: pos
+        };
 
-      if (cursorMode === 'base') {
-        // base の場合は sceneMap を変更する
-        set(baseSelectionState, selection);
-        set(cursorModeState, 'pen');
-      } else {
-        // それ以外の場合は nib として選ぶ
-        draggingRef.current = true;
-        set(paletteSelectionState, selection);
-        if (cursorMode !== 'pen') {
+        if (cursorMode === 'base') {
+          // base の場合は sceneMap を変更する
+          set(baseSelectionState, selection);
           set(cursorModeState, 'pen');
+        } else {
+          // それ以外の場合は nib として選ぶ
+          draggingRef.current = true;
+          set(paletteSelectionState, selection);
+          if (cursorMode !== 'pen') {
+            set(cursorModeState, 'pen');
+          }
         }
-      }
-      set(nibWidthState, 1); // ペンの幅を 1 に戻す
-    },
+        set(nibWidthState, 1); // ペンの幅を 1 に戻す
+      },
     []
   );
 

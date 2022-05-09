@@ -90,17 +90,18 @@ export function CanvasView() {
   // ペン先または消しゴムの範囲を示すための Canvas
   const nibCanvasRef = React.useRef<HTMLCanvasElement>(null);
   const updateNibCanvas = useRecoilCallback(
-    ({ snapshot }) => ({ x, y }: { x: number; y: number }) => {
-      const canvas = nibCanvasRef.current;
-      const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) return;
-      const loadable = snapshot.getLoadable(cursorSizeState);
-      if (loadable.state !== 'hasValue') return;
-      const { cols, rows } = loadable.contents;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#333';
-      ctx.strokeRect(x * 32, y * 32, 32 * cols, 32 * rows);
-    },
+    ({ snapshot }) =>
+      ({ x, y }: { x: number; y: number }) => {
+        const canvas = nibCanvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (!canvas || !ctx) return;
+        const loadable = snapshot.getLoadable(cursorSizeState);
+        if (loadable.state !== 'hasValue') return;
+        const { cols, rows } = loadable.contents;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#333';
+        ctx.strokeRect(x * 32, y * 32, 32 * cols, 32 * rows);
+      },
     [nibCanvasRef.current]
   );
   const clearNibCanvas = React.useCallback(() => {
@@ -141,34 +142,35 @@ export function CanvasView() {
   const setDropper = useDropper();
   const setEditing = useSetRecoilState(editingState);
   const handleMove = useRecoilCallback(
-    ({ snapshot }) => (e: React.MouseEvent<HTMLCanvasElement>) => {
-      const { left, top } = e.currentTarget.getBoundingClientRect();
-      const x = ((e.clientX - left) / 32) >> 0;
-      const y = ((e.clientY - top) / 32) >> 0;
-      updateNibCanvas({ x, y });
-      if (!mutate.pressed) return;
-      if (nibLoadable.state !== 'hasValue') return;
-      if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
-        return; // Nib のロードが完了していない
-      }
-      if (cursorMode === 'dropper') {
-        // スポイトで色を吸い取る
-        setDropper(x, y);
-        stop();
-      } else if (x !== mutate.px || y !== mutate.py) {
-        update(x, y);
-        const eraserLoadable = snapshot.getLoadable(eraserWidthState);
-        const cursor = new Cursor(
-          x,
-          y,
-          cursorMode,
-          nibLoadable.contents,
-          mutate.id,
-          eraserLoadable.state === 'hasValue' ? eraserLoadable.contents : 1
-        );
-        setEditing(current => editWithCursor(current, cursor));
-      }
-    },
+    ({ snapshot }) =>
+      (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const { left, top } = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - left) / 32) >> 0;
+        const y = ((e.clientY - top) / 32) >> 0;
+        updateNibCanvas({ x, y });
+        if (!mutate.pressed) return;
+        if (nibLoadable.state !== 'hasValue') return;
+        if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
+          return; // Nib のロードが完了していない
+        }
+        if (cursorMode === 'dropper') {
+          // スポイトで色を吸い取る
+          setDropper(x, y);
+          stop();
+        } else if (x !== mutate.px || y !== mutate.py) {
+          update(x, y);
+          const eraserLoadable = snapshot.getLoadable(eraserWidthState);
+          const cursor = new Cursor(
+            x,
+            y,
+            cursorMode,
+            nibLoadable.contents,
+            mutate.id,
+            eraserLoadable.state === 'hasValue' ? eraserLoadable.contents : 1
+          );
+          setEditing(current => editWithCursor(current, cursor));
+        }
+      },
     [cursorMode, nibLoadable, preloaded]
   );
   const handleMouseDown = React.useCallback(
@@ -186,32 +188,33 @@ export function CanvasView() {
   }, []);
 
   const handleTouchMove = useRecoilCallback(
-    ({ snapshot }) => (e: React.TouchEvent<HTMLCanvasElement>) => {
-      const primary = e.touches.item(0);
-      const { left, top } = e.currentTarget.getBoundingClientRect();
-      const x = ((primary.clientX - left) / 32) >> 0;
-      const y = ((primary.clientY - top) / 32) >> 0;
-      updateNibCanvas({ x, y });
-      if (!mutate.pressed) return;
-      if (nibLoadable.state !== 'hasValue') return;
-      if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
-        return; // Nib のロードが完了していない
-      }
-      e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
-      if (x !== mutate.px || y !== mutate.py) {
-        update(x, y);
-        const eraserLoadable = snapshot.getLoadable(eraserWidthState);
-        const cursor = new Cursor(
-          x,
-          y,
-          cursorMode,
-          nibLoadable.contents,
-          mutate.id,
-          eraserLoadable.state === 'hasValue' ? eraserLoadable.contents : 1
-        );
-        setEditing(current => editWithCursor(current, cursor));
-      }
-    },
+    ({ snapshot }) =>
+      (e: React.TouchEvent<HTMLCanvasElement>) => {
+        const primary = e.touches.item(0);
+        const { left, top } = e.currentTarget.getBoundingClientRect();
+        const x = ((primary.clientX - left) / 32) >> 0;
+        const y = ((primary.clientY - top) / 32) >> 0;
+        updateNibCanvas({ x, y });
+        if (!mutate.pressed) return;
+        if (nibLoadable.state !== 'hasValue') return;
+        if (cursorMode === 'pen' && preloaded.state !== 'hasValue') {
+          return; // Nib のロードが完了していない
+        }
+        e.nativeEvent.preventDefault(); // 指でスクロールするのを防ぐ
+        if (x !== mutate.px || y !== mutate.py) {
+          update(x, y);
+          const eraserLoadable = snapshot.getLoadable(eraserWidthState);
+          const cursor = new Cursor(
+            x,
+            y,
+            cursorMode,
+            nibLoadable.contents,
+            mutate.id,
+            eraserLoadable.state === 'hasValue' ? eraserLoadable.contents : 1
+          );
+          setEditing(current => editWithCursor(current, cursor));
+        }
+      },
     [cursorMode, nibLoadable, preloaded]
   );
   const handleTouchStart = React.useCallback(

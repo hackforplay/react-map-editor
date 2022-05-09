@@ -21,26 +21,29 @@ let _count = 0;
  */
 export const request = selectorFamily<Response, string>({
   key: 'request',
-  get: src => ({ get }) => {
-    const number = ++_count; // 一意な ID を割り振る
-    get(retrys(number)); // エラーになった場合 online になったら再評価する
+  get:
+    src =>
+    ({ get }) => {
+      const number = ++_count; // 一意な ID を割り振る
+      get(retrys(number)); // エラーになった場合 online になったら再評価する
 
-    return fetch(src).catch(error => {
-      errorNumbers.add(number);
-      throw error;
-    });
-  }
+      return fetch(src).catch(error => {
+        errorNumbers.add(number);
+        throw error;
+      });
+    }
 });
 
 export function NetworkProvider() {
   const retryAllFailedRequests = useRecoilCallback(
-    ({ set }) => () => {
-      const copy = new Set(errorNumbers);
-      errorNumbers.clear();
-      copy.forEach(number => {
-        set(retrys(number), curr => curr + 1);
-      });
-    },
+    ({ set }) =>
+      () => {
+        const copy = new Set(errorNumbers);
+        errorNumbers.clear();
+        copy.forEach(number => {
+          set(retrys(number), curr => curr + 1);
+        });
+      },
     []
   );
 

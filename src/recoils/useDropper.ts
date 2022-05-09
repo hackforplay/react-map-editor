@@ -17,44 +17,47 @@ export const dropperPageAtom = atom<{ index: number }>({
 
 export function useDropper() {
   return useRecoilCallback(
-    ({ snapshot, set }) => (x: number, y: number) => {
-      const sceneMapLoadable = snapshot.getLoadable(sceneMapState);
-      const sceneMap =
-        sceneMapLoadable.state === 'hasValue'
-          ? sceneMapLoadable.contents
-          : undefined;
-      if (!sceneMap) return;
-      const pagesLoadable = snapshot.getLoadable(palettePagesState);
-      const pages =
-        pagesLoadable.state === 'hasValue' ? pagesLoadable.contents : undefined;
-      if (!pages) return;
+    ({ snapshot, set }) =>
+      (x: number, y: number) => {
+        const sceneMapLoadable = snapshot.getLoadable(sceneMapState);
+        const sceneMap =
+          sceneMapLoadable.state === 'hasValue'
+            ? sceneMapLoadable.contents
+            : undefined;
+        if (!sceneMap) return;
+        const pagesLoadable = snapshot.getLoadable(palettePagesState);
+        const pages =
+          pagesLoadable.state === 'hasValue'
+            ? pagesLoadable.contents
+            : undefined;
+        if (!pages) return;
 
-      for (let layer = 0; layer < sceneMap.tables.length; layer++) {
-        const index = sceneMap.tables[layer]?.[y]?.[x];
-        if (index > 0) {
-          // index から page を見つける
-          for (const page of pages) {
-            for (let y = 0; y < page.row; y++) {
-              for (let x = 0; x < 8; x++) {
-                const num = y * 8 + x;
-                const tile = page.tiles[num];
-                if (tile?.index === index) {
-                  set(paletteSelectionState, {
-                    page: page.index,
-                    start: { col: x, row: y, num },
-                    end: { col: x, row: y, num }
-                  });
-                  set(cursorModeState, 'pen');
-                  set(dropperPageAtom, { index: page.index });
-                  return;
+        for (let layer = 0; layer < sceneMap.tables.length; layer++) {
+          const index = sceneMap.tables[layer]?.[y]?.[x];
+          if (index > 0) {
+            // index から page を見つける
+            for (const page of pages) {
+              for (let y = 0; y < page.row; y++) {
+                for (let x = 0; x < 8; x++) {
+                  const num = y * 8 + x;
+                  const tile = page.tiles[num];
+                  if (tile?.index === index) {
+                    set(paletteSelectionState, {
+                      page: page.index,
+                      start: { col: x, row: y, num },
+                      end: { col: x, row: y, num }
+                    });
+                    set(cursorModeState, 'pen');
+                    set(dropperPageAtom, { index: page.index });
+                    return;
+                  }
                 }
               }
             }
+            return;
           }
-          return;
         }
-      }
-    },
+      },
     []
   );
 }
